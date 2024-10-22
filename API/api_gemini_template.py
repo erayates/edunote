@@ -1,41 +1,36 @@
 from fastapi import FastAPI, Query, File, UploadFile
 from typing import Optional
-from profanity_check import predict_prob
-import genai
 import KEY
-from google.ai.generativelanguage_v1beta.types import content
-
-def config_model():
-    generation_config = {
-        "temperature": 1,
-        "top_p": 0.95,
-        "top_k": 64,
-        "max_output_tokens": 1000,
-        "response_schema": content.Schema(
-            type=content.Type.ARRAY,
-            items=content.Schema(
-                type=content.Type.OBJECT,
-                required=[
-                    "result_text_title",
-                    "result_text"
-                ],
-                properties={
-                    "result_text_title": content.Schema(
-                        type=content.Type.STRING
-                    ),
-                    "result_text": content.Schema(
-                        type=content.Type.STRING
-                    )
-                }
-            )
-        ),
-        "response_mime_type": "application/json",
-    }
-    return genai.GenerativeModel(model_name="gemini-1.5-pro",generation_config=generation_config)
 
 app = FastAPI()
-gemini = config_model()
-genai.configure(api_key=KEY.GEMINI_API_KEY)
+
+# def config_model():
+#     generation_config = {
+#         "temperature": 1,
+#         "top_p": 0.95,
+#         "top_k": 64,
+#         "max_output_tokens": 1000,
+#         "response_schema": content.Schema(
+#             type=content.Type.ARRAY,
+#             items=content.Schema(
+#                 type=content.Type.OBJECT,
+#                 required=[
+#                     "result_text_title",
+#                     "result_text"
+#                 ],
+#                 properties={
+#                     "result_text_title": content.Schema(
+#                         type=content.Type.STRING
+#                     ),
+#                     "result_text": content.Schema(
+#                         type=content.Type.STRING
+#                     )
+#                 }
+#             )
+#         ),
+#         "response_mime_type": "application/json",
+#     }
+#     return genai.GenerativeModel(model_name="gemini-1.5-pro",generation_config=generation_config)
 
 @app.post("/text/")
 async def text_process(
@@ -56,20 +51,7 @@ async def text_process(
     Returns:
     - A summary, explanation, or answer to the question.
     """
-
-    if option == "summarize":
-        prompt = f"Please provide {'a detailed' if detailed else 'a'} summary of the following text: {text}"
-    elif option == "explain":
-        prompt = f"Please provide {'a detailed' if detailed else 'an'} explanation of the following text: {text}"
-    elif option == "user_query":
-        if user_query is None:
-            return {"error": "Please provide a user query."}
-        prompt = f"Here's some text: {text} \n\n{user_query}"
-    else:
-        return {"error": "Invalid option."}
-
-    response = gemini.generate_content(prompt=prompt)
-    return response
+    pass
 
 @app.post("/audio/")
 async def audio_process(
@@ -90,24 +72,7 @@ async def audio_process(
     Returns:
     - A summary, explanation, or answer to the question.
     """
-    
-    # TODO: Convert audio to text.
-    
-    transcript = "transcribed audio"
-
-    if option == "summarize":
-        prompt = f"Please provide {'a detailed' if detailed else 'a'} summary of the following audio transcript: {transcript}"
-    elif option == "explain":
-        prompt = f"Please provide {'a detailed' if detailed else 'an'} explanation of the following audio transcript: {transcript}"
-    elif option == "user_query":
-        if user_query is None:
-            return {"error": "Please provide a user query."}
-        prompt = f"Here's a transcript of an audio file: {transcript} \n\n{user_query}"
-    else:
-        return {"error": "Invalid option."}
-
-    response = gemini.generate_content(prompt=prompt)
-    return response
+    pass
 
 @app.post("/pdf/")
 async def pdf_process(
@@ -128,24 +93,7 @@ async def pdf_process(
     Returns:
     - A summary, explanation, or answer to the question.
     """
-    
-    # TODO: Convert PDF to text.
-    
-    pdf_text = "extracted PDF text"
-
-    if option == "summarize":
-        prompt = f"Please provide {'a detailed' if detailed else 'a'} summary of the following PDF text: {pdf_text}"
-    elif option == "explain":
-        prompt = f"Please provide {'a detailed' if detailed else 'an'} explanation of the following PDF text: {pdf_text}"
-    elif option == "user_query":
-        if user_query is None:
-            return {"error": "Please provide a user query."}
-        prompt = f"Here's the text from a PDF file: {pdf_text} \n\n{user_query}"
-    else:
-        return {"error": "Invalid option."}
-
-    response = gemini.generate_content(prompt=prompt)
-    return response
+    pass
 
 @app.post("/youtube/")
 async def youtube_process(
@@ -166,24 +114,7 @@ async def youtube_process(
     Returns:
     - A summary, explanation, or answer to the question.
     """
-    
-    # TODO: Get captions from Youtube video using Youtube Data v3 API.
-
-    transcript = "captions"
-
-    if option == "summarize":
-        prompt = f"Please provide {'a detailed' if detailed else 'a'} summary of the following YouTube video transcript: {transcript}"
-    elif option == "explain":
-        prompt = f"Please provide {'a detailed' if detailed else 'an'} explanation of the following YouTube video transcript: {transcript}"
-    elif option == "user_query":
-        if user_query is None:
-            return {"error": "Please provide a user query."}
-        prompt = f"Here's the transcript from a YouTube video: {transcript} \n\n{user_query}"
-    else:
-        return
-    
-    response = gemini.generate_content(prompt=prompt)
-    return response
+    pass
 
 @app.get("/tag-propriety-check/")
 async def tag_propriety_check(tag: str):
@@ -196,8 +127,7 @@ async def tag_propriety_check(tag: str):
     Returns:
     - A boolean value indicating if the tag is proper or not.
     """
-    if float(predict_prob(tag.lower())[0]) > 0.7: return False
-    else: return True
+    pass
 
 @app.get("/")
 async def root():
