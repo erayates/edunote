@@ -1,8 +1,9 @@
 from fastapi import FastAPI, Query, File, UploadFile
 from typing import Optional
-from profanity_check import predict_prob
-import genai
+# from profanity_check import predict_prob
+import google.generativeai as genai
 import KEY
+import json
 from google.ai.generativelanguage_v1beta.types import content
 
 def config_model():
@@ -37,7 +38,7 @@ app = FastAPI()
 gemini = config_model()
 genai.configure(api_key=KEY.GEMINI_API_KEY)
 
-@app.post("/text/")
+@app.get("/text/")
 async def text_process(
     text: str, 
     option: str = Query("summarize", enum=["summarize", "explain", "user_query"], description="Choose an option: 'summarize', 'explain', or 'user_query'"),
@@ -68,10 +69,12 @@ async def text_process(
     else:
         return {"error": "Invalid option."}
 
-    response = gemini.generate_content(prompt=prompt)
+    response = gemini.generate_content(prompt)
+    response = response.to_dict()
+    response["candidates"][0]["content"]["parts"][0]["text"] = json.loads(response["candidates"][0]["content"]["parts"][0]["text"])
     return response
 
-@app.post("/audio/")
+@app.get("/audio/")
 async def audio_process(
     file: UploadFile = File(...), 
     option: str = Query("summarize", enum=["summarize", "explain", "user_query"], description="Choose an option: 'summarize', 'explain', or 'user_query'"),
@@ -109,7 +112,7 @@ async def audio_process(
     response = gemini.generate_content(prompt=prompt)
     return response
 
-@app.post("/pdf/")
+@app.get("/pdf/")
 async def pdf_process(
     file: UploadFile = File(...), 
     option: str = Query("summarize", enum=["summarize", "explain", "user_query"], description="Choose an option: 'summarize', 'explain', or 'user_query'"),
@@ -147,7 +150,7 @@ async def pdf_process(
     response = gemini.generate_content(prompt=prompt)
     return response
 
-@app.post("/youtube/")
+@app.get("/youtube/")
 async def youtube_process(
     link: str, 
     option: str = Query("summarize", enum=["summarize", "explain", "user_query"], description="Choose an option: 'summarize', 'explain', or 'user_query'"),
@@ -185,19 +188,19 @@ async def youtube_process(
     response = gemini.generate_content(prompt=prompt)
     return response
 
-@app.get("/tag-propriety-check/")
-async def tag_propriety_check(tag: str):
-    """
-    Checks if the provided tag is appropriate for use.
+# @app.get("/tag-propriety-check/")
+# async def tag_propriety_check(tag: str):
+#     """
+#     Checks if the provided tag is appropriate for use.
 
-    Args:
-    - tag (str): The tag to be checked.
+#     Args:
+#     - tag (str): The tag to be checked.
 
-    Returns:
-    - A boolean value indicating if the tag is proper or not.
-    """
-    if float(predict_prob(tag.lower())[0]) > 0.7: return False
-    else: return True
+#     Returns:
+#     - A boolean value indicating if the tag is proper or not.
+#     """
+#     if float(predict_prob(tag.lower())[0]) > 0.7: return False
+#     else: return True
 
 @app.get("/")
 async def root():
@@ -206,23 +209,23 @@ async def root():
         "description": "Edunote API, uses Gemini by Google to present you the best note taking experience.",
         "endpoints": {
             "/text/": {
-                "method": "POST",
+                "method": "get",
                 "description": "Process text."
             },
             "/audio/": {
-                "method": "POST",
+                "method": "get",
                 "description": "Process audio content."
             },
             "/pdf/": {
-                "method": "POST",
+                "method": "get",
                 "description": "Process PDF documents."
             },
             "/youtube/": {
-                "method": "POST",
+                "method": "get",
                 "description": "Process YouTube videos."
             },
             "/image/": {
-                "method": "POST",
+                "method": "get",
                 "description": "Process image content."
             },
             "/tag-propriety-check/": {
