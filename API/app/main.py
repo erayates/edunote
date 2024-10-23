@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Query, File, UploadFile, HTTPException
 from typing import Optional
 import google.generativeai as genai
-import KEY
+import API.KEY as KEY
 import json, fitz, io
 from google.ai.generativelanguage_v1beta.types import content
 from langchain_community.document_loaders import YoutubeLoader
