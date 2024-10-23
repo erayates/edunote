@@ -1,12 +1,11 @@
-from fastapi import FastAPI, Query, File, UploadFile
+from fastapi import FastAPI, Query, File, UploadFile, HTTPException
 from typing import Optional
-# from profanity_check import predict_prob
 import google.generativeai as genai
 import KEY
-import json
+import json, fitz, io
 from google.ai.generativelanguage_v1beta.types import content
 from langchain_community.document_loaders import YoutubeLoader
-from pytube import YouTube
+from langchain_community.document_loaders import PyPDFLoader
 
 def config_model():
     generation_config = {
@@ -46,7 +45,7 @@ def format_response(prompt):
     response["candidates"][0]["content"]["parts"][0]["text"] = json.loads(response["candidates"][0]["content"]["parts"][0]["text"])
     return response    
 
-def caption(link, language="en"):
+async def caption_loader(link: str, language: str = "en"):
     content = ""
     loader = YoutubeLoader.from_youtube_url(link, add_video_info=True, language=language)
 
@@ -55,12 +54,76 @@ def caption(link, language="en"):
 
         for doc in youtube_data:
             content += doc.page_content
-            print(doc.page_content)
         return content
 
     except Exception as e:
         print(f"Error loading video data: {e}")
         return ""
+
+async def pdf_loader(file: UploadFile):
+    # Read the content of the uploaded PDF file as bytes
+    pdf_bytes = await file.read()
+
+    # Check if the file is empty
+    if not pdf_bytes:
+        raise HTTPException(status_code=400, detail="Uploaded PDF file is empty.")
+
+    # Create a BytesIO stream from the bytes
+    pdf_stream = io.BytesIO(pdf_bytes)
+
+    # Open the PDF file with PyMuPDF from the BytesIO stream
+    try:
+        pdf_document = fitz.open("pdf", pdf_stream)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Failed to open PDF: {str(e)}")
+
+    # Extract text from the PDF
+    extracted_text = ""
+    for page in pdf_document:
+        extracted_text += page.get_text()  # Extract text from each page
+
+    pdf_document.close()  # Close the document
+
+    return extracted_text
+
+@app.get("/gemini/")
+async def text_process(
+    text: str = None, 
+    option: Optional[str] = Query("note", enum=["summarize", "explain", "note"], description="Choose an option: 'summarize', 'explain', or 'note'"),
+    source: Optional[str] = Query("text", enum=["text", "pdf", "audio", "youtube", "image"], description="Choose a source: 'text', 'pdf', 'audio', 'youtube', 'image'"),
+    user_query: Optional[str] = Query(None, description="Ask AI a question"),
+    detailed: Optional[bool] = Query(False, description="Ask AI for detailed output")
+):
+    """
+    Summarizes, explains, or answers a question about the given text.
+
+    Args:
+    - text (str): The text to be processed.
+    - option (str): The option to choose: 'summarize', 'explain', or 'user_query'.
+    - user_query (str): Optional question to ask AI about the text (used with 'user_query' option).
+    - detailed (bool): Optional flag to request detailed output.
+
+    Returns:
+    - A summary, explanation, or answer to the question.
+    """
+    
+    if text is None and source != 'text':
+        match source:
+            case 'text': 
+    
+    if option:
+        if option == "summarize":
+            prompt = f"Please provide {'a detailed' if detailed else 'a'} summary of the following text {f"({user_query})" if user_query else ''}: {text}"
+        elif option == "explain":
+            prompt = f"Please provide {'a detailed' if detailed else 'an'} explanation of the following text {f"({user_query})" if user_query else ''}: {text}"
+        elif option == "note":
+            prompt = f"Please provide {'a detailed' if detailed else 'a'} note of the following text {f"({user_query})" if user_query else ''}: {text}"
+    elif user_query:
+        prompt = user_query
+    else:
+        return {"error": "Invalid option."}
+
+    return format_response(prompt)
 
 @app.get("/text/")
 async def text_process(
@@ -152,10 +215,7 @@ async def pdf_process(
     Returns:
     - A summary, explanation, or answer to the question.
     """
-    
-    # TODO: Convert PDF to text.
-    
-    pdf_text = "extracted PDF text"
+    pdf_text = await pdf_loader(file)
 
     if option == "summarize":
         prompt = f"Please provide {'a detailed' if detailed else 'a'} summary of the following PDF text: {pdf_text}"
@@ -168,7 +228,6 @@ async def pdf_process(
     else:
         return {"error": "Invalid option."}
 
-    response = gemini.generate_content(prompt=prompt)
     return format_response(prompt)
 
 @app.get("/youtube/")
@@ -194,7 +253,7 @@ async def youtube_process(
 
     # TODO: Get captions from Youtube video using Youtube Data v3 API.
 
-    transcript = caption(f"https://www.youtube.com/watch?v={link}", language)
+    transcript = caption_loader(f"https://www.youtube.com/watch?v={link}", language)
 
     if option == "summarize":
         prompt = f"Please provide {'a detailed' if detailed else 'a'} summary of the following YouTube video transcript: {transcript}"
