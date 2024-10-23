@@ -40,9 +40,14 @@ gemini = config_model()
 genai.configure(api_key=KEY.GEMINI_API_KEY)
 
 def format_response(prompt):
+    global gemini
     response = gemini.generate_content(prompt)
     response = response.to_dict()
-    response["candidates"][0]["content"]["parts"][0]["text"] = json.loads(response["candidates"][0]["content"]["parts"][0]["text"])
+    print(response["candidates"][0]["content"]["parts"][0]["text"])
+    try:
+        response["candidates"][0]["content"]["parts"][0]["text"] = json.loads(response["candidates"][0]["content"]["parts"][0]["text"])
+    except json.JSONDecodeError as e:
+        print(f"JSON decoding failed: {e}")
     return response    
 
 async def caption_loader(link: str, language: str = "en"):
@@ -86,186 +91,69 @@ async def pdf_loader(file: UploadFile):
 
     return extracted_text
 
+async def audio_loader(file: UploadFile):
+    raise NotImplementedError
+    extracted_text: str
+    return extracted_text
+
+async def image_loader(file: UploadFile):
+    raise NotImplementedError
+    extracted_text: str
+    return extracted_text
+
 @app.get("/gemini/")
-async def text_process(
-    text: str = None, 
+async def gemini_process(
+    text: str = None,
+    link: str = None,
+    language: str = None,
+    file: Optional[UploadFile] = File(...), 
     option: Optional[str] = Query("note", enum=["summarize", "explain", "note"], description="Choose an option: 'summarize', 'explain', or 'note'"),
     source: Optional[str] = Query("text", enum=["text", "pdf", "audio", "youtube", "image"], description="Choose a source: 'text', 'pdf', 'audio', 'youtube', 'image'"),
     user_query: Optional[str] = Query(None, description="Ask AI a question"),
     detailed: Optional[bool] = Query(False, description="Ask AI for detailed output")
 ):
     """
-    Summarizes, explains, or answers a question about the given text.
+    Process text or multimedia content using Gemini AI model.
+
+    This endpoint allows you to interact with the Gemini AI model by providing text, PDF documents, YouTube links, or audio/image files (not yet implemented). 
+    You can choose different options to summarize, explain, or take notes on the provided content.
 
     Args:
-    - text (str): The text to be processed.
-    - option (str): The option to choose: 'summarize', 'explain', or 'user_query'.
-    - user_query (str): Optional question to ask AI about the text (used with 'user_query' option).
-    - detailed (bool): Optional flag to request detailed output.
+        text (str, optional): Text content to be processed. Defaults to None.
+        link (str, optional): URL link to YouTube video or other sources (not yet implemented). Defaults to None.
+        language (str, optional): Language of the content. Defaults to None.
+        file (UploadFile, optional): File upload for PDF documents. Defaults to File(...).
+        option (str, optional): Choose an option from 'summarize', 'explain', or 'note'. Defaults to "note".
+        source (str, optional): Choose a source from 'text', 'pdf', 'audio', 'youtube', 'image'. Defaults to "text".
+        user_query (str, optional): Ask AI a question about the content. Defaults to None.
+        detailed (bool, optional): Ask AI for a more detailed output. Defaults to False.
 
     Returns:
-    - A summary, explanation, or answer to the question.
+        dict: A dictionary containing the processed response from the Gemini AI model, or an error message if the request is invalid.
     """
-    
-    if text is None and source != 'text':
-        match source:
-            case 'text': 
-    
+    match source:
+        case 'text': pass
+        case 'pdf': text = await pdf_loader(file)
+        case 'youtube': text = caption_loader(f"https://www.youtube.com/watch?v={link}", language)
+        case 'audio': {"error": "Method is not implemented."}
+        case 'image': {"error": "Method is not implemented."}
+
+    if text is None and user_query is None:
+        return {"error": "Error occured."}
+        
     if option:
+        query_part = f"({user_query})" if user_query else ''
         if option == "summarize":
-            prompt = f"Please provide {'a detailed' if detailed else 'a'} summary of the following text {f"({user_query})" if user_query else ''}: {text}"
+            prompt = f"Please provide {'a detailed' if detailed else 'a'} summary of the following text {query_part}: {text}"
         elif option == "explain":
-            prompt = f"Please provide {'a detailed' if detailed else 'an'} explanation of the following text {f"({user_query})" if user_query else ''}: {text}"
+            prompt = f"Please provide {'a detailed' if detailed else 'an'} explanation of the following text {query_part}: {text}"
         elif option == "note":
-            prompt = f"Please provide {'a detailed' if detailed else 'a'} note of the following text {f"({user_query})" if user_query else ''}: {text}"
+            prompt = f"Please provide {'a detailed' if detailed else 'a'} note of the following text {query_part}: {text}"
     elif user_query:
         prompt = user_query
     else:
         return {"error": "Invalid option."}
 
-    return format_response(prompt)
-
-@app.get("/text/")
-async def text_process(
-    text: str, 
-    option: str = Query("summarize", enum=["summarize", "explain", "user_query"], description="Choose an option: 'summarize', 'explain', or 'user_query'"),
-    user_query: Optional[str] = Query(None, description="Ask AI a question about the text"),
-    detailed: Optional[bool] = Query(False, description="Ask AI for detailed output")
-):
-    """
-    Summarizes, explains, or answers a question about the given text.
-
-    Args:
-    - text (str): The text to be processed.
-    - option (str): The option to choose: 'summarize', 'explain', or 'user_query'.
-    - user_query (str): Optional question to ask AI about the text (used with 'user_query' option).
-    - detailed (bool): Optional flag to request detailed output.
-
-    Returns:
-    - A summary, explanation, or answer to the question.
-    """
-
-    if option == "summarize":
-        prompt = f"Please provide {'a detailed' if detailed else 'a'} summary of the following text: {text}"
-    elif option == "explain":
-        prompt = f"Please provide {'a detailed' if detailed else 'an'} explanation of the following text: {text}"
-    elif option == "user_query":
-        if user_query is None:
-            return {"error": "Please provide a user query."}
-        prompt = f"Here's some text: {text} \n\n{user_query}"
-    else:
-        return {"error": "Invalid option."}
-
-    return format_response(prompt)
-
-@app.get("/audio/")
-async def audio_process(
-    file: UploadFile = File(...), 
-    option: str = Query("summarize", enum=["summarize", "explain", "user_query"], description="Choose an option: 'summarize', 'explain', or 'user_query'"),
-    user_query: Optional[str] = Query(None, description="Ask AI a question about the audio"),
-    detailed: Optional[bool] = Query(False, description="Ask AI for detailed output")
-):
-    """
-    Summarizes, explains, or answers a question about the content of an audio file.
-
-    Args:
-    - file (UploadFile): The audio file to be processed.
-    - option (str): The option to choose: 'summarize', 'explain', or 'user_query'.
-    - user_query (str): Optional question to ask AI about the audio (used with 'user_query' option).
-    - detailed (bool): Optional flag to request detailed output.
-
-    Returns:
-    - A summary, explanation, or answer to the question.
-    """
-    
-    # TODO: Convert audio to text.
-    
-    transcript = "transcribed audio"
-
-    if option == "summarize":
-        prompt = f"Please provide {'a detailed' if detailed else 'a'} summary of the following audio transcript: {transcript}"
-    elif option == "explain":
-        prompt = f"Please provide {'a detailed' if detailed else 'an'} explanation of the following audio transcript: {transcript}"
-    elif option == "user_query":
-        if user_query is None:
-            return {"error": "Please provide a user query."}
-        prompt = f"Here's a transcript of an audio file: {transcript} \n\n{user_query}"
-    else:
-        return {"error": "Invalid option."}
-
-    response = gemini.generate_content(prompt=prompt)
-    return format_response(prompt)
-
-@app.get("/pdf/")
-async def pdf_process(
-    file: UploadFile = File(...), 
-    option: str = Query("summarize", enum=["summarize", "explain", "user_query"], description="Choose an option: 'summarize', 'explain', or 'user_query'"),
-    user_query: Optional[str] = Query(None, description="Ask AI a question about the PDF"),
-    detailed: Optional[bool] = Query(False, description="Ask AI for detailed output")
-):
-    """
-    Summarizes, explains, or answers a question about the content of a PDF document.
-
-    Args:
-    - file (UploadFile): The PDF file to be processed.
-    - option (str): The option to choose: 'summarize', 'explain', or 'user_query'.
-    - user_query (str): Optional question to ask AI about the PDF (used with 'user_query' option).
-    - detailed (bool): Optional flag to request detailed output.
-
-    Returns:
-    - A summary, explanation, or answer to the question.
-    """
-    pdf_text = await pdf_loader(file)
-
-    if option == "summarize":
-        prompt = f"Please provide {'a detailed' if detailed else 'a'} summary of the following PDF text: {pdf_text}"
-    elif option == "explain":
-        prompt = f"Please provide {'a detailed' if detailed else 'an'} explanation of the following PDF text: {pdf_text}"
-    elif option == "user_query":
-        if user_query is None:
-            return {"error": "Please provide a user query."}
-        prompt = f"Here's the text from a PDF file: {pdf_text} \n\n{user_query}"
-    else:
-        return {"error": "Invalid option."}
-
-    return format_response(prompt)
-
-@app.get("/youtube/")
-async def youtube_process(
-    link: str,
-    language: str = "en",
-    option: str = Query("summarize", enum=["summarize", "explain", "user_query"], description="Choose an option: 'summarize', 'explain', or 'user_query'"),
-    user_query: Optional[str] = Query(None, description="Ask AI a question about the YouTube video"),
-    detailed: Optional[bool] = Query(False, description="Ask AI for detailed output")
-):
-    """
-    Summarizes, explains, or answers a question about a YouTube video.
-
-    Args:
-    - link (str): The YouTube video URL.
-    - option (str): The option to choose: 'summarize', 'explain', or 'user_query'.
-    - user_query (str): Optional question to ask AI about the video (used with 'user_query' option).
-    - detailed (bool): Optional flag to request detailed output.
-
-    Returns:
-    - A summary, explanation, or answer to the question.
-    """
-
-    # TODO: Get captions from Youtube video using Youtube Data v3 API.
-
-    transcript = caption_loader(f"https://www.youtube.com/watch?v={link}", language)
-
-    if option == "summarize":
-        prompt = f"Please provide {'a detailed' if detailed else 'a'} summary of the following YouTube video transcript: {transcript}"
-    elif option == "explain":
-        prompt = f"Please provide {'a detailed' if detailed else 'an'} explanation of the following YouTube video transcript: {transcript}"
-    elif option == "user_query":
-        if user_query is None:
-            return {"error": "Please provide a user query."}
-        prompt = f"Here's the transcript from a YouTube video: {transcript} \n\n{user_query}"
-    else:
-        return
-    
     return format_response(prompt)
 
 # @app.get("/tag-propriety-check/")
