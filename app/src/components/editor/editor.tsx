@@ -31,6 +31,7 @@ import { slashCommand, suggestionItems } from "./slash-commands";
 import hljs from "highlight.js";
 import { toast } from "sonner";
 import { Input } from "../ui/input";
+import { checkImageDeleted } from "@/actions/blob";
 
 const extensions = [...defaultExtensions, slashCommand];
 
@@ -60,6 +61,14 @@ const TailwindAdvancedEditor = () => {
   const debouncedUpdates = useDebouncedCallback(
     async (editor: EditorInstance) => {
       const json = editor.getJSON();
+
+      const images =
+        json.content
+          ?.filter((contentItem) => contentItem.type === "image")
+          .map((item) => item.attrs?.src) ?? [];
+
+      checkImageDeleted(images);
+
       setCharsCount(editor.storage.characterCount.words());
       window.localStorage.setItem(
         "html-content",
@@ -71,7 +80,6 @@ const TailwindAdvancedEditor = () => {
         editor.storage.markdown.getMarkdown()
       );
 
-      toast.success("Saved successfully!");
       setSaveStatus("Saved");
     },
     500

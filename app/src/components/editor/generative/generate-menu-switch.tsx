@@ -1,10 +1,12 @@
+"use client";
+
 import { EditorBubble, useEditor } from "novel";
 import { removeAIHighlight } from "novel/extensions";
 import {} from "novel/plugins";
 import { Fragment, type ReactNode, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import Magic from "@/components/ui/icons/magic";
-// import { AISelector } from "./ai-selector";
+import { AISelector } from "./ai-selector";
 
 interface GenerativeMenuSwitchProps {
   children: ReactNode;
@@ -20,19 +22,20 @@ const GenerativeMenuSwitch = ({
 
   useEffect(() => {
     if (!open && editor) removeAIHighlight(editor);
-  }, [open]);
+  }, [open, editor]);
+
   return (
     <EditorBubble
       tippyOptions={{
         placement: open ? "bottom-start" : "top",
         onHidden: () => {
           onOpenChange(false);
-          editor.chain().unsetHighlight().run();
+          if (editor) editor.chain().unsetHighlight().run();
         },
       }}
       className="flex w-fit max-w-[90vw] overflow-hidden rounded-md border border-muted bg-background shadow-xl"
     >
-      {/* {open && <AISelector open={open} onOpenChange={onOpenChange} />} */}
+      {open && <AISelector open={open} onOpenChange={onOpenChange} />}
       {!open && (
         <Fragment>
           <Button
