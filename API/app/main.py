@@ -101,12 +101,12 @@ async def image_loader(file: UploadFile):
     extracted_text: str
     return extracted_text
 
-@app.get("/gemini/")
+@app.post("/gemini/")
 async def gemini_process(
     text: str = None,
     link: str = None,
     language: str = None,
-    file: Optional[UploadFile] = File(...), 
+    file: Optional[UploadFile] = None, 
     option: Optional[str] = Query(None, enum=["summarize", "explain", "note"], description="Choose an option: 'summarize', 'explain', or 'note'"),
     source: Optional[str] = Query(None, enum=["text", "pdf", "audio", "youtube", "image"], description="Choose a source: 'text', 'pdf', 'audio', 'youtube', 'image'"),
     user_query: Optional[str] = Query(None, description="Ask AI a question"),
