@@ -5,6 +5,8 @@ import google.generativeai as genai
 import KEY
 import json
 from google.ai.generativelanguage_v1beta.types import content
+from langchain_community.document_loaders import YoutubeLoader
+from pytube import YouTube
 
 def config_model():
     generation_config = {
@@ -38,6 +40,28 @@ app = FastAPI()
 gemini = config_model()
 genai.configure(api_key=KEY.GEMINI_API_KEY)
 
+def format_response(prompt):
+    response = gemini.generate_content(prompt)
+    response = response.to_dict()
+    response["candidates"][0]["content"]["parts"][0]["text"] = json.loads(response["candidates"][0]["content"]["parts"][0]["text"])
+    return response    
+
+def caption(link, language="en"):
+    content = ""
+    loader = YoutubeLoader.from_youtube_url(link, add_video_info=True, language=language)
+
+    try:
+        youtube_data = loader.load()
+
+        for doc in youtube_data:
+            content += doc.page_content
+            print(doc.page_content)
+        return content
+
+    except Exception as e:
+        print(f"Error loading video data: {e}")
+        return ""
+
 @app.get("/text/")
 async def text_process(
     text: str, 
@@ -69,10 +93,7 @@ async def text_process(
     else:
         return {"error": "Invalid option."}
 
-    response = gemini.generate_content(prompt)
-    response = response.to_dict()
-    response["candidates"][0]["content"]["parts"][0]["text"] = json.loads(response["candidates"][0]["content"]["parts"][0]["text"])
-    return response
+    return format_response(prompt)
 
 @app.get("/audio/")
 async def audio_process(
@@ -110,7 +131,7 @@ async def audio_process(
         return {"error": "Invalid option."}
 
     response = gemini.generate_content(prompt=prompt)
-    return response
+    return format_response(prompt)
 
 @app.get("/pdf/")
 async def pdf_process(
@@ -148,11 +169,12 @@ async def pdf_process(
         return {"error": "Invalid option."}
 
     response = gemini.generate_content(prompt=prompt)
-    return response
+    return format_response(prompt)
 
-@app.get("/youtube/")
+@app.get("/youtube/") # http://127.0.0.1:8000/youtube/?link=Y7W41VMxyQE&option=explain&user_query=Can%20you%20show%20me%20captions%20and%20explain%20me%20the%20situation%20of%20this%20video&detailed=true
 async def youtube_process(
-    link: str, 
+    link: str,
+    language: str = "en",
     option: str = Query("summarize", enum=["summarize", "explain", "user_query"], description="Choose an option: 'summarize', 'explain', or 'user_query'"),
     user_query: Optional[str] = Query(None, description="Ask AI a question about the YouTube video"),
     detailed: Optional[bool] = Query(False, description="Ask AI for detailed output")
@@ -169,10 +191,10 @@ async def youtube_process(
     Returns:
     - A summary, explanation, or answer to the question.
     """
-    
+
     # TODO: Get captions from Youtube video using Youtube Data v3 API.
 
-    transcript = "captions"
+    transcript = caption(f"https://www.youtube.com/watch?v={link}", language)
 
     if option == "summarize":
         prompt = f"Please provide {'a detailed' if detailed else 'a'} summary of the following YouTube video transcript: {transcript}"
@@ -185,8 +207,7 @@ async def youtube_process(
     else:
         return
     
-    response = gemini.generate_content(prompt=prompt)
-    return response
+    return format_response(prompt)
 
 # @app.get("/tag-propriety-check/")
 # async def tag_propriety_check(tag: str):
