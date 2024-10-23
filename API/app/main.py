@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Query, File, UploadFile, HTTPException
 from typing import Optional
 import google.generativeai as genai
-import API.KEY as KEY
+import KEY as KEY
 import json, fitz, io
 from google.ai.generativelanguage_v1beta.types import content
 from langchain_community.document_loaders import YoutubeLoader
@@ -107,8 +107,8 @@ async def gemini_process(
     link: str = None,
     language: str = None,
     file: Optional[UploadFile] = File(...), 
-    option: Optional[str] = Query("note", enum=["summarize", "explain", "note"], description="Choose an option: 'summarize', 'explain', or 'note'"),
-    source: Optional[str] = Query("text", enum=["text", "pdf", "audio", "youtube", "image"], description="Choose a source: 'text', 'pdf', 'audio', 'youtube', 'image'"),
+    option: Optional[str] = Query(None, enum=["summarize", "explain", "note"], description="Choose an option: 'summarize', 'explain', or 'note'"),
+    source: Optional[str] = Query(None, enum=["text", "pdf", "audio", "youtube", "image"], description="Choose a source: 'text', 'pdf', 'audio', 'youtube', 'image'"),
     user_query: Optional[str] = Query(None, description="Ask AI a question"),
     detailed: Optional[bool] = Query(False, description="Ask AI for detailed output")
 ):
@@ -123,8 +123,8 @@ async def gemini_process(
         link (str, optional): URL link to YouTube video or other sources (not yet implemented). Defaults to None.
         language (str, optional): Language of the content. Defaults to None.
         file (UploadFile, optional): File upload for PDF documents. Defaults to File(...).
-        option (str, optional): Choose an option from 'summarize', 'explain', or 'note'. Defaults to "note".
-        source (str, optional): Choose a source from 'text', 'pdf', 'audio', 'youtube', 'image'. Defaults to "text".
+        option (str, optional): Choose an option from 'summarize', 'explain', or 'note'. Defaults to None.
+        source (str, optional): Choose a source from 'text', 'pdf', 'audio', 'youtube', 'image'. Defaults to None.
         user_query (str, optional): Ask AI a question about the content. Defaults to None.
         detailed (bool, optional): Ask AI for a more detailed output. Defaults to False.
 
@@ -140,7 +140,7 @@ async def gemini_process(
 
     if text is None and user_query is None:
         return {"error": "Error occured."}
-        
+
     if option:
         query_part = f"({user_query})" if user_query else ''
         if option == "summarize":
@@ -176,29 +176,20 @@ async def root():
         "message": "Edunote API",
         "description": "Edunote API, uses Gemini by Google to present you the best note taking experience.",
         "endpoints": {
-            "/text/": {
+            "/gemini/": {
                 "method": "get",
-                "description": "Process text."
-            },
-            "/audio/": {
-                "method": "get",
-                "description": "Process audio content."
-            },
-            "/pdf/": {
-                "method": "get",
-                "description": "Process PDF documents."
-            },
-            "/youtube/": {
-                "method": "get",
-                "description": "Process YouTube videos."
-            },
-            "/image/": {
-                "method": "get",
-                "description": "Process image content."
-            },
-            "/tag-propriety-check/": {
-                "method": "GET",
-                "description": "Checks if the provided tag is appropriate for use."
+                "description": "Process text.",
+                "parameters": {
+                    "text": "Provide text to Gemini to use options.",
+                    "link": "Youtube link to get the video transcript.",
+                    "language": "Language for Gemini. (Not implemented yet.)",
+                    "file": "Provide a pdf, audio or image file. (Audio and image files are not supported yet.)",
+                    "option": "Choose an option from 'summarize', 'explain', or 'note'. Defaults to None.",
+                    "source": "Choose a source from 'text', 'pdf', 'audio', 'youtube', 'image'. Defaults to None.",
+                    "user_query": "Ask AI a question about the content. Defaults to None.",
+                    "detailed": "Ask AI for a more detailed output. Defaults to false.",
+                },
+                "help": "Provide at least an option (only one: youtube link/text/file) and choose source or a user query (only user query to ask any question) or both." 
             }
         }
     }
