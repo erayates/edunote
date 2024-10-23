@@ -171,7 +171,7 @@ async def pdf_process(
     response = gemini.generate_content(prompt=prompt)
     return format_response(prompt)
 
-@app.get("/youtube/") # http://127.0.0.1:8000/youtube/?link=Y7W41VMxyQE&option=explain&user_query=Can%20you%20show%20me%20captions%20and%20explain%20me%20the%20situation%20of%20this%20video&detailed=true
+@app.get("/youtube/")
 async def youtube_process(
     link: str,
     language: str = "en",
