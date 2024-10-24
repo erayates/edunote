@@ -1,11 +1,10 @@
 from fastapi import FastAPI, HTTPException
 import google.generativeai as genai
 import KEY as KEY
-import json, asyncio, sys
-sys.path.append('app')
+import json, asyncio
 from fastapi.responses import StreamingResponse
 from google.api_core.exceptions import ResourceExhausted
-from loaders import *
+from app.loaders import *
 
 app = FastAPI()
 model = Loaders.config_model()
@@ -53,6 +52,7 @@ async def root():
                         "user" : "Default option. Provide {{user_query}}. Feeds Gemini with user query.",
                         "ask" : "Provide {{text}} and {{user_query}} to ask a question about the text.",
                         "explain" : "Provide {{text}}. Gemini explains the text.",
+                        "template" : "Provide {{text}}. Gemini creates a template of the text.",
                         "summarize" : "Provide {{text}}. Gemini summarizes the text.",
                         "note" : "Provide {{text}}. Gemini takes notes for you from the text.",
                         "improve" : "Provide {{text}}. Gemini improves the text.",
@@ -66,3 +66,4 @@ async def root():
             }
         }
     }
+
