@@ -2,41 +2,30 @@ from fastapi import FastAPI, Query, File, UploadFile, HTTPException
 from typing import Optional
 import google.generativeai as genai
 import KEY as KEY
-import json, fitz, io
+import json, fitz, io, asyncio
 from google.ai.generativelanguage_v1beta.types import content
 from langchain_community.document_loaders import YoutubeLoader
-from langchain_community.document_loaders import PyPDFLoader
+from fastapi.responses import StreamingResponse
+from google.api_core.exceptions import ResourceExhausted
+from time import perf_counter
+
 
 def config_model():
     generation_config = {
         "temperature": 1,
         "top_p": 0.95,
         "top_k": 64,
-        "max_output_tokens": 1000,
+        "max_output_tokens": 500,
         "response_schema": content.Schema(
-            type=content.Type.ARRAY,
-            items=content.Schema(
-                type=content.Type.OBJECT,
-                required=[
-                    "result_text_title",
-                    "result_text"
-                ],
-                properties={
-                    "result_text_title": content.Schema(
-                        type=content.Type.STRING
-                    ),
-                    "result_text": content.Schema(
-                        type=content.Type.STRING
-                    )
-                }
-            )
+            type=content.Type.STRING
         ),
-        "response_mime_type": "application/json",
+        "response_mime_type": "text/plain",
     }
-    return genai.GenerativeModel(model_name="gemini-1.5-pro",generation_config=generation_config)
+    return genai.GenerativeModel(model_name="gemini-1.5-pro", generation_config=generation_config)
+
 
 app = FastAPI()
-gemini = config_model()
+model = config_model()
 genai.configure(api_key=KEY.GEMINI_API_KEY)
 
 def format_response(prompt):
@@ -48,7 +37,7 @@ def format_response(prompt):
         response["candidates"][0]["content"]["parts"][0]["text"] = json.loads(response["candidates"][0]["content"]["parts"][0]["text"])
     except json.JSONDecodeError as e:
         print(f"JSON decoding failed: {e}")
-    return response    
+    return response
 
 async def caption_loader(link: str, language: str = "en"):
     content = ""
@@ -101,74 +90,80 @@ async def image_loader(file: UploadFile):
     extracted_text: str
     return extracted_text
 
-@app.post("/gemini/")
-async def gemini_process(
-    text: str = None,
-    link: str = None,
-    language: str = None,
-    file: Optional[UploadFile] = None, 
-    option: Optional[str] = Query(None, enum=["summarize", "explain", "note"], description="Choose an option: 'summarize', 'explain', or 'note'"),
-    source: Optional[str] = Query(None, enum=["text", "pdf", "audio", "youtube", "image"], description="Choose a source: 'text', 'pdf', 'audio', 'youtube', 'image'"),
-    user_query: Optional[str] = Query(None, description="Ask AI a question"),
-    detailed: Optional[bool] = Query(False, description="Ask AI for detailed output")
-):
-    """
-    Process text or multimedia content using Gemini AI model.
+# @app.get("/gemini/")
+# async def gemini_process(
+#     text: str = None,
+#     option: str = None,
+#     language: str = None,
+#     user_query: str = None,
+# ):
 
-    This endpoint allows you to interact with the Gemini AI model by providing text, PDF documents, YouTube links, or audio/image files (not yet implemented). 
-    You can choose different options to summarize, explain, or take notes on the provided content.
+#     if text is None and user_query is None:
+#         return {"error": "Error occured."}
 
-    Args:
-        text (str, optional): Text content to be processed. Defaults to None.
-        link (str, optional): URL link to YouTube video or other sources (not yet implemented). Defaults to None.
-        language (str, optional): Language of the content. Defaults to None.
-        file (UploadFile, optional): File upload for PDF documents. Defaults to File(...).
-        option (str, optional): Choose an option from 'summarize', 'explain', or 'note'. Defaults to None.
-        source (str, optional): Choose a source from 'text', 'pdf', 'audio', 'youtube', 'image'. Defaults to None.
-        user_query (str, optional): Ask AI a question about the content. Defaults to None.
-        detailed (bool, optional): Ask AI for a more detailed output. Defaults to False.
+#     if text.startswith("https://www.youtube.com/watch?v="): text = caption_loader(text, language)
 
-    Returns:
-        dict: A dictionary containing the processed response from the Gemini AI model, or an error message if the request is invalid.
-    """
-    match source:
-        case 'text': pass
-        case 'pdf': text = await pdf_loader(file)
-        case 'youtube': text = caption_loader(f"https://www.youtube.com/watch?v={link}", language)
-        case 'audio': {"error": "Method is not implemented."}
-        case 'image': {"error": "Method is not implemented."}
+#     query_part = f"({user_query})" if user_query else ''
 
+#     if option:
+#         match option:
+#             case "summarize":
+#                 prompt = f"Please provide a summary of the following text {query_part}: {text}"
+#             case "explain":
+#                 prompt = f"Please provide an explanation of the following text {query_part}: {text}"
+#             case "note":
+#                 prompt = f"Please provide a note of the following text {query_part}: {text}"
+#     elif user_query:
+#         prompt = user_query
+#     else:
+#         return {"error": "Invalid option."}
+
+#     return format_response(prompt)
+
+app = FastAPI()
+
+async def json_stream(text: str):
+    max_retries = 3
+    retry_delay = 0.2
+
+    for attempt in range(max_retries):
+        try:
+            for chunk in model.generate_content(contents=text, stream=True):
+                chunk_dict = chunk.to_dict()
+                print(chunk_dict)
+                print(type(chunk_dict))
+                json_chunk = json.dumps(dict(chunk_dict), allow_nan=True, skipkeys=True)
+                yield json_chunk
+            break
+        except ResourceExhausted as e:
+            if attempt < max_retries - 1:
+                await asyncio.sleep(retry_delay)
+                retry_delay *= 2
+            else:
+                raise HTTPException(status_code=429, detail="API quota exceeded. Please try again later.")
+
+@app.get("/gemini/")
+async def gemini(text: str = None, option: str = None, language: str = None, user_query: str = None):
     if text is None and user_query is None:
-        return {"error": "Error occured."}
+        raise HTTPException(status_code=000, detail="Can not find required endpoints.")
+
+    if text and text.startswith("https://www.youtube.com/watch?v="): text = caption_loader(text, language)
+
+    query_part = f"({user_query})" if user_query else ''
 
     if option:
-        query_part = f"({user_query})" if user_query else ''
-        if option == "summarize":
-            prompt = f"Please provide {'a detailed' if detailed else 'a'} summary of the following text {query_part}: {text}"
-        elif option == "explain":
-            prompt = f"Please provide {'a detailed' if detailed else 'an'} explanation of the following text {query_part}: {text}"
-        elif option == "note":
-            prompt = f"Please provide {'a detailed' if detailed else 'a'} note of the following text {query_part}: {text}"
+        match option:
+            case "summarize":
+                prompt = f"Please provide a summary of the following text {query_part}: {text}"
+            case "explain":
+                prompt = f"Please provide an explanation of the following text {query_part}: {text}"
+            case "note":
+                prompt = f"Please provide a note of the following text {query_part}: {text}"
     elif user_query:
         prompt = user_query
     else:
-        return {"error": "Invalid option."}
-
-    return format_response(prompt)
-
-# @app.get("/tag-propriety-check/")
-# async def tag_propriety_check(tag: str):
-#     """
-#     Checks if the provided tag is appropriate for use.
-
-#     Args:
-#     - tag (str): The tag to be checked.
-
-#     Returns:
-#     - A boolean value indicating if the tag is proper or not.
-#     """
-#     if float(predict_prob(tag.lower())[0]) > 0.7: return False
-#     else: return True
+        raise HTTPException(status_code=000, detail="Invalid option.")
+    return StreamingResponse(json_stream(prompt), media_type="application/json")
 
 @app.get("/")
 async def root():
@@ -181,13 +176,9 @@ async def root():
                 "description": "Process text.",
                 "parameters": {
                     "text": "Provide text to Gemini to use options.",
-                    "link": "Youtube link to get the video transcript.",
                     "language": "Language for Gemini. (Not implemented yet.)",
-                    "file": "Provide a pdf, audio or image file. (Audio and image files are not supported yet.)",
                     "option": "Choose an option from 'summarize', 'explain', or 'note'. Defaults to None.",
-                    "source": "Choose a source from 'text', 'pdf', 'audio', 'youtube', 'image'. Defaults to None.",
                     "user_query": "Ask AI a question about the content. Defaults to None.",
-                    "detailed": "Ask AI for a more detailed output. Defaults to false.",
                 },
                 "help": "Provide at least an option (only one: youtube link/text/file) and choose source or a user query (only user query to ask any question) or both." 
             }
