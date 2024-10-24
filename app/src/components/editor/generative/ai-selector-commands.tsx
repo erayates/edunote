@@ -7,7 +7,7 @@ import {
   StepForward,
   WrapText,
 } from "lucide-react";
-import { EditorInstance, useEditor } from "novel";
+import { useEditor } from "novel";
 import { getPrevText } from "novel/utils";
 
 import {
