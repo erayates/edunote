@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, File
 import google.generativeai as genai
 import KEY as KEY
 import json, asyncio
@@ -29,6 +29,11 @@ async def json_stream(option: str, text: str, user_query: str):
             else:
                 raise HTTPException(status_code=429, detail="API quota exceeded. Please try again later.")
 
+@app.post("/OptionOne")
+def file_upload(file: UploadFile = File(None)):
+    print(file.filename)
+    return {'name': file.filename}
+
 @app.get("/gemini/")
 async def gemini_porcess(body: MainBody):
     print("\n\n\n", body.command, body.prompt, body.option, "\n\n\n")
@@ -50,18 +55,18 @@ async def root():
                         "prompt": "Provide text to Gemini to use options. Defaults to None.",
                         "command": "Ask AI a question about the content. Defaults to None.",
                         "option": {
-                            "user" : "Default option. Provide {{user_query}}. Feeds Gemini with user query.",
-                            "ask" : "Provide {{text}} and {{user_query}} to ask a question about the text.",
-                            "explain" : "Provide {{text}}. Gemini explains the text.",
-                            "template" : "Provide {{text}}. Gemini creates a template of the text.",
-                            "summarize" : "Provide {{text}}. Gemini summarizes the text.",
-                            "note" : "Provide {{text}}. Gemini takes notes for you from the text.",
-                            "improve" : "Provide {{text}}. Gemini improves the text.",
-                            "shorter" : "Provide {{text}}. Gemini shorters the text.",
-                            "longer" : "Provide {{text}}. Gemini longers the text.",
-                            "continue" : "Provide {{text}}. Gemini continues the text.",
-                            "fix" : "Provide {{text}}. Gemini fixes the text.",
-                            "zap" : "Provide {{user_query}}. Gemini generates new text from user query."
+                            "user" : "Default option. Provide {{commands}}. Feeds Gemini with user query.",
+                            "ask" : "Provide {{propmt}} and {{commands}} to ask a question about the text.",
+                            "explain" : "Provide {{propmt}}. Gemini explains the text.",
+                            "template" : "Provide {{propmt}}. Gemini creates a template of the text.",
+                            "summarize" : "Provide {{propmt}}. Gemini summarizes the text.",
+                            "note" : "Provide {{propmt}}. Gemini takes notes for you from the text.",
+                            "improve" : "Provide {{propmt}}. Gemini improves the text.",
+                            "shorter" : "Provide {{propmt}}. Gemini shorters the text.",
+                            "longer" : "Provide {{propmt}}. Gemini longers the text.",
+                            "continue" : "Provide {{propmt}}. Gemini continues the text.",
+                            "fix" : "Provide {{propmt}}. Gemini fixes the text.",
+                            "zap" : "Provide {{commands}}. Gemini generates new text from user query."
                         }
                     }
                 }
