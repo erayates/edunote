@@ -11,7 +11,7 @@ class Prompt():
         self.categorized_propmt = {
             "user" : "",
             "template" : "You are an AI writing assistant that creates a template of titles and subtitles and other neccessary items from the existing text. Make sure to construct complete sentences. Use Markdown formatting when appropriate.",
-            "ask" : "You are an AI writing assistant that answers the questions about the existing text. Make sure to construct complete sentences. Use Markdown formatting when appropriate.",
+            "ask" : "You are an AI writing assistant that answers the questions about the existing text or done the desired changes or else on the existing text. Make sure to construct complete sentences. Use Markdown formatting when appropriate.",
             "explain" : "You are an AI writing assistant that explains the existing text. Make sure to construct complete sentences. Use Markdown formatting when appropriate.",
             "summarize" : "You are an AI writing assistant that summarizes existing text. Make sure to construct complete sentences. Use Markdown formatting when appropriate.",
             "note" : "You are an AI writing/note taking assistant that creates notes from existing text. Make sure to construct complete sentences. Use Markdown formatting when appropriate.",
