@@ -44,23 +44,25 @@ async def root():
         "endpoints": {
             "/gemini/": {
                 "method": "get",
-                "description": "Process text.",
+                "description": "Process prompt and user command.",
                 "parameters": {
-                    "text": "Provide text to Gemini to use options. Defaults to None.",
-                    "user_query": "Ask AI a question about the content. Defaults to None.",
-                    "option": {
-                        "user" : "Default option. Provide {{user_query}}. Feeds Gemini with user query.",
-                        "ask" : "Provide {{text}} and {{user_query}} to ask a question about the text.",
-                        "explain" : "Provide {{text}}. Gemini explains the text.",
-                        "template" : "Provide {{text}}. Gemini creates a template of the text.",
-                        "summarize" : "Provide {{text}}. Gemini summarizes the text.",
-                        "note" : "Provide {{text}}. Gemini takes notes for you from the text.",
-                        "improve" : "Provide {{text}}. Gemini improves the text.",
-                        "shorter" : "Provide {{text}}. Gemini shorters the text.",
-                        "longer" : "Provide {{text}}. Gemini longers the text.",
-                        "continue" : "Provide {{text}}. Gemini continues the text.",
-                        "fix" : "Provide {{text}}. Gemini fixes the text.",
-                        "zap" : "Provide {{user_query}}. Gemini generates new text from user query."
+                    "body": {
+                        "prompt": "Provide text to Gemini to use options. Defaults to None.",
+                        "command": "Ask AI a question about the content. Defaults to None.",
+                        "option": {
+                            "user" : "Default option. Provide {{user_query}}. Feeds Gemini with user query.",
+                            "ask" : "Provide {{text}} and {{user_query}} to ask a question about the text.",
+                            "explain" : "Provide {{text}}. Gemini explains the text.",
+                            "template" : "Provide {{text}}. Gemini creates a template of the text.",
+                            "summarize" : "Provide {{text}}. Gemini summarizes the text.",
+                            "note" : "Provide {{text}}. Gemini takes notes for you from the text.",
+                            "improve" : "Provide {{text}}. Gemini improves the text.",
+                            "shorter" : "Provide {{text}}. Gemini shorters the text.",
+                            "longer" : "Provide {{text}}. Gemini longers the text.",
+                            "continue" : "Provide {{text}}. Gemini continues the text.",
+                            "fix" : "Provide {{text}}. Gemini fixes the text.",
+                            "zap" : "Provide {{user_query}}. Gemini generates new text from user query."
+                        }
                     }
                 }
             }
