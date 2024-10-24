@@ -69,13 +69,13 @@ export const LinkSelector = ({ open, onOpenChange }: LinkSelectorProps) => {
               onOpenChange(false);
             }
           }}
-          className="flex  p-1 "
+          className="flex space-x-1 p-1 bg-foreground"
         >
           <input
             ref={inputRef}
             type="text"
             placeholder="Paste a link"
-            className="flex-1 bg-background p-1 text-sm outline-none"
+            className="flex-1 bg-background p-1 text-sm outline-none rounded-lg"
             defaultValue={editor.getAttributes("link").href || ""}
           />
           {editor.getAttributes("link").href ? (
@@ -93,7 +93,7 @@ export const LinkSelector = ({ open, onOpenChange }: LinkSelectorProps) => {
               <Trash className="h-4 w-4" />
             </Button>
           ) : (
-            <Button size="icon" className="h-8">
+            <Button size="icon" className="h-8 text-white">
               <Check className="h-4 w-4" />
             </Button>
           )}

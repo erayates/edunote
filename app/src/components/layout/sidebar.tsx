@@ -35,7 +35,7 @@ const AppSidebar: React.FC = () => {
         <div className="w-full h-[1px] border border-secondary my-6"></div>
 
         <ul>
-          <p className="flex items-center text-sm font-semibold text-secondary mb-3">
+          <p className="flex items-center text-white/30 text-sm font-semibold mb-3">
             <NotepadText size={16} className="mr-2" />
             NOTES
           </p>
@@ -125,7 +125,7 @@ const AppSidebar: React.FC = () => {
         </ul>
 
         <ul className="mt-8 space-y-3">
-          <p className="text-sm font-semibold text-secondary mb-3 flex items-center">
+          <p className="text-sm font-semibold text-white/30 mb-3 flex items-center">
             <Earth size={16} className="mr-2" />
             APP
           </p>

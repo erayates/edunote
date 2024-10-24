@@ -29,7 +29,6 @@ const items: SelectorItem[] = [
     name: "Text",
     icon: TextIcon,
     command: (editor) => editor?.chain().focus().clearNodes().run(),
-    // I feel like there has to be a more efficient way to do this – feel free to PR if you know how!
     isActive: (editor) => {
       if (editor) {
         return (
@@ -45,6 +44,7 @@ const items: SelectorItem[] = [
     name: "Heading 1",
     icon: Heading1,
     command: (editor) =>
+      editor &&
       editor?.chain().focus().clearNodes().toggleHeading({ level: 1 }).run(),
     isActive: (editor) =>
       editor ? editor.isActive("heading", { level: 1 }) : false,
@@ -53,6 +53,7 @@ const items: SelectorItem[] = [
     name: "Heading 2",
     icon: Heading2,
     command: (editor) =>
+      editor &&
       editor?.chain().focus().clearNodes().toggleHeading({ level: 2 }).run(),
     isActive: (editor) =>
       editor ? editor.isActive("heading", { level: 2 }) : false,
@@ -61,6 +62,7 @@ const items: SelectorItem[] = [
     name: "Heading 3",
     icon: Heading3,
     command: (editor) =>
+      editor &&
       editor?.chain().focus().clearNodes().toggleHeading({ level: 3 }).run(),
     isActive: (editor) =>
       editor ? editor.isActive("heading", { level: 3 }) : false,
@@ -69,38 +71,39 @@ const items: SelectorItem[] = [
     name: "To-do List",
     icon: CheckSquare,
     command: (editor) =>
-      editor?.chain().focus().clearNodes().toggleTaskList().run(),
+      editor && editor?.chain().focus().clearNodes().toggleTaskList().run(),
     isActive: (editor) => (editor ? editor.isActive("taskItem") : false),
   },
   {
     name: "Bullet List",
     icon: ListOrdered,
     command: (editor) =>
-      editor?.chain().focus().clearNodes().toggleBulletList().run(),
+      editor && editor?.chain().focus().clearNodes().toggleBulletList().run(),
     isActive: (editor) => (editor ? editor.isActive("bulletList") : false),
   },
   {
     name: "Numbered List",
     icon: ListOrdered,
     command: (editor) =>
-      editor?.chain().focus().clearNodes().toggleOrderedList().run(),
+      editor && editor?.chain().focus().clearNodes().toggleOrderedList().run(),
     isActive: (editor) => (editor ? editor.isActive("orderedList") : false),
   },
   {
     name: "Quote",
     icon: TextQuote,
     command: (editor) =>
-      editor?.chain().focus().clearNodes().toggleBlockquote().run(),
+      editor && editor?.chain().focus().clearNodes().toggleBlockquote().run(),
     isActive: (editor) => (editor ? editor.isActive("blockquote") : false),
   },
   {
     name: "Code",
     icon: Code,
     command: (editor) =>
-      editor?.chain().focus().clearNodes().toggleCodeBlock().run(),
+      editor && editor?.chain().focus().clearNodes().toggleCodeBlock().run(),
     isActive: (editor) => (editor ? editor.isActive("codeBlock") : false),
   },
 ];
+
 interface NodeSelectorProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -124,7 +127,11 @@ export const NodeSelector = ({ open, onOpenChange }: NodeSelectorProps) => {
           <ChevronDown className="h-4 w-4" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent sideOffset={5} align="start" className="w-48 p-1">
+      <PopoverContent
+        sideOffset={5}
+        align="start"
+        className="w-48 p-1 bg-foreground"
+      >
         {items.map((item) => (
           <EditorBubbleItem
             key={item.name}

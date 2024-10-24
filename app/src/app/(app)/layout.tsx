@@ -38,7 +38,7 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             <AppSidebar />
-            <main className="max-w-screen-lg relative left-[100px] top-[80px] mx-auto">{children}</main>
+            <main className="max-w-screen-lg relative left-[100px] top-[80px] mx-auto h-full">{children}</main>
             <AppBottomBar />
           </ThemeProvider>
         </body>
