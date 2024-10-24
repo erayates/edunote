@@ -80,11 +80,25 @@ def format_response(prompt):
 
 #     return extracted_text
 
-async def audio_loader(file: UploadFile):
-    raise NotImplementedError
-    extracted_text: str
-    return extracted_text
+@app.post("/summarize_audio/")
+async def summarize_audio(file: UploadFile = File(...)):
+    if not file.filename.endswith(('.mp3', '.wav', '.m4a')):
+        raise HTTPException(status_code=400, detail="Invalid file type. Please upload an audio file (mp3, wav, or m4a).")
+    
+    
+    file_location = f"./{file.filename}"
+    with open(file_location, "wb") as f:
+        content = await file.read()
+        f.write(content)
 
+    prompt = "Summarize the speech from this audio file."
+
+    
+    audio_file = genai.upload_file(path=file_location)
+    response = model.generate_content([prompt, audio_file])
+    
+   
+    return {"summary": response.text}
 async def image_loader(file: UploadFile):
     raise NotImplementedError
     extracted_text: str
