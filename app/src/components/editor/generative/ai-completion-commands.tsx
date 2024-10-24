@@ -6,7 +6,7 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import { EditorInstance, useEditor } from "novel";
+import { useEditor } from "novel";
 import { Check, TextQuote, TrashIcon } from "lucide-react";
 
 const AICompletionCommands = ({

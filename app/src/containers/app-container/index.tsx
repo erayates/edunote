@@ -1,4 +1,4 @@
-import { BadgePlus, CheckCircle, Share2, Telescope } from "lucide-react";
+import { BadgePlus, Share2, Telescope } from "lucide-react";
 import { CreateActivity } from "./create-activity";
 
 const AppContainer: React.FC = () => {

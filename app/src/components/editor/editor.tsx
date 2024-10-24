@@ -29,11 +29,8 @@ import { uploadFn } from "./image-upload";
 import { slashCommand, suggestionItems } from "./slash-commands";
 
 import hljs from "highlight.js";
-import { toast } from "sonner";
 import { Input } from "../ui/input";
 import { checkImageDeleted } from "@/actions/blob";
-import { Button } from "../ui/button";
-import { Settings } from "lucide-react";
 import EditorSettings from "./editor-settings";
 
 const extensions = [...defaultExtensions, slashCommand];
@@ -54,9 +51,8 @@ const TailwindAdvancedEditor = () => {
   const highlightCodeblocks = (content: string) => {
     const doc = new DOMParser().parseFromString(content, "text/html");
     doc.querySelectorAll("pre code").forEach((el) => {
-      // @ts-ignore
       // https://highlightjs.readthedocs.io/en/latest/api.html?highlight=highlightElement#highlightelement
-      hljs.highlightElement(el);
+      hljs.highlightElement(el as HTMLElement);
     });
     return new XMLSerializer().serializeToString(doc);
   };

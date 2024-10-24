@@ -1,8 +1,7 @@
 import { _notes } from "@/_mocks/notes";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DatePicker } from "@/components/ui/date-picker";
 import { Input } from "@/components/ui/input";
-import { BookKey, Calendar } from "lucide-react";
+import { BookKey } from "lucide-react";
 import Image from "next/image";
 import React from "react";
 import NoteCard from "./note-card";

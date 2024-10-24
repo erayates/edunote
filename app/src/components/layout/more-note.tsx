@@ -1,10 +1,8 @@
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
-  SheetClose,
   SheetContent,
   SheetDescription,
-  SheetFooter,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
@@ -60,132 +58,6 @@ export function MoreNote() {
                 </div>
               </div>
             ))}
-
-            <div className="flex border w-full max-h-[100px] h-[100px] border-secondary rounded-xl p-2 space-x-2 items-center">
-              <div className="w-16 h-full min-w-16 min-h-16 overflow-hidden relative rounded-2xl">
-                <Image
-                  width={0}
-                  height={0}
-                  sizes="100vw"
-                  alt="Note Thumbnail"
-                  className="w-full h-auto rounded-2xl object-cover"
-                  src="https://brnx9rsmvjqlixb6.public.blob.vercel-storage.com/note-thumbnail-ivmpLfDWc1HFGLQJ9LFNDpFaX0ktuG.jpg"
-                />
-              </div>
-              <div className="col-span-2">
-                <h3 className="text-white text-sm">
-                  "My Travel Journal: Paris Adventure"
-                </h3>
-                <p className="text-xs text-white/30">
-                  My favorite Mediterranean recipes with personal notes{" "}
-                </p>
-              </div>
-            </div>
-
-            <div className="flex border w-full max-h-[100px] h-[100px] border-secondary rounded-xl p-2 space-x-2 items-center">
-              <div className="w-16 h-full min-w-16 min-h-16 overflow-hidden relative rounded-2xl">
-                <Image
-                  width={0}
-                  height={0}
-                  sizes="100vw"
-                  alt="Note Thumbnail"
-                  className="w-full h-auto rounded-2xl object-cover"
-                  src="https://brnx9rsmvjqlixb6.public.blob.vercel-storage.com/note-thumbnail-ivmpLfDWc1HFGLQJ9LFNDpFaX0ktuG.jpg"
-                />
-              </div>
-              <div className="col-span-2">
-                <h3 className="text-white text-sm">
-                  "My Travel Journal: Paris Adventure"
-                </h3>
-                <p className="text-xs text-white/30">
-                  My favorite Mediterranean recipes with personal notes{" "}
-                </p>
-              </div>
-            </div>
-
-            <div className="flex border w-full max-h-[100px] h-[100px] border-secondary rounded-xl p-2 space-x-2 items-center">
-              <div className="w-16 h-full min-w-16 min-h-16 overflow-hidden relative rounded-2xl">
-                <Image
-                  width={0}
-                  height={0}
-                  sizes="100vw"
-                  alt="Note Thumbnail"
-                  className="w-full h-auto rounded-2xl object-cover"
-                  src="https://brnx9rsmvjqlixb6.public.blob.vercel-storage.com/note-thumbnail-ivmpLfDWc1HFGLQJ9LFNDpFaX0ktuG.jpg"
-                />
-              </div>
-              <div className="col-span-2">
-                <h3 className="text-white text-sm">
-                  "My Travel Journal: Paris Adventure"
-                </h3>
-                <p className="text-xs text-white/30">
-                  My favorite Mediterranean recipes with personal notes{" "}
-                </p>
-              </div>
-            </div>
-
-            <div className="flex border w-full max-h-[100px] h-[100px] border-secondary rounded-xl p-2 space-x-2 items-center">
-              <div className="w-16 h-full min-w-16 min-h-16 overflow-hidden relative rounded-2xl">
-                <Image
-                  width={0}
-                  height={0}
-                  sizes="100vw"
-                  alt="Note Thumbnail"
-                  className="w-full h-auto rounded-2xl object-cover"
-                  src="https://brnx9rsmvjqlixb6.public.blob.vercel-storage.com/note-thumbnail-ivmpLfDWc1HFGLQJ9LFNDpFaX0ktuG.jpg"
-                />
-              </div>
-              <div className="col-span-2">
-                <h3 className="text-white text-sm">
-                  "My Travel Journal: Paris Adventure"
-                </h3>
-                <p className="text-xs text-white/30">
-                  My favorite Mediterranean recipes with personal notes{" "}
-                </p>
-              </div>
-            </div>
-
-            <div className="flex border w-full max-h-[100px] h-[100px] border-secondary rounded-xl p-2 space-x-2 items-center">
-              <div className="w-16 h-full min-w-16 min-h-16 overflow-hidden relative rounded-2xl">
-                <Image
-                  width={0}
-                  height={0}
-                  sizes="100vw"
-                  alt="Note Thumbnail"
-                  className="w-full h-auto rounded-2xl object-cover"
-                  src="https://brnx9rsmvjqlixb6.public.blob.vercel-storage.com/note-thumbnail-ivmpLfDWc1HFGLQJ9LFNDpFaX0ktuG.jpg"
-                />
-              </div>
-              <div className="col-span-2">
-                <h3 className="text-white text-sm">
-                  "My Travel Journal: Paris Adventure"
-                </h3>
-                <p className="text-xs text-white/30">
-                  My favorite Mediterranean recipes with personal notes{" "}
-                </p>
-              </div>
-            </div>
-
-            <div className="flex border w-full max-h-[100px] h-[100px] border-secondary rounded-xl p-2 space-x-2 items-center">
-              <div className="w-16 h-full min-w-16 min-h-16 overflow-hidden relative rounded-2xl">
-                <Image
-                  width={0}
-                  height={0}
-                  sizes="100vw"
-                  alt="Note Thumbnail"
-                  className="w-full h-auto rounded-2xl object-cover"
-                  src="https://brnx9rsmvjqlixb6.public.blob.vercel-storage.com/note-thumbnail-ivmpLfDWc1HFGLQJ9LFNDpFaX0ktuG.jpg"
-                />
-              </div>
-              <div className="col-span-2">
-                <h3 className="text-white text-sm">
-                  "My Travel Journal: Paris Adventure"
-                </h3>
-                <p className="text-xs text-white/30">
-                  My favorite Mediterranean recipes with personal notes{" "}
-                </p>
-              </div>
-            </div>
           </div>
         </div>
       </SheetContent>

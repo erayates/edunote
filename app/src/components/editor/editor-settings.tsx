@@ -17,6 +17,8 @@ import { Button } from "../ui/button";
 const EditorSettings: React.FC = () => {
   const [copiedLink, setCopiedLink] = useCopyToClipboard();
 
+  console.log(copiedLink);
+
   const handleCopyShareLink = (link: string) => {
     setCopiedLink(link)
       .then(() => toast.success("You have copied share link."))
@@ -38,7 +40,7 @@ const EditorSettings: React.FC = () => {
         <div className="">
           <h3 className="text-sm text-white font-semibold">Share Link</h3>
           <p className="text-xs text-white/30">
-            You can copy your note's share link from below.
+            {`You can copy your note's share link from below.`}
           </p>
 
           <div className="flex space-x-2 mt-2">
