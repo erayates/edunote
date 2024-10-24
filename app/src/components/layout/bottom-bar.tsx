@@ -7,7 +7,7 @@ import { Button } from "../ui/button";
 
 const AppBottomBar: React.FC = () => {
   return (
-    <div className="absolute left-1/2 -translate-x-1/2 bottom-8 flex rounded-3xl space-x-4">
+    <div className="fixed left-1/2 -translate-x-1/2 bottom-8 flex rounded-3xl space-x-4">
       <div className="p-2 w-[540px] rounded-3xl bg-foreground relative grid place-items-center pl-8">
         <div className="w-[72px] h-[72px] rounded-full absolute -left-10 -top-2 grid place-items-center bg-foreground border-4 border-background ">
           <Image

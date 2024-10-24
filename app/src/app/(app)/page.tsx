@@ -3,7 +3,7 @@ import { Suspense } from "react";
 
 export default function Home() {
   return (
-    <div className="ml-[280px]">
+    <div className="">
       <Suspense fallback={<p>Loading....</p>}>
         <TailwindAdvancedEditor />
       </Suspense>

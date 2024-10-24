@@ -1,61 +1,86 @@
 import { cn } from "@/lib/utils";
-import { Earth, NotepadText } from "lucide-react";
+import {
+  Boxes,
+  Earth,
+  LogOut,
+  MessagesSquare,
+  Notebook,
+  NotepadText,
+  Settings2,
+  ShieldQuestion,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { Button } from "../ui/button";
+import { MoreNote } from "./more-note";
+import { _notes } from "@/_mocks/notes";
 
 const AppSidebar: React.FC = () => {
   return (
     <aside
       className={cn(
-        "w-[280px] fixed left-0 top-0 bg-foreground h-screen p-8 z-50 bg-[#1e2124]"
+        "w-[280px] fixed left-0 flex flex-col justify-between top-0 bg-foreground h-screen p-8 z-50 "
       )}
     >
       <div className="">
-        <Image
-          src="/assets/images/edunote-logo-light.png"
-          alt="Edunote Logo"
-          width={280}
-          height={50}
-        />
+        <Link href={"/"}>
+          <Image
+            src="/assets/images/edunote-logo-light.png"
+            alt="Edunote Logo"
+            width={280}
+            height={50}
+          />
+        </Link>
 
-        <div className="w-full h-[1px] border border-[#36393E] my-6"></div>
+        <div className="w-full h-[1px] border border-secondary my-6"></div>
 
-        <ul className="">
-          <p className="flex items-center text-sm font-semibold text-[#424549] mb-3">
+        <ul>
+          <p className="flex items-center text-sm font-semibold text-secondary mb-3">
             <NotepadText size={16} className="mr-2" />
             NOTES
           </p>
-          <li className="flex items-center text-sm text-white border-l-2 border-[#424549] pl-6 py-1 after:absolute after:left-0 after:top-1/2 after:-translate-y-1/2 after:bg-[#424549] after:w-5 after:h-[2px] relative">
-            <NotepadText size={16} className="mr-2" /> Test Note Page
-          </li>
-          <li className="flex items-center text-sm text-white border-l-2 border-[#424549] pl-6 py-1 after:absolute after:left-0 after:top-1/2 after:-translate-y-1/2 after:bg-[#424549] after:w-5 after:h-[2px] relative">
-            <NotepadText size={16} className="mr-2" /> Test Note Page
-          </li>
-          <li className="flex items-center text-sm text-white border-l-2 border-[#424549] pl-6 py-1 after:absolute after:left-0 after:top-1/2 after:-translate-y-1/2 after:bg-[#424549] after:w-5 after:h-[2px] relative">
-            <NotepadText size={16} className="mr-2" /> Test Note Page
-          </li>
+
+          {_notes
+            .slice(0, _notes.length > 3 ? 3 : _notes.length)
+            .map((_note) => (
+              <li
+                key={String(_note._id)}
+                className="flex items-center text-sm text-white/30 hover:text-white border-l-2 border-primary pl-6 py-1 after:absolute after:left-0 after:top-1/2 after:-translate-y-1/2 after:bg-[#424549] after:w-5 after:h-[2px] relative"
+              >
+                <Link href="#" className="flex items-center">
+                  <NotepadText size={16} className="mr-2" />{" "}
+                  {_note.title.slice(
+                    0,
+                    _note.title.length > 16 ? 16 : _note.title.length
+                  )}
+                  ...
+                </Link>
+              </li>
+            ))}
+
+          {_notes.length > 3 && <MoreNote />}
         </ul>
 
         <ul className="mt-8">
-          <p className="text-sm font-semibold text-[#424549] mb-3 flex items-center">
+          <p className="flex items-center text-sm font-semibold text-white/30 mb-3">
             <Earth size={16} className="mr-2" />
-            DISCOVER
+            EXPLORE
           </p>
-          
+
           <li className="flex items-center text-white border-2 rounded-xl group hover:bg-[#424549] transition-all duration-300 border-[#424549]">
             <Link
-              href="#"
+              href="/notes"
               className="flex space-x-2 items-center w-full pt-1 pb-[6px] px-4"
             >
               <span className="w-10 h-10">
-                <Earth size={40} />
+                <Notebook size={40} />
               </span>
               <p className="leading-none">
-                <span className="text-white text-sm font-semibold leading-6">
+                <span className="text-white text-sm font-medium leading-6">
                   Notes
                 </span>
-                <span className="text-[#424549] group-hover:text-white  font-semibold leading-none text-xs inline-block">
-                  Discover any notes from world.
+                <span className="text-white/30 group-hover:text-white leading-none text-xs inline-block">
+                  Explore any notes from world.
                 </span>
               </p>
             </Link>
@@ -66,14 +91,14 @@ const AppSidebar: React.FC = () => {
               className="flex space-x-2 items-center w-full pt-1 pb-[6px] px-4"
             >
               <span className="w-10 h-10">
-                <Earth size={40} />
+                <Boxes size={40} />
               </span>
               <p className="leading-none">
-                <span className="text-white text-sm font-semibold leading-6">
-                  Notes
+                <span className="text-white text-sm font-medium leading-6">
+                  Groups
                 </span>
-                <span className="text-[#424549] group-hover:text-white  font-semibold leading-none text-xs inline-block">
-                  Discover any notes from world.
+                <span className="text-white/30 group-hover:text-white leading-none text-xs inline-block">
+                  Explore any groups from world.
                 </span>
               </p>
             </Link>
@@ -85,20 +110,55 @@ const AppSidebar: React.FC = () => {
               className="flex space-x-2 items-center w-full pt-1 pb-[6px] px-4"
             >
               <span className="w-10 h-10">
-                <Earth size={40} />
+                <ShieldQuestion size={40} />
               </span>
               <p className="leading-none">
-                <span className="text-white text-sm font-semibold leading-6">
-                  Notes
+                <span className="text-white text-sm font-medium leading-6">
+                  Quizes
                 </span>
-                <span className="text-[#424549] group-hover:text-white  font-semibold leading-none text-xs inline-block">
-                  Discover any notes from world.
+                <span className="text-white/30 group-hover:text-white leading-none text-xs inline-block">
+                  Explore any quiz from world.
                 </span>
               </p>
             </Link>
           </li>
         </ul>
+
+        <ul className="mt-8 space-y-3">
+          <p className="text-sm font-semibold text-secondary mb-3 flex items-center">
+            <Earth size={16} className="mr-2" />
+            APP
+          </p>
+
+          <li className="">
+            <Button
+              asChild={true}
+              className="text-white/30 w-full"
+              variant="outline"
+            >
+              <Link href="#">
+                <MessagesSquare /> Messages
+              </Link>
+            </Button>
+          </li>
+
+          <li className="">
+            <Button
+              asChild={true}
+              className="text-white/30 w-full"
+              variant="outline"
+            >
+              <Link href="#">
+                <Settings2 /> Settings
+              </Link>
+            </Button>
+          </li>
+        </ul>
       </div>
+
+      <Button variant="destructive">
+        <LogOut /> Logout
+      </Button>
     </aside>
   );
 };

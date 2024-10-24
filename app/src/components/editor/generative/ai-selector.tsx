@@ -45,7 +45,7 @@ export function AISelector({ onOpenChange }: AISelectorProps) {
 
   return (
     <Command className="w-[350px]">
-      {/* {hasCompletion && (
+      {hasCompletion && (
         <div className="flex max-h-[400px]">
           <ScrollArea>
             <div className="prose p-2 px-4 prose-sm">
@@ -53,8 +53,9 @@ export function AISelector({ onOpenChange }: AISelectorProps) {
             </div>
           </ScrollArea>
         </div>
-      )} */}
+      )}
 
+      {/* Çalışıyor */}
       {isLoading && (
         <div className="flex h-12 w-full items-center px-4 text-sm font-medium text-muted-foreground text-purple-500">
           <Magic className="mr-2 h-4 w-4 shrink-0  " />
@@ -64,13 +65,13 @@ export function AISelector({ onOpenChange }: AISelectorProps) {
           </div>
         </div>
       )}
-      
+
       {!isLoading && (
         <>
           <div className="relative">
             <CommandInput
               value={inputValue}
-              onValueChange={(e) => setInputValue((prev) => prev + e)}
+              onValueChange={setInputValue}
               autoFocus
               placeholder={
                 hasCompletion
@@ -79,6 +80,7 @@ export function AISelector({ onOpenChange }: AISelectorProps) {
               }
               onFocus={() => editor && addAIHighlight(editor)}
             />
+
             <Button
               size="icon"
               className="absolute right-2 top-1/2 h-6 w-6 -translate-y-1/2 rounded-full bg-purple-500 hover:bg-purple-900"
@@ -101,7 +103,8 @@ export function AISelector({ onOpenChange }: AISelectorProps) {
               <ArrowUp className="h-4 w-4" />
             </Button>
           </div>
-          {/* {hasCompletion ? (
+
+          {hasCompletion ? (
             <AICompletionCommands
               onDiscard={() => {
                 if (editor) editor.chain().unsetHighlight().focus().run();
@@ -115,7 +118,7 @@ export function AISelector({ onOpenChange }: AISelectorProps) {
                 complete(value, { body: { option } })
               }
             />
-          )} */}
+          )}
         </>
       )}
     </Command>
