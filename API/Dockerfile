@@ -6,6 +6,9 @@ ENV HOST=0.0.0.0
 
 COPY ./requirements.txt /code/requirements.txt
 COPY ./KEY.py /code/KEY.py
+COPY ./LICENSE /code/LICENSE
+COPY ./README.md /code/README.md
+
 RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
 
 COPY ./app /code/app/
