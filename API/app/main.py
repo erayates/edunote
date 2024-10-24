@@ -1,13 +1,13 @@
-from fastapi import FastAPI, Query, File, UploadFile, HTTPException
-from typing import Optional
+from fastapi import FastAPI, UploadFile, HTTPException # Query, File, 
+# from typing import Optional
 import google.generativeai as genai
 import KEY as KEY
-import json, fitz, io, asyncio
+import json, asyncio # fitz, io, 
 from google.ai.generativelanguage_v1beta.types import content
-from langchain_community.document_loaders import YoutubeLoader
+# from langchain_community.document_loaders import YoutubeLoader
 from fastapi.responses import StreamingResponse
 from google.api_core.exceptions import ResourceExhausted
-from time import perf_counter
+# from time import perf_counter
 
 
 def config_model():
@@ -39,46 +39,46 @@ def format_response(prompt):
         print(f"JSON decoding failed: {e}")
     return response
 
-async def caption_loader(link: str, language: str = "en"):
-    content = ""
-    loader = YoutubeLoader.from_youtube_url(link, add_video_info=True, language=language)
+# async def caption_loader(link: str, language: str = "en"):
+#     content = ""
+#     loader = YoutubeLoader.from_youtube_url(link, add_video_info=True, language=language)
 
-    try:
-        youtube_data = loader.load()
+#     try:
+#         youtube_data = loader.load()
 
-        for doc in youtube_data:
-            content += doc.page_content
-        return content
+#         for doc in youtube_data:
+#             content += doc.page_content
+#         return content
 
-    except Exception as e:
-        print(f"Error loading video data: {e}")
-        return ""
+#     except Exception as e:
+#         print(f"Error loading video data: {e}")
+#         return ""
 
-async def pdf_loader(file: UploadFile):
-    # Read the content of the uploaded PDF file as bytes
-    pdf_bytes = await file.read()
+# async def pdf_loader(file: UploadFile):
+#     # Read the content of the uploaded PDF file as bytes
+#     pdf_bytes = await file.read()
 
-    # Check if the file is empty
-    if not pdf_bytes:
-        raise HTTPException(status_code=400, detail="Uploaded PDF file is empty.")
+#     # Check if the file is empty
+#     if not pdf_bytes:
+#         raise HTTPException(status_code=400, detail="Uploaded PDF file is empty.")
 
-    # Create a BytesIO stream from the bytes
-    pdf_stream = io.BytesIO(pdf_bytes)
+#     # Create a BytesIO stream from the bytes
+#     pdf_stream = io.BytesIO(pdf_bytes)
 
-    # Open the PDF file with PyMuPDF from the BytesIO stream
-    try:
-        pdf_document = fitz.open("pdf", pdf_stream)
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=f"Failed to open PDF: {str(e)}")
+#     # Open the PDF file with PyMuPDF from the BytesIO stream
+#     try:
+#         pdf_document = fitz.open("pdf", pdf_stream)
+#     except Exception as e:
+#         raise HTTPException(status_code=400, detail=f"Failed to open PDF: {str(e)}")
 
-    # Extract text from the PDF
-    extracted_text = ""
-    for page in pdf_document:
-        extracted_text += page.get_text()  # Extract text from each page
+#     # Extract text from the PDF
+#     extracted_text = ""
+#     for page in pdf_document:
+#         extracted_text += page.get_text()  # Extract text from each page
 
-    pdf_document.close()  # Close the document
+#     pdf_document.close()  # Close the document
 
-    return extracted_text
+#     return extracted_text
 
 async def audio_loader(file: UploadFile):
     raise NotImplementedError
@@ -147,7 +147,7 @@ async def gemini(text: str = None, option: str = None, language: str = None, use
     if text is None and user_query is None:
         raise HTTPException(status_code=000, detail="Can not find required endpoints.")
 
-    if text and text.startswith("https://www.youtube.com/watch?v="): text = caption_loader(text, language)
+    # if text and text.startswith("https://www.youtube.com/watch?v="): text = caption_loader(text, language)
 
     query_part = f"({user_query})" if user_query else ''
 
