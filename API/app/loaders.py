@@ -1,8 +1,14 @@
 from fastapi import UploadFile, HTTPException
 import google.generativeai as genai
+from pydantic import BaseModel
 import fitz, io, os
 from google.ai.generativelanguage_v1beta.types import content
 from langchain_community.document_loaders import YoutubeLoader
+
+class MainBody(BaseModel):
+    option: str = 'user'
+    command: str | None = None
+    prompt: str | None = None
 
 class Prompt():
     def __init__(self, safety_category: int = 0, generation_config: dict = None) -> None:
@@ -23,21 +29,19 @@ class Prompt():
             "zap" : "You area an AI writing assistant that generates text based on a prompt. You take an input from the user and a command for manipulating the text. Use Markdown formatting when appropriate."
         }
 
-    def generate_response(self, prompt, option, user_query = None, language = None):
+    def generate_response(self, prompt, option, user_query = None):
         if option == 'ask':
             messages = [
                 {'role': 'user', 'parts': [self.categorized_propmt[option]]},
                 {'role': 'model', 'parts': ['I am an AI writing assistant and I will provide you the text you desire.']},
-                {'role': 'user', 'parts': f'Answer me in {language} from now on.'},
                 {'role': 'user', 'parts': [f'{user_query}, Here is the text: {prompt}']}
             ]
         else:
             messages = [
                 {'role': 'user', 'parts': [self.categorized_propmt[option]]},
                 {'role': 'model', 'parts': ['I am an AI writing assistant and I will provide you the text you desire.']},
-                {'role': 'user', 'parts': f'Answer me in {language} from now on.'},
                 {'role': 'user', 'parts': [f'Here is the text: {prompt}']}
-            ] if option != 'user' else [ {'role': 'user', 'parts': f'Answer me in {language} from now on.'}, {'role': 'user', 'parts': [user_query]} ]
+            ] if option != 'user' else [ {'role': 'user', 'parts': [user_query]} ]
         return {
             'contents': messages,
             # 'generation_config': self.generation_config,

@@ -9,15 +9,15 @@ from app.loaders import *
 app = FastAPI()
 model = Loaders.config_model()
 genai.configure(api_key=KEY.GEMINI_API_KEY)
-prompt = Prompt()
+prompt_obj = Prompt()
 
-async def json_stream(option: str, text: str, language: str, user_query: str):
-    global prompt
+async def json_stream(option: str, text: str, user_query: str):
+    global prompt_obj
     max_retries = 3
     retry_delay = 0.2
     for attempt in range(max_retries):
         try:
-            for chunk in model.generate_content(**prompt.generate_response(text, option, user_query, language), stream=True):
+            for chunk in model.generate_content(**prompt_obj.generate_response(text, option, user_query), stream=True):
                 chunk_dict = chunk.to_dict()
                 json_chunk = json.dumps(dict(chunk_dict), allow_nan=True, skipkeys=True)
                 yield json_chunk
@@ -30,10 +30,11 @@ async def json_stream(option: str, text: str, language: str, user_query: str):
                 raise HTTPException(status_code=429, detail="API quota exceeded. Please try again later.")
 
 @app.get("/gemini/")
-async def gemini_porcess(option: str = 'user', text: str = None, language: str = 'English', user_query: str = None):
-    if text is None and user_query is None:
-        raise HTTPException(status_code=000, detail="Required endpoints.")
-    return StreamingResponse(json_stream(option, text, language, user_query), media_type="application/json")
+async def gemini_porcess(body: MainBody):
+    print("\n\n\n", body.command, body.prompt, body.option, "\n\n\n")
+    # if body.prompt is None and body.command is None:
+    #     raise HTTPException(status_code=000, detail="Required endpoints.")
+    return StreamingResponse(json_stream(body.option, body.prompt, body.command), media_type="application/json")
 
 @app.get("/")
 async def root():
@@ -46,7 +47,6 @@ async def root():
                 "description": "Process text.",
                 "parameters": {
                     "text": "Provide text to Gemini to use options. Defaults to None.",
-                    "language": "Language of answers. Defaults to 'English'.",
                     "user_query": "Ask AI a question about the content. Defaults to None.",
                     "option": {
                         "user" : "Default option. Provide {{user_query}}. Feeds Gemini with user query.",
