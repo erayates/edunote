@@ -1,6 +1,7 @@
 KEY.py
 test.py
 googledeploy.txt
+Secrets/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

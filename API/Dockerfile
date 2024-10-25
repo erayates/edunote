@@ -8,8 +8,10 @@ COPY ./requirements.txt /code/requirements.txt
 COPY ./KEY.py /code/KEY.py
 COPY ./LICENSE /code/LICENSE
 COPY ./README.md /code/README.md
+COPY ./Secrets /code/Secrets
 
 RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
+RUN pip install --upgrade google-cloud-storage
 
 COPY ./app /code/app/
 
