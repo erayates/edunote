@@ -169,9 +169,9 @@ async def root():
             },
             "/file/extract/": {
                 "method": "POST",
-                "description": "Extract text from a PDF file.",
+                "description": "Extract text from an audio, image or pdf file.",
                 "parameters": {
-                    "file": "PDF file to extract text from."
+                    "file": "File to extract text from."
                 }
             },
             "/caption/extract/": {
