@@ -92,30 +92,70 @@ async def gemini_porcess(body: MainBody = Depends()):
 
 @app.get("/")
 async def root():
+    """Root endpoint providing information about the API."""
     return {
-        "message": "Edunote API",
-        "description": "Edunote API, uses Gemini by Google to present you the best note taking experience.",
+        "message": "Welcome to the Edunote API",
+        "description": "Edunote API leverages Gemini by Google to enhance your note-taking experience.",
         "endpoints": {
+            "/file/upload/": {
+                "method": "POST",
+                "description": "Upload files to the server.",
+                "parameters": {
+                    "user_id": "User ID for tracking.",
+                    "if_exists": "Specify if the file should be replaced if it exists.",
+                    "files": "List of files to upload."
+                }
+            },
+            "/file/download/": {
+                "method": "POST",
+                "description": "Download a file from the storage bucket.",
+                "parameters": {
+                    "user_id": "User ID for tracking.",
+                    "file_name": "Name of the file to check."
+                }
+            },
+            "/file/extract/": {
+                "method": "POST",
+                "description": "Extract text from a PDF file.",
+                "parameters": {
+                    "file": "PDF file to extract text from."
+                }
+            },
+            "/caption/extract/": {
+                "method": "POST",
+                "description": "Extract captions from a YouTube video.",
+                "parameters": {
+                    "youtube_video_id": "The ID of the YouTube video."
+                }
+            },
+            "/bucket/check/": {
+                "method": "POST",
+                "description": "Check if a file exists in the storage bucket.",
+                "parameters": {
+                    "user_id": "User ID for tracking.",
+                    "file_name": "Name of the file to check."
+                }
+            },
             "/gemini/": {
-                "method": "get",
+                "method": "GET",
                 "description": "Process prompt and user command.",
                 "parameters": {
                     "body": {
                         "prompt": "Provide text to Gemini to use options. Defaults to None.",
                         "command": "Ask AI a question about the content. Defaults to None.",
                         "option": {
-                            "user" : "Default option. Provide {{commands}}. Feeds Gemini with user query.",
-                            "ask" : "Provide {{propmt}} and {{commands}} to ask a question about the text.",
-                            "explain" : "Provide {{propmt}}. Gemini explains the text.",
-                            "template" : "Provide {{propmt}}. Gemini creates a template of the text.",
-                            "summarize" : "Provide {{propmt}}. Gemini summarizes the text.",
-                            "note" : "Provide {{propmt}}. Gemini takes notes for you from the text.",
-                            "improve" : "Provide {{propmt}}. Gemini improves the text.",
-                            "shorter" : "Provide {{propmt}}. Gemini shorters the text.",
-                            "longer" : "Provide {{propmt}}. Gemini longers the text.",
-                            "continue" : "Provide {{propmt}}. Gemini continues the text.",
-                            "fix" : "Provide {{propmt}}. Gemini fixes the text.",
-                            "zap" : "Provide {{commands}}. Gemini generates new text from user query."
+                            "user": "Default option. Provide {{commands}}. Feeds Gemini with user query.",
+                            "ask": "Provide {{prompt}} and {{commands}} to ask a question about the text.",
+                            "explain": "Provide {{prompt}}. Gemini explains the text.",
+                            "template": "Provide {{prompt}}. Gemini creates a template of the text.",
+                            "summarize": "Provide {{prompt}}. Gemini summarizes the text.",
+                            "note": "Provide {{prompt}}. Gemini takes notes for you from the text.",
+                            "improve": "Provide {{prompt}}. Gemini improves the text.",
+                            "shorter": "Provide {{prompt}}. Gemini shortens the text.",
+                            "longer": "Provide {{prompt}}. Gemini lengthens the text.",
+                            "continue": "Provide {{prompt}}. Gemini continues the text.",
+                            "fix": "Provide {{prompt}}. Gemini fixes the text.",
+                            "zap": "Provide {{commands}}. Gemini generates new text from user query."
                         }
                     }
                 }
