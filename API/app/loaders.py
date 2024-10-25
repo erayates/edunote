@@ -7,6 +7,7 @@ import fitz, io, os
 from google.ai.generativelanguage_v1beta.types import content
 from langchain_community.document_loaders import YoutubeLoader
 from typing import List, Union
+from google.cloud import vision
 
 AUDIO_EXTENSIONS = {'mp3', 'wav', 'aac', 'm4a', 'wma'}
 PDF_EXTENSIONS = {'pdf'}
@@ -174,11 +175,33 @@ class Loaders():
         return response.text
 
     @staticmethod
-    def image_loader(file: Union[UploadFile, bytes]):
-        raise NotImplementedError
-        extracted_text: str
-        return extracted_text
+    def image_loader(file: Union[UploadFile, bytes]) -> str:
+        
+        if isinstance(file, UploadFile):
+            if not file.filename.endswith(('.png', '.jpg', '.jpeg')):
+                raise HTTPException(status_code=400, detail="Invalid file type. Please upload an image file (png, jpg, jpeg).")
+            image_data = file.file.read()
+        elif isinstance(file, bytes):
+            image_data = file
+        else:
+            raise HTTPException(status_code=400, detail="Unsupported file format.")
 
+       
+        try:
+            
+            client = vision.ImageAnnotatorClient()
+            image = vision.Image(content=image_data)
+            response = client.text_detection(image=image)
+            texts = response.text_annotations
+            if texts:
+                extracted_text = texts[0].description
+            else:
+                extracted_text = "No text found."
+        except Exception as vision_error:
+            print(f"Google Vision API error: {vision_error}")
+       
+
+        return extracted_text
 class Process():
     
     @staticmethod
