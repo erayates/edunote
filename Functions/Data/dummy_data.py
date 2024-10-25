@@ -108,7 +108,7 @@ def create_varied_dataset(num_entries):
         modifier = random.choice(modifiers)
         
         # Randomly decide if the entry should be shorter or longer
-        if random.random() < 0.5:  # 50% chance for a shorter entry
+        if random.random() < 0.8:  # 50% chance for a shorter entry
             row = f"{action} {subject} - {modifier}"
         else:
             row = f"{action} {subject} {context} - {modifier}"
@@ -173,8 +173,8 @@ def generate_realistic_notes(num_notes=2):
     return notes
 
 
-realistic_notes = generate_realistic_notes(100)
-with open("realistic_notes.json", "w") as file:
+realistic_notes = generate_realistic_notes(500)
+with open("Functions/Data/realistic_notes_3.json", "w") as file:
     json.dump(realistic_notes, file, indent=4)
 
 print("Realistic notes generated and saved to 'realistic_notes.json'.")

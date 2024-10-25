@@ -17,24 +17,6 @@ genai.configure(api_key=KEY.GEMINI_API_KEY)
 prompt_obj = Prompt()
 client = KEY.ELASTICSEARCH_CLIENT
 
-async def json_stream(option: str, text: str, user_query: str):
-    global prompt_obj
-    max_retries = 3
-    retry_delay = 0.2
-    for attempt in range(max_retries):
-        try:
-            for chunk in model.generate_content(**prompt_obj.generate_response(text, option, user_query), stream=True):
-                chunk_dict = chunk.to_dict()
-                json_chunk = json.dumps(dict(chunk_dict), allow_nan=True, skipkeys=True)
-                yield json_chunk
-            break
-        except ResourceExhausted as e:
-            if attempt < max_retries - 1:
-                await asyncio.sleep(retry_delay)
-                retry_delay *= 2
-            else:
-                raise HTTPException(status_code=429, detail="API quota exceeded. Please try again later.")
-
 @app.get("/search/simple/")
 async def elasticsearch_simple(query: str):
     global client
@@ -138,11 +120,33 @@ async def file_text_extraction(body: FileDownloadBody = Depends()):
         return {'details': f"{user_id}/{file_name} found.", 'state': 1}
     return {'details': f"{user_id}/{file_name} not found.", 'state': 0}
 
+@app.get("/chat/history/")
+async def get_chat_history(user_id: str):
+    return ChatHistory.get_chat_history(user_id=user_id)
+
 @app.get("/gemini/")
 async def gemini_porcess(body: MainBody = Depends()):
     # if body.prompt is None and body.command is None:
     #     raise HTTPException(status_code=000, detail="Required endpoints.")
-    return StreamingResponse(json_stream(body.option, body.prompt, body.command), media_type="application/json")
+    return StreamingResponse(json_stream(body.option, body.prompt, body.command, body.user_id), media_type="application/json")
+
+async def json_stream(option: str, text: str, user_query: str, user_id: str):
+    global prompt_obj
+    max_retries = 3
+    retry_delay = 0.2
+    for attempt in range(max_retries):
+        try:
+            for chunk in model.generate_content(**prompt_obj.generate_response(user_id, text, option, user_query), stream=True):
+                chunk_dict = chunk.to_dict()
+                json_chunk = json.dumps(dict(chunk_dict), allow_nan=True, skipkeys=True)
+                yield json_chunk
+            break
+        except ResourceExhausted as e:
+            if attempt < max_retries - 1:
+                await asyncio.sleep(retry_delay)
+                retry_delay *= 2
+            else:
+                raise HTTPException(status_code=429, detail="API quota exceeded. Please try again later.")
 
 @app.get("/")
 async def root():
