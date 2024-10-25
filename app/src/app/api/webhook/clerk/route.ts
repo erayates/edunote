@@ -1,4 +1,3 @@
-// app/api/webhook/clerk/route.ts
 import { Webhook } from "svix";
 import { headers } from "next/headers";
 import { WebhookEvent } from "@clerk/nextjs/server";
@@ -16,7 +15,7 @@ async function handler(req: NextRequest) {
 
   // If there are no headers, error out
   if (!svix_id || !svix_timestamp || !svix_signature) {
-    return new Response("Error occured -- no svix headers", {
+    return new Response("Error occurred -- no svix headers", {
       status: 400,
     });
   }
@@ -39,7 +38,13 @@ async function handler(req: NextRequest) {
     }) as WebhookEvent;
   } catch (err) {
     console.error("Error verifying webhook:", err);
-    return NextResponse.json("Error occured", {
+    console.error("Body:", body); // Log the body
+    console.error("Headers:", {
+      svix_id,
+      svix_timestamp,
+      svix_signature,
+    }); // Log the headers
+    return NextResponse.json("Error occurred", {
       status: 400,
     });
   }
@@ -71,7 +76,7 @@ async function handler(req: NextRequest) {
         },
       });
 
-      return NextResponse.json(JSON.stringify(user), { status: 200 });
+      return NextResponse.json(user, { status: 200 });
     } catch (error) {
       console.error("Error creating user:", error);
       return NextResponse.json("Error creating user", { status: 500 });
