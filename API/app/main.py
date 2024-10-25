@@ -7,6 +7,9 @@ from fastapi.responses import StreamingResponse
 from google.api_core.exceptions import ResourceExhausted
 from app.loaders import *
 
+# TODO: MongoDB Keyword Control
+# TODO: 
+
 app = FastAPI()
 model = Loaders.config_model()
 genai.configure(api_key=KEY.GEMINI_API_KEY)
@@ -65,6 +68,11 @@ async def file_text_extraction(file: Optional[UploadFile] = File(None)):
     ext = file.filename.split('.')[-1].lower()
     return Process.extract_text(file, ext, model)
 
+@app.post("/caption/extract/")
+async def file_text_extraction(youtube_video_id: str):
+    link = f"https://www.youtube.com/watch?v={youtube_video_id}"
+    return Loaders.caption_loader(link)
+
 @app.post("/bucket/check/")
 async def file_text_extraction(body: FileDownloadBody = Depends()):
     user_id = body.user_id
@@ -78,7 +86,6 @@ async def file_text_extraction(body: FileDownloadBody = Depends()):
 
 @app.get("/gemini/")
 async def gemini_porcess(body: MainBody = Depends()):
-    print("\n\n\n", body.command, body.prompt, body.option, "\n\n\n")
     # if body.prompt is None and body.command is None:
     #     raise HTTPException(status_code=000, detail="Required endpoints.")
     return StreamingResponse(json_stream(body.option, body.prompt, body.command), media_type="application/json")
