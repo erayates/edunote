@@ -9,9 +9,9 @@ from langchain_community.document_loaders import YoutubeLoader
 from typing import List, Union
 from google.cloud import vision
 
-AUDIO_EXTENSIONS = {'mp3', 'wav', 'aac', 'm4a', 'wma'}
-PDF_EXTENSIONS = {'pdf'}
-IMAGE_EXTENSIONS = {'jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'}
+AUDIO_EXTENSIONS = ['mp3', 'wav', 'aac', 'm4a', 'wma']
+PDF_EXTENSIONS = ['pdf']
+IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg']
 
 class MainBody(BaseModel):
     option: str = 'user'
@@ -155,7 +155,7 @@ class Loaders():
 
     @staticmethod
     def audio_loader(file: Union[UploadFile, bytes], model: genai.GenerativeModel):
-        if not file.filename.endswith(('.mp3', '.wav', '.m4a')):
+        if not file.filename.endswith(tuple(AUDIO_EXTENSIONS)):
             raise HTTPException(status_code=400, detail="Invalid file type. Please upload an audio file (mp3, wav, or m4a).")
 
         file_location = f"./{file.filename}"
@@ -175,33 +175,27 @@ class Loaders():
         return response.text
 
     @staticmethod
-    def image_loader(file: Union[UploadFile, bytes]) -> str:
-        
-        if isinstance(file, UploadFile):
-            if not file.filename.endswith(('.png', '.jpg', '.jpeg')):
-                raise HTTPException(status_code=400, detail="Invalid file type. Please upload an image file (png, jpg, jpeg).")
-            image_data = file.file.read()
-        elif isinstance(file, bytes):
-            image_data = file
-        else:
-            raise HTTPException(status_code=400, detail="Unsupported file format.")
+    def image_loader(file: Union[UploadFile, bytes], model: genai.GenerativeModel) -> str:
 
-       
-        try:
-            
-            client = vision.ImageAnnotatorClient()
-            image = vision.Image(content=image_data)
-            response = client.text_detection(image=image)
-            texts = response.text_annotations
-            if texts:
-                extracted_text = texts[0].description
-            else:
-                extracted_text = "No text found."
-        except Exception as vision_error:
-            print(f"Google Vision API error: {vision_error}")
-       
+        if not file.filename.endswith(tuple(IMAGE_EXTENSIONS)):
+            raise HTTPException(status_code=400, detail="Invalid file type. Please upload an audio file (jpg, .jpeg, .png, .gif, .webp, .svg).")
 
-        return extracted_text
+        file_location = f"./{file.filename}"
+        with open(file_location, "wb") as f:
+            content = file.file.read()
+            f.write(content)
+
+        prompt = "You are an AI writing assistant that creates closed captions from an existing audio. Make sure to construct complete sentences. Use Markdown formatting when appropriate."
+
+        image_file = genai.upload_file(path=file_location)
+        response = model.generate_content([prompt, image_file])
+
+        if os.path.exists(file_location):
+            os.remove(file_location)
+        else: pass
+
+        return response.text
+
 class Process():
     
     @staticmethod
@@ -211,7 +205,7 @@ class Process():
         elif extension in PDF_EXTENSIONS:
             return {file.filename : Loaders.pdf_loader(file)}
         elif extension in IMAGE_EXTENSIONS:
-            return {file.filename : "Image extraction not implemented yet!"}
+            return {file.filename : Loaders.image_loader(file)}
         else:
             raise HTTPException(status_code=400, detail=f"Unsupported file type: {extension}")        
 
