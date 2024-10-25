@@ -90,7 +90,7 @@ class Prompt():
 class Loaders():
 
     @staticmethod
-    def config_model():
+    def config_model(model_name="gemini-1.5-pro"):
         generation_config = {
             "candidate_count": 1,
             "temperature": 1,
@@ -102,7 +102,7 @@ class Loaders():
             ),
             "response_mime_type": "text/plain",
         }
-        return genai.GenerativeModel(model_name="gemini-1.5-pro", generation_config=generation_config)
+        return genai.GenerativeModel(model_name=model_name, generation_config=generation_config)
 
     @staticmethod
     def config_bucket():
