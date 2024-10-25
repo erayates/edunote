@@ -1,19 +1,20 @@
-from fastapi import FastAPI, HTTPException, File, Depends
+from fastapi import FastAPI, HTTPException, File, Depends, Request
 import google.generativeai as genai
 from typing import List, Optional
-import KEY as KEY
+import Secrets.KEY as KEY
 import json, asyncio
 from fastapi.responses import StreamingResponse
 from google.api_core.exceptions import ResourceExhausted
 from app.loaders import *
 
 # TODO: MongoDB Keyword Control
-# TODO: 
+# TODO: Elasticsearch implementaiton
 
 app = FastAPI()
 model = Loaders.config_model()
 genai.configure(api_key=KEY.GEMINI_API_KEY)
 prompt_obj = Prompt()
+client = KEY.ELASTICSEARCH_CLIENT
 
 async def json_stream(option: str, text: str, user_query: str):
     global prompt_obj
@@ -32,6 +33,58 @@ async def json_stream(option: str, text: str, user_query: str):
                 retry_delay *= 2
             else:
                 raise HTTPException(status_code=429, detail="API quota exceeded. Please try again later.")
+
+@app.get("/search/simple/")
+async def elasticsearch_simple(query: str):
+    global client
+    try:
+        response = client.search(q=query)
+        return response.body
+    except Exception as e:
+        raise HTTPException(status_code=404, detail=f"Elasticsearch client error: {str(e)}")
+
+@app.get("/search/all/")
+async def elasticsearch_all(body: Request):
+    global client
+    try:
+        response = client.search(body=body)
+        return response.body
+    except Exception as e:
+        raise HTTPException(status_code=404, detail=f"Elasticsearch client error: {str(e)}")
+
+@app.get("/search/ask/")
+async def elasticsearch_ask(body: SearchINNotes):
+    query = body.query
+    user_id = body.user_id
+    global client
+    try:
+        response = client.search(
+            body={
+                "query": {
+                    "bool": {
+                        "must": [
+                            {"match": {"content": query}}
+                        ],
+                        "filter": [
+                            {"term": {"user_id": user_id}}
+                        ]
+                    }
+                },
+                "from": 0,
+                "size": 5
+            }
+        )
+        
+        messages = [
+            {'role': 'user', 'parts': ["You are an AI assistant that takes some notes and a question or a query or else. In the result, you will answer the question with only using the information in the notes provided to you. You will answer me with a string of JSON. Add JSON only the notes you use to answer the query and the answer. So the JSON template is {{'notes': [notes...], 'response': 'response...'}}"]},
+            # {'role': 'user', 'parts': [f'{user_query}, Here is the text: {prompt}']}
+        ]
+
+        model.generate_content(contents=messages, stream=True)
+
+        return response.body
+    except Exception as e:
+        raise HTTPException(status_code=404, detail=f"Elasticsearch client error: {str(e)}")
 
 @app.post("/file/upload/")
 async def file_upload(body: FileUploadBody = Depends(), files: List[UploadFile] = File(...)):

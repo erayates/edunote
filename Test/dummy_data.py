@@ -3,25 +3,28 @@ import random
 import json
 import uuid
 from datetime import datetime
+from random import choice
 
 fake = Faker()
 
 def generate_dummy_note_data(num_notes=1000):
+    user_ids = []
+    for _ in range(30):
+        user_ids.append(str(uuid.uuid4()))
+    
     notes = []
 
     for _ in range(num_notes):
         keyword = fake.word()  # Generate a keyword for relevance
 
         note = {
-            "_id": str(uuid.uuid4()),
             "title": f"{keyword.capitalize()}: {fake.sentence(nb_words=5)}",
             "content": f"This note is about {keyword}. " + fake.paragraph(nb_sentences=10),
-            "description": f"Summary about {keyword}. " + fake.paragraph(nb_sentences=5),
-            "slug": fake.slug(),
+            "description": f"(Test) Summary about {keyword}. " + fake.paragraph(nb_sentences=5),
             "is_public": fake.boolean(),
-            "share_link": fake.url() if random.choice([True, False]) else None,
-            "user_id": str(uuid.uuid4()),
-            "group_ids": [str(uuid.uuid4()) for _ in range(random.randint(1, 3))],
+            "share_link": "Test",
+            "user_id": choice(user_ids),
+            "group_ids": [],
             "tag_ids": [str(uuid.uuid4()) for _ in range(random.randint(1, 5))],
             "favorited_by_ids": [str(uuid.uuid4()) for _ in range(random.randint(0, 5))],
             "created_at": datetime.now().isoformat(),

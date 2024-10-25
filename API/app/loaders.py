@@ -17,6 +17,10 @@ class MainBody(BaseModel):
     command: str | None = None
     prompt: str | None = None
 
+class SearchINNotes(BaseModel):
+    query: str
+    user_id: str
+
 class FileUploadBody(BaseModel):
     user_id: str
     update_if_exists: bool = True
@@ -174,7 +178,6 @@ class Loaders():
         raise NotImplementedError
         extracted_text: str
         return extracted_text
-
 
 class Process():
     
