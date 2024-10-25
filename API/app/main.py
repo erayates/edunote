@@ -125,13 +125,14 @@ async def get_chat_history(user_id: str):
     return ChatHistory.get_chat_history(user_id=user_id)
 
 @app.get("/gemini/")
-async def gemini_porcess(body: MainBody = Depends()):
+async def gemini_porcess(body: MainBody):
     # if body.prompt is None and body.command is None:
     #     raise HTTPException(status_code=000, detail="Required endpoints.")
     return StreamingResponse(json_stream(body.option, body.prompt, body.command, body.user_id), media_type="application/json")
 
 async def json_stream(option: str, text: str, user_query: str, user_id: str):
     global prompt_obj
+    text_response = ""
     max_retries = 3
     retry_delay = 0.2
     for attempt in range(max_retries):
@@ -139,7 +140,11 @@ async def json_stream(option: str, text: str, user_query: str, user_id: str):
             for chunk in model.generate_content(**prompt_obj.generate_response(user_id, text, option, user_query), stream=True):
                 chunk_dict = chunk.to_dict()
                 json_chunk = json.dumps(dict(chunk_dict), allow_nan=True, skipkeys=True)
+                try:
+                    text_response += chunk.text
+                except: pass
                 yield json_chunk
+            ChatHistory.update_chat_history(user_id, [{"role": "model", "parts": [text_response]}])
             break
         except ResourceExhausted as e:
             if attempt < max_retries - 1:

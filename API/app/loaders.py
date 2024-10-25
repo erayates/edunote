@@ -255,7 +255,8 @@ class ChatHistory():
         blob = bucket.blob(destination_file_name)
 
         if not blob.exists():
-            raise HTTPException(status_code=404, detail=f"File {destination_file_name} not found in bucket.")
+            # raise HTTPException(status_code=404, detail=f"File {destination_file_name} not found in bucket.")
+            return []
         
         try:
             file_data = blob.download_as_bytes()
