@@ -7,8 +7,9 @@ from fastapi.responses import StreamingResponse
 from google.api_core.exceptions import ResourceExhausted
 from app.loaders import *
 
-# TODO: MongoDB Keyword Control
-# TODO: Elasticsearch implementaiton
+# TODO: MongoDB Tag Propriety Check
+# TODO: API Test
+# TODO: Elasticsearch Implementation Test
 
 app = FastAPI()
 model = Loaders.config_model()
