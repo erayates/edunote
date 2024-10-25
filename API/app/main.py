@@ -1,5 +1,6 @@
-from fastapi import FastAPI, HTTPException, File
+from fastapi import FastAPI, HTTPException, File, Depends
 import google.generativeai as genai
+from typing import List, Optional
 import KEY as KEY
 import json, asyncio
 from fastapi.responses import StreamingResponse
@@ -29,13 +30,54 @@ async def json_stream(option: str, text: str, user_query: str):
             else:
                 raise HTTPException(status_code=429, detail="API quota exceeded. Please try again later.")
 
-@app.post("/OptionOne")
-def file_upload(file: UploadFile = File(None)):
-    print(file.filename)
-    return {'name': file.filename}
+@app.post("/file/upload/")
+async def file_upload(body: FileUploadBody = Depends(), files: List[UploadFile] = File(...)):
+    return Process.file_upload(body ,files)
+
+@app.post("/file/download/")
+async def file_download(body: FileDownloadBody = Depends()):
+    user_id = body.user_id
+    file_name = body.file_name    
+
+    bucket = Loaders.config_bucket()
+    
+    destination_file_name = f'{user_id}/{file_name}'
+    blob = bucket.blob(destination_file_name)
+
+    # Check if the file exists
+    if not blob.exists():
+        raise HTTPException(status_code=404, detail=f"File {file_name} not found in bucket.")
+    
+    try:
+        # Download the file as bytes
+        file_data = blob.download_as_bytes()
+
+        # Use StreamingResponse to return the file as a response
+        return StreamingResponse(io.BytesIO(file_data), media_type="application/octet-stream", headers={
+            "Content-Disposition": f"attachment; filename={file_name}"
+        })
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"File download failed: {str(e)}")
+
+@app.post("/file/extract/")
+async def file_text_extraction(file: Optional[UploadFile] = File(None)):
+    global model
+    ext = file.filename.split('.')[-1].lower()
+    return Process.extract_text(file, ext, model)
+
+@app.post("/bucket/check/")
+async def file_text_extraction(body: FileDownloadBody = Depends()):
+    user_id = body.user_id
+    file_name = body.file_name    
+    bucket = Loaders.config_bucket()
+    destination_file_name = f'{user_id}/{file_name}'
+    blob = bucket.blob(destination_file_name)
+    if blob.exists():
+        return {'details': f"{user_id}/{file_name} found.", 'state': 1}
+    return {'details': f"{user_id}/{file_name} not found.", 'state': 0}
 
 @app.get("/gemini/")
-async def gemini_porcess(body: MainBody):
+async def gemini_porcess(body: MainBody = Depends()):
     print("\n\n\n", body.command, body.prompt, body.option, "\n\n\n")
     # if body.prompt is None and body.command is None:
     #     raise HTTPException(status_code=000, detail="Required endpoints.")
