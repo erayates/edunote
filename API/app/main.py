@@ -1,8 +1,9 @@
 from fastapi import FastAPI, HTTPException, File, Depends, Request
+from fastapi.responses import PlainTextResponse
 import google.generativeai as genai
 from typing import List, Optional
 import Secrets.KEY as KEY
-import json, asyncio
+import asyncio
 from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from google.api_core.exceptions import ResourceExhausted
@@ -27,7 +28,7 @@ genai.configure(api_key=KEY.GEMINI_API_KEY)
 prompt_obj = Prompt()
 client = KEY.ELASTICSEARCH_CLIENT
 
-@app.get("/search/simple/")
+@app.post("/search/simple/")
 async def elasticsearch_simple(query: str):
     global client
     try:
@@ -36,7 +37,7 @@ async def elasticsearch_simple(query: str):
     except Exception as e:
         raise HTTPException(status_code=404, detail=f"Elasticsearch client error: {str(e)}")
 
-@app.get("/search/all/")
+@app.post("/search/all/")
 async def elasticsearch_all(body: Request):
     global client
     try:
@@ -45,7 +46,7 @@ async def elasticsearch_all(body: Request):
     except Exception as e:
         raise HTTPException(status_code=404, detail=f"Elasticsearch client error: {str(e)}")
 
-@app.get("/search/ask/")
+@app.post("/search/ask/")
 async def elasticsearch_ask(body: SearchINNotes):
     query = body.query
     user_id = body.user_id
@@ -130,17 +131,15 @@ async def file_text_extraction(body: FileDownloadBody = Depends()):
         return {'details': f"{user_id}/{file_name} found.", 'state': 1}
     return {'details': f"{user_id}/{file_name} not found.", 'state': 0}
 
-@app.get("/chat/history/")
+@app.post("/chat/history/")
 async def get_chat_history(user_id: str):
     return ChatHistory.get_chat_history(user_id=user_id)
 
-@app.get("/gemini/")
-async def gemini_porcess(body: MainBody):
-    # if body.prompt is None and body.command is None:
-    #     raise HTTPException(status_code=000, detail="Required endpoints.")
-    return StreamingResponse(json_stream(body.option, body.prompt, body.command, body.user_id), media_type="application/json")
+@app.post("/gemini/", response_class=PlainTextResponse)
+async def gemini_process(body: MainBody):
+    return StreamingResponse(stream_text(body.option, body.prompt, body.command, body.user_id), media_type="text/plain")
 
-async def json_stream(option: str, text: str, user_query: str, user_id: str):
+async def stream_text(option: str, text: str, user_query: str, user_id: str):
     global prompt_obj
     text_response = ""
     max_retries = 3
@@ -148,12 +147,11 @@ async def json_stream(option: str, text: str, user_query: str, user_id: str):
     for attempt in range(max_retries):
         try:
             for chunk in model.generate_content(**prompt_obj.generate_response(user_id, text, option, user_query), stream=True):
-                chunk_dict = chunk.to_dict()
-                json_chunk = json.dumps(dict(chunk_dict), allow_nan=True, skipkeys=True)
                 try:
                     text_response += chunk.text
-                except: pass
-                yield json_chunk
+                    yield chunk.text  # Yield only the text
+                except: 
+                    pass
             ChatHistory.update_chat_history(user_id, [{"role": "model", "parts": [text_response]}])
             break
         except ResourceExhausted as e:
@@ -161,7 +159,7 @@ async def json_stream(option: str, text: str, user_query: str, user_id: str):
                 await asyncio.sleep(retry_delay)
                 retry_delay *= 2
             else:
-                raise HTTPException(status_code=429, detail="API quota exceeded. Please try again later.")
+                raise HTTPException(status_code=429, detail="API quota exceeded. Please try again later.") 
 
 @app.get("/")
 async def root():

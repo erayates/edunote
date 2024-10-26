@@ -7,7 +7,7 @@ ENV HOST=0.0.0.0
 COPY ./requirements.txt /code/requirements.txt
 COPY ./LICENSE /code/LICENSE
 COPY ./README.md /code/README.md
-COPY ./Secrets/KEY.py /code/Secrets/KEY.py
+COPY ./Secrets /code/Secrets
 
 RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
 RUN pip install --upgrade google-cloud-storage

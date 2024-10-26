@@ -7,8 +7,8 @@ import fitz, io, os, json
 from google.ai.generativelanguage_v1beta.types import content
 from langchain_community.document_loaders import YoutubeLoader
 from typing import List, Union
+from typing import Optional
 from io import BytesIO
-
 
 AUDIO_EXTENSIONS = ['mp3', 'wav', 'aac', 'm4a', 'wma']
 PDF_EXTENSIONS = ['pdf']
@@ -17,8 +17,8 @@ IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg']
 class MainBody(BaseModel):
     user_id: str
     option: str = 'user'
-    command: str | None = None
-    prompt: str | None = None
+    command: Optional[str] = None
+    prompt: Optional[str] = None
 
 class SearchINNotes(BaseModel):
     query: str
