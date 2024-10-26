@@ -1,0 +1,82 @@
+[
+    {
+        "name": "Faculty of Engineering",
+        "slug": "faculty-of-engineering"
+    },
+    {
+        "name": "Faculty of Arts and Humanities",
+        "slug": "faculty-of-arts-and-humanities"
+    },
+    {
+        "name": "Faculty of Science",
+        "slug": "faculty-of-science"
+    },
+    {
+        "name": "Faculty of Medicine",
+        "slug": "faculty-of-medicine"
+    },
+    {
+        "name": "Faculty of Business and Economics",
+        "slug": "faculty-of-business-and-economics"
+    },
+    {
+        "name": "Faculty of Law",
+        "slug": "faculty-of-law"
+    },
+    {
+        "name": "Faculty of Social Sciences",
+        "slug": "faculty-of-social-sciences"
+    },
+    {
+        "name": "Faculty of Education",
+        "slug": "faculty-of-education"
+    },
+    {
+        "name": "Faculty of Health Sciences",
+        "slug": "faculty-of-health-sciences"
+    },
+    {
+        "name": "Faculty of Information Technology",
+        "slug": "faculty-of-information-technology"
+    },
+    {
+        "name": "Faculty of Environmental Studies",
+        "slug": "faculty-of-environmental-studies"
+    },
+    {
+        "name": "Faculty of Architecture and Design",
+        "slug": "faculty-of-architecture-and-design"
+    },
+    {
+        "name": "Faculty of Agriculture",
+        "slug": "faculty-of-agriculture"
+    },
+    {
+        "name": "Faculty of Pharmacy",
+        "slug": "faculty-of-pharmacy"
+    },
+    {
+        "name": "Faculty of Dentistry",
+        "slug": "faculty-of-dentistry"
+    },
+    {
+        "name": "Faculty of Nursing",
+        "slug": "faculty-of-nursing"
+    },
+    {
+        "name": "Faculty of Music and Fine Arts",
+        "slug": "faculty-of-music-and-fine-arts"
+    },
+    {
+        "name": "Faculty of Veterinary Medicine",
+        "slug": "faculty-of-veterinary-medicine"
+    },
+    {
+        "name": "Faculty of Political Science and International Relations",
+        "slug": "faculty-of-political-science-and-international-relations"
+    },
+    {
+        "name": "Faculty of Communication",
+        "slug": "faculty-of-communication"
+    }
+]

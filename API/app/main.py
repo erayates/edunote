@@ -1,37 +1,73 @@
-from fastapi import FastAPI, HTTPException, File, Depends
+from fastapi import FastAPI, HTTPException, File, Depends, Request
 import google.generativeai as genai
 from typing import List, Optional
-import KEY as KEY
+import Secrets.KEY as KEY
 import json, asyncio
 from fastapi.responses import StreamingResponse
 from google.api_core.exceptions import ResourceExhausted
 from app.loaders import *
 
-# TODO: MongoDB Keyword Control
-# TODO: 
+# TODO: MongoDB Tag Propriety Check
+# TODO: API Test
+# TODO: Elasticsearch Implementation Test
 
 app = FastAPI()
 model = Loaders.config_model()
 genai.configure(api_key=KEY.GEMINI_API_KEY)
 prompt_obj = Prompt()
+client = KEY.ELASTICSEARCH_CLIENT
 
-async def json_stream(option: str, text: str, user_query: str):
-    global prompt_obj
-    max_retries = 3
-    retry_delay = 0.2
-    for attempt in range(max_retries):
-        try:
-            for chunk in model.generate_content(**prompt_obj.generate_response(text, option, user_query), stream=True):
-                chunk_dict = chunk.to_dict()
-                json_chunk = json.dumps(dict(chunk_dict), allow_nan=True, skipkeys=True)
-                yield json_chunk
-            break
-        except ResourceExhausted as e:
-            if attempt < max_retries - 1:
-                await asyncio.sleep(retry_delay)
-                retry_delay *= 2
-            else:
-                raise HTTPException(status_code=429, detail="API quota exceeded. Please try again later.")
+@app.get("/search/simple/")
+async def elasticsearch_simple(query: str):
+    global client
+    try:
+        response = client.search(q=query)
+        return response.body
+    except Exception as e:
+        raise HTTPException(status_code=404, detail=f"Elasticsearch client error: {str(e)}")
+
+@app.get("/search/all/")
+async def elasticsearch_all(body: Request):
+    global client
+    try:
+        response = client.search(body=body)
+        return response.body
+    except Exception as e:
+        raise HTTPException(status_code=404, detail=f"Elasticsearch client error: {str(e)}")
+
+@app.get("/search/ask/")
+async def elasticsearch_ask(body: SearchINNotes):
+    query = body.query
+    user_id = body.user_id
+    global client
+    try:
+        response = client.search(
+            body={
+                "query": {
+                    "bool": {
+                        "must": [
+                            {"match": {"content": query}}
+                        ],
+                        "filter": [
+                            {"term": {"user_id": user_id}}
+                        ]
+                    }
+                },
+                "from": 0,
+                "size": 5
+            }
+        )
+        
+        messages = [
+            {'role': 'user', 'parts': ["You are an AI assistant that takes some notes and a question or a query or else. In the result, you will answer the question with only using the information in the notes provided to you. You will answer me with a string of JSON. Add JSON only the notes you use to answer the query and the answer. So the JSON template is {{'notes': [notes...], 'response': 'response...'}}"]},
+            # {'role': 'user', 'parts': [f'{user_query}, Here is the text: {prompt}']}
+        ]
+
+        model.generate_content(contents=messages, stream=True)
+
+        return response.body
+    except Exception as e:
+        raise HTTPException(status_code=404, detail=f"Elasticsearch client error: {str(e)}")
 
 @app.post("/file/upload/")
 async def file_upload(body: FileUploadBody = Depends(), files: List[UploadFile] = File(...)):
@@ -84,11 +120,38 @@ async def file_text_extraction(body: FileDownloadBody = Depends()):
         return {'details': f"{user_id}/{file_name} found.", 'state': 1}
     return {'details': f"{user_id}/{file_name} not found.", 'state': 0}
 
+@app.get("/chat/history/")
+async def get_chat_history(user_id: str):
+    return ChatHistory.get_chat_history(user_id=user_id)
+
 @app.get("/gemini/")
-async def gemini_porcess(body: MainBody = Depends()):
+async def gemini_porcess(body: MainBody):
     # if body.prompt is None and body.command is None:
     #     raise HTTPException(status_code=000, detail="Required endpoints.")
-    return StreamingResponse(json_stream(body.option, body.prompt, body.command), media_type="application/json")
+    return StreamingResponse(json_stream(body.option, body.prompt, body.command, body.user_id), media_type="application/json")
+
+async def json_stream(option: str, text: str, user_query: str, user_id: str):
+    global prompt_obj
+    text_response = ""
+    max_retries = 3
+    retry_delay = 0.2
+    for attempt in range(max_retries):
+        try:
+            for chunk in model.generate_content(**prompt_obj.generate_response(user_id, text, option, user_query), stream=True):
+                chunk_dict = chunk.to_dict()
+                json_chunk = json.dumps(dict(chunk_dict), allow_nan=True, skipkeys=True)
+                try:
+                    text_response += chunk.text
+                except: pass
+                yield json_chunk
+            ChatHistory.update_chat_history(user_id, [{"role": "model", "parts": [text_response]}])
+            break
+        except ResourceExhausted as e:
+            if attempt < max_retries - 1:
+                await asyncio.sleep(retry_delay)
+                retry_delay *= 2
+            else:
+                raise HTTPException(status_code=429, detail="API quota exceeded. Please try again later.")
 
 @app.get("/")
 async def root():
@@ -116,9 +179,9 @@ async def root():
             },
             "/file/extract/": {
                 "method": "POST",
-                "description": "Extract text from a PDF file.",
+                "description": "Extract text from an audio, image or pdf file.",
                 "parameters": {
-                    "file": "PDF file to extract text from."
+                    "file": "File to extract text from."
                 }
             },
             "/caption/extract/": {

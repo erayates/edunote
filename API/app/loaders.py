@@ -3,19 +3,26 @@ import starlette.datastructures as starlette
 import google.generativeai as genai
 from pydantic import BaseModel
 from google.cloud import storage
-import fitz, io, os
+import fitz, io, os, json
 from google.ai.generativelanguage_v1beta.types import content
 from langchain_community.document_loaders import YoutubeLoader
 from typing import List, Union
+from io import BytesIO
 
-AUDIO_EXTENSIONS = {'mp3', 'wav', 'aac', 'm4a', 'wma'}
-PDF_EXTENSIONS = {'pdf'}
-IMAGE_EXTENSIONS = {'jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'}
+
+AUDIO_EXTENSIONS = ['mp3', 'wav', 'aac', 'm4a', 'wma']
+PDF_EXTENSIONS = ['pdf']
+IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg']
 
 class MainBody(BaseModel):
+    user_id: str
     option: str = 'user'
     command: str | None = None
     prompt: str | None = None
+
+class SearchINNotes(BaseModel):
+    query: str
+    user_id: str
 
 class FileUploadBody(BaseModel):
     user_id: str
@@ -44,19 +51,20 @@ class Prompt():
             "zap" : "You area an AI writing assistant that generates text based on a prompt. You take an input from the user and a command for manipulating the text. Use Markdown formatting when appropriate."
         }
 
-    def generate_response(self, prompt, option, user_query = None):
+    def generate_response(self, user_id, prompt, option, user_query = None):
+        messages = ChatHistory.get_chat_history(user_id=user_id)
         if option == 'ask':
-            messages = [
-                {'role': 'user', 'parts': [self.categorized_propmt[option]]},
-                {'role': 'model', 'parts': ['I am an AI writing assistant and I will provide you the text you desire.']},
-                {'role': 'user', 'parts': [f'{user_query}, Here is the text: {prompt}']}
-            ]
+            messages.append({'role': 'user', 'parts': [self.categorized_propmt[option]]})
+            messages.append({'role': 'model', 'parts': ['I am an AI writing assistant and I will provide you only the text you desire.']})
+            messages.append({'role': 'user', 'parts': [f'{user_query}, Here is the text: {prompt}']})
         else:
-            messages = [
-                {'role': 'user', 'parts': [self.categorized_propmt[option]]},
-                {'role': 'model', 'parts': ['I am an AI writing assistant and I will provide you the text you desire.']},
-                {'role': 'user', 'parts': [f'Here is the text: {prompt}']}
-            ] if option != 'user' else [ {'role': 'user', 'parts': [user_query]} ]
+            if option != 'user':
+                messages.append({'role': 'user', 'parts': [self.categorized_propmt[option]]})
+                messages.append({'role': 'model', 'parts': ['I am an AI writing assistant and I will provide you only the text you desire.']})
+                messages.append({'role': 'user', 'parts': [f'Here is the text: {prompt}']})
+            else:
+                messages.append({'role': 'user', 'parts': [user_query]})
+        ChatHistory.upload_chat_history(user_id=user_id, chat_history=messages)
         return {
             'contents': messages,
             # 'generation_config': self.generation_config,
@@ -85,7 +93,7 @@ class Prompt():
 class Loaders():
 
     @staticmethod
-    def config_model():
+    def config_model(model_name="gemini-1.5-pro"):
         generation_config = {
             "candidate_count": 1,
             "temperature": 1,
@@ -97,7 +105,7 @@ class Loaders():
             ),
             "response_mime_type": "text/plain",
         }
-        return genai.GenerativeModel(model_name="gemini-1.5-pro", generation_config=generation_config)
+        return genai.GenerativeModel(model_name=model_name, generation_config=generation_config)
 
     @staticmethod
     def config_bucket():
@@ -150,7 +158,7 @@ class Loaders():
 
     @staticmethod
     def audio_loader(file: Union[UploadFile, bytes], model: genai.GenerativeModel):
-        if not file.filename.endswith(('.mp3', '.wav', '.m4a')):
+        if not file.filename.endswith(tuple(AUDIO_EXTENSIONS)):
             raise HTTPException(status_code=400, detail="Invalid file type. Please upload an audio file (mp3, wav, or m4a).")
 
         file_location = f"./{file.filename}"
@@ -170,11 +178,26 @@ class Loaders():
         return response.text
 
     @staticmethod
-    def image_loader(file: Union[UploadFile, bytes]):
-        raise NotImplementedError
-        extracted_text: str
-        return extracted_text
+    def image_loader(file: Union[UploadFile, bytes], model: genai.GenerativeModel) -> str:
 
+        if not file.filename.endswith(tuple(IMAGE_EXTENSIONS)):
+            raise HTTPException(status_code=400, detail="Invalid file type. Please upload an audio file (jpg, .jpeg, .png, .gif, .webp, .svg).")
+
+        file_location = f"./{file.filename}"
+        with open(file_location, "wb") as f:
+            content = file.file.read()
+            f.write(content)
+
+        prompt = "You are an AI writing assistant that creates closed captions from an existing audio. Make sure to construct complete sentences. Use Markdown formatting when appropriate."
+
+        image_file = genai.upload_file(path=file_location)
+        response = model.generate_content([prompt, image_file])
+
+        if os.path.exists(file_location):
+            os.remove(file_location)
+        else: pass
+
+        return response.text
 
 class Process():
     
@@ -185,7 +208,7 @@ class Process():
         elif extension in PDF_EXTENSIONS:
             return {file.filename : Loaders.pdf_loader(file)}
         elif extension in IMAGE_EXTENSIONS:
-            return {file.filename : "Image extraction not implemented yet!"}
+            return {file.filename : Loaders.image_loader(file)}
         else:
             raise HTTPException(status_code=400, detail=f"Unsupported file type: {extension}")        
 
@@ -219,3 +242,67 @@ class Process():
                 raise HTTPException(status_code=500, detail=f"{file.filename} : File upload failed: {str(e)}")
 
         return upload_states
+
+class ChatHistory():
+    
+    @staticmethod
+    def get_chat_history(user_id: str) -> list:
+        try:
+            bucket = Loaders.config_bucket()
+        except:
+            raise HTTPException(status_code=404, detail=f"Bucket load failed.")
+        destination_file_name = f'chat/history-{user_id}.json'
+        blob = bucket.blob(destination_file_name)
+
+        if not blob.exists():
+            # raise HTTPException(status_code=404, detail=f"File {destination_file_name} not found in bucket.")
+            return []
+        
+        try:
+            file_data = blob.download_as_bytes()
+            json_string = file_data.decode('utf-8')
+            chat_history = json.loads(json_string)
+            return chat_history
+
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"File download failed: {str(e)}")
+
+    def update_chat_history(user_id: str, propmts: list[dict]):
+        chat_history = ChatHistory.get_chat_history(user_id=user_id)
+        for row in propmts:
+            chat_history.append(row)
+
+        bucket = Loaders.config_bucket()
+        destination_file_name = f'chat/history-{user_id}.json'
+        blob = bucket.blob(destination_file_name)
+
+        try:
+            json_data = json.dumps(chat_history, indent=2) 
+            json_bytes = BytesIO(json_data.encode('utf-8'))
+            blob.upload_from_file(json_bytes) 
+        except Exception as e: HTTPException(status_code=500, detail=f"destination_file_name : File upload failed: {str(e)}")
+
+    def upload_chat_history(user_id: str, chat_history: list[dict]):
+        bucket = Loaders.config_bucket()
+        destination_file_name = f'chat/history-{user_id}.json'
+        blob = bucket.blob(destination_file_name)
+
+        try:
+            json_data = json.dumps(chat_history, indent=2) 
+            json_bytes = BytesIO(json_data.encode('utf-8'))
+            blob.upload_from_file(json_bytes) 
+        except Exception as e: HTTPException(status_code=500, detail=f"destination_file_name : File upload failed: {str(e)}")
+
+    def clear_chat_history(user_id: str):
+        chat_history = []
+
+        bucket = Loaders.config_bucket()
+        destination_file_name = f'chat/history-{user_id}.json'
+        blob = bucket.blob(destination_file_name)
+
+        try:
+            json_data = json.dumps(chat_history, indent=2) 
+            json_bytes = BytesIO(json_data.encode('utf-8'))
+            blob.upload_from_file(json_bytes) 
+        except Exception as e: HTTPException(status_code=500, detail=f"destination_file_name : File upload failed: {str(e)}")
+
