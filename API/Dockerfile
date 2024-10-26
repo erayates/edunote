@@ -5,10 +5,9 @@ WORKDIR /code
 ENV HOST=0.0.0.0
 
 COPY ./requirements.txt /code/requirements.txt
-COPY ./KEY.py /code/KEY.py
 COPY ./LICENSE /code/LICENSE
 COPY ./README.md /code/README.md
-COPY ./Secrets /code/Secrets
+COPY ./Secrets/KEY.py /code/Secrets/KEY.py
 
 RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
 RUN pip install --upgrade google-cloud-storage

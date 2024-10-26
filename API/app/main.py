@@ -4,6 +4,7 @@ from typing import List, Optional
 import Secrets.KEY as KEY
 import json, asyncio
 from fastapi.responses import StreamingResponse
+from fastapi.middleware.cors import CORSMiddleware
 from google.api_core.exceptions import ResourceExhausted
 from app.loaders import *
 
@@ -11,7 +12,16 @@ from app.loaders import *
 # TODO: API Test
 # TODO: Elasticsearch Implementation Test
 
+origins = ["*"]
+
 app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 model = Loaders.config_model()
 genai.configure(api_key=KEY.GEMINI_API_KEY)
 prompt_obj = Prompt()
@@ -158,68 +168,91 @@ async def root():
     """Root endpoint providing information about the API."""
     return {
         "message": "Welcome to the Edunote API",
-        "description": "Edunote API leverages Gemini by Google to enhance your note-taking experience.",
+        "description": "This API leverages Gemini by Google to enhance note-taking, file handling, and content generation.",
         "endpoints": {
-            "/file/upload/": {
-                "method": "POST",
-                "description": "Upload files to the server.",
-                "parameters": {
-                    "user_id": "User ID for tracking.",
-                    "if_exists": "Specify if the file should be replaced if it exists.",
-                    "files": "List of files to upload."
+            "File Operations": {
+                "/file/upload/": {
+                    "method": "POST",
+                    "description": "Upload files to the server.",
+                    "parameters": {
+                        "user_id": "User ID for tracking the file.",
+                        "if_exists": "Replace the file if it already exists.",
+                        "files": "List of files to be uploaded."
+                    }
+                },
+                "/file/download/": {
+                    "method": "POST",
+                    "description": "Download a file from the storage bucket.",
+                    "parameters": {
+                        "user_id": "User ID for tracking the file.",
+                        "file_name": "Name of the file to download."
+                    }
+                },
+                "/file/extract/": {
+                    "method": "POST",
+                    "description": "Extract text from a file (audio, image, PDF).",
+                    "parameters": {
+                        "file": "The file from which text will be extracted."
+                    }
+                },
+                "/caption/extract/": {
+                    "method": "POST",
+                    "description": "Extract captions from a YouTube video.",
+                    "parameters": {
+                        "youtube_video_id": "The ID of the YouTube video."
+                    }
+                },
+                "/bucket/check/": {
+                    "method": "POST",
+                    "description": "Check if a file exists in the storage bucket.",
+                    "parameters": {
+                        "user_id": "User ID for tracking the file.",
+                        "file_name": "Name of the file to check."
+                    }
                 }
             },
-            "/file/download/": {
-                "method": "POST",
-                "description": "Download a file from the storage bucket.",
-                "parameters": {
-                    "user_id": "User ID for tracking.",
-                    "file_name": "Name of the file to check."
+            "Elasticsearch Operations": {
+                "/search/simple/": {
+                    "method": "GET",
+                    "description": "Perform a simple search in Elasticsearch.",
+                    "parameters": {
+                        "query": "Search query string."
+                    }
+                },
+                "/search/all/": {
+                    "method": "GET",
+                    "description": "Perform a search with a request body in Elasticsearch.",
+                    "parameters": {
+                        "body": "Request body for the search."
+                    }
+                },
+                "/search/ask/": {
+                    "method": "GET",
+                    "description": "Perform a filtered search in Elasticsearch based on user notes and queries.",
+                    "parameters": {
+                        "query": "Search query string.",
+                        "user_id": "User ID to filter the search results."
+                    }
                 }
             },
-            "/file/extract/": {
-                "method": "POST",
-                "description": "Extract text from an audio, image or pdf file.",
-                "parameters": {
-                    "file": "File to extract text from."
+            "Gemini Operations": {
+                "/gemini/": {
+                    "method": "GET",
+                    "description": "Interact with Gemini AI for text processing and queries.",
+                    "parameters": {
+                        "option": "Option for processing the text (e.g., summarize, explain, note, etc.).",
+                        "prompt": "The text to be processed.",
+                        "command": "Specific user command for the text (optional).",
+                        "user_id": "User ID for tracking."
+                    }
                 }
             },
-            "/caption/extract/": {
-                "method": "POST",
-                "description": "Extract captions from a YouTube video.",
-                "parameters": {
-                    "youtube_video_id": "The ID of the YouTube video."
-                }
-            },
-            "/bucket/check/": {
-                "method": "POST",
-                "description": "Check if a file exists in the storage bucket.",
-                "parameters": {
-                    "user_id": "User ID for tracking.",
-                    "file_name": "Name of the file to check."
-                }
-            },
-            "/gemini/": {
-                "method": "GET",
-                "description": "Process prompt and user command.",
-                "parameters": {
-                    "body": {
-                        "prompt": "Provide text to Gemini to use options. Defaults to None.",
-                        "command": "Ask AI a question about the content. Defaults to None.",
-                        "option": {
-                            "user": "Default option. Provide {{commands}}. Feeds Gemini with user query.",
-                            "ask": "Provide {{prompt}} and {{commands}} to ask a question about the text.",
-                            "explain": "Provide {{prompt}}. Gemini explains the text.",
-                            "template": "Provide {{prompt}}. Gemini creates a template of the text.",
-                            "summarize": "Provide {{prompt}}. Gemini summarizes the text.",
-                            "note": "Provide {{prompt}}. Gemini takes notes for you from the text.",
-                            "improve": "Provide {{prompt}}. Gemini improves the text.",
-                            "shorter": "Provide {{prompt}}. Gemini shortens the text.",
-                            "longer": "Provide {{prompt}}. Gemini lengthens the text.",
-                            "continue": "Provide {{prompt}}. Gemini continues the text.",
-                            "fix": "Provide {{prompt}}. Gemini fixes the text.",
-                            "zap": "Provide {{commands}}. Gemini generates new text from user query."
-                        }
+            "Chat History": {
+                "/chat/history/": {
+                    "method": "GET",
+                    "description": "Retrieve chat history for a given user.",
+                    "parameters": {
+                        "user_id": "User ID to retrieve the chat history."
                     }
                 }
             }
