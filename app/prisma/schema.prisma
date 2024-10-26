@@ -48,6 +48,7 @@ model Note {
   title       String
   content     String
   description String
+  thumbnail   String? 
   slug        String
   isPublic    Boolean @default(false) @map("is_public")
   shareLink   String? @map("share_link")
@@ -118,11 +119,6 @@ model Tag {
 
   // Metadata
   useCount Int @default(0) @map("use_count")
-
-  // Audit
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
   @@map("tags")
 }
 

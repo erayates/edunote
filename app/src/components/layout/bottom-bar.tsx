@@ -4,14 +4,10 @@ import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import { ModeToggle } from "../theme-toggle";
 import { Bell, MessageCircle } from "lucide-react";
-import { UserButton, useUser } from "@clerk/nextjs";
+import { UserButton } from "@clerk/nextjs";
 import { Button } from "../ui/button";
 
 const AppBottomBar: React.FC = () => {
-  const { user } = useUser();
-
-  console.log(user);
-
   return (
     <div className="fixed left-1/2 -translate-x-1/2 bottom-8 flex rounded-3xl space-x-4">
       <div className="p-2 w-[540px] rounded-3xl bg-foreground relative grid place-items-center pl-8">

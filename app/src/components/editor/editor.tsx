@@ -29,13 +29,20 @@ import { uploadFn } from "./image-upload";
 import { slashCommand, suggestionItems } from "./slash-commands";
 
 import hljs from "highlight.js";
-import { Input } from "../ui/input";
 import { checkImageDeleted } from "@/actions/blob";
-import EditorSettings from "./editor-settings";
+import { Note } from "@prisma/client";
+import EditorHeader from "./editor-header";
+import { updateNote } from "@/actions/notes";
+import { toast } from "sonner";
 
 const extensions = [...defaultExtensions, slashCommand];
 
-const TailwindAdvancedEditor = () => {
+interface EdunoteEditorProps {
+  note: Note;
+  settingsOff?: boolean;
+}
+
+const EdunoteEditor: React.FC<EdunoteEditorProps> = ({ note, settingsOff }) => {
   const [initialContent, setInitialContent] = useState<null | JSONContent>(
     null
   );
@@ -48,14 +55,14 @@ const TailwindAdvancedEditor = () => {
   const [openAI, setOpenAI] = useState(false);
 
   //Apply Codeblock Highlighting on the HTML from editor.getHTML()
-  const highlightCodeblocks = (content: string) => {
-    const doc = new DOMParser().parseFromString(content, "text/html");
-    doc.querySelectorAll("pre code").forEach((el) => {
-      // https://highlightjs.readthedocs.io/en/latest/api.html?highlight=highlightElement#highlightelement
-      hljs.highlightElement(el as HTMLElement);
-    });
-    return new XMLSerializer().serializeToString(doc);
-  };
+  // const highlightCodeblocks = (content: string) => {
+  //   const doc = new DOMParser().parseFromString(content, "text/html");
+  //   doc.querySelectorAll("pre code").forEach((el) => {
+  //     // https://highlightjs.readthedocs.io/en/latest/api.html?highlight=highlightElement#highlightelement
+  //     hljs.highlightElement(el as HTMLElement);
+  //   });
+  //   return new XMLSerializer().serializeToString(doc);
+  // };
 
   const debouncedUpdates = useDebouncedCallback(
     async (editor: EditorInstance) => {
@@ -69,45 +76,30 @@ const TailwindAdvancedEditor = () => {
       checkImageDeleted(images);
 
       setCharsCount(editor.storage.characterCount.words());
-      window.localStorage.setItem(
-        "html-content",
-        highlightCodeblocks(editor.getHTML())
-      );
-      window.localStorage.setItem("novel-content", JSON.stringify(json));
-      window.localStorage.setItem(
-        "markdown",
-        editor.storage.markdown.getMarkdown()
-      );
+      const isUpdated = await updateNote(note.id, {
+        content: JSON.stringify(json),
+      });
 
-      setSaveStatus("Saved");
+      if (isUpdated) {
+        setSaveStatus("Saved");
+        return;
+      }
+
+      toast.error("Something went wrong when updating note!");
     },
     500
   );
 
   useEffect(() => {
-    const content = window.localStorage.getItem("novel-content");
-    if (content) setInitialContent(JSON.parse(content));
+    if (note) setInitialContent(JSON.parse(note.content));
     else setInitialContent(defaultEditorContent);
-  }, []);
+  }, [note]);
 
   if (!initialContent) return null;
 
   return (
     <React.Fragment>
-      <div className="w-full flex justify-end mb-4">
-        <EditorSettings />
-      </div>
-      <div className="w-full space-y-4">
-        <Input
-          className="w-full text-4xl font-semibold text-white placeholder:text-primary border-t-0 border-l-0 border-r-0 border-b-2 pb-4 h-auto rounded-none border-primary rounded-b-2xl shadow-none focus-visible:ring-0"
-          placeholder="Enter a title"
-        />
-
-        <Input
-          className="w-full text-xl font-medium text-white placeholder:text-primary border-t-0 border-l-0 border-r-0 border-b-2 pb-4 h-auto rounded-none border-primary rounded-b-xl shadow-none focus-visible:ring-0"
-          placeholder="Enter a description"
-        />
-      </div>
+      <EditorHeader note={note} settingsOff={settingsOff as boolean} />
       <div className="relative w-full mt-16">
         <div className="flex absolute -top-12 right-0 z-10 mb-5 gap-2">
           <div className="rounded-lg bg-accent px-2 py-1 text-sm text-muted-foreground text-center">
@@ -127,6 +119,7 @@ const TailwindAdvancedEditor = () => {
           <EditorContent
             initialContent={initialContent}
             extensions={extensions}
+            editable={!settingsOff}
             className="relative min-h-[500px] w-full border-muted bg-transparent sm:mb-[calc(20vh)] sm:rounded-lg text-white"
             editorProps={{
               handleDOMEvents: {
@@ -193,4 +186,4 @@ const TailwindAdvancedEditor = () => {
   );
 };
 
-export default TailwindAdvancedEditor;
+export default EdunoteEditor;

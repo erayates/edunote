@@ -14,8 +14,19 @@ import Link from "next/link";
 import { Button } from "../ui/button";
 import { MoreNote } from "./more-note";
 import { _notes } from "@/_mocks/notes";
+import { getAllUserNotes } from "@/actions/notes";
+import { currentUser } from "@clerk/nextjs/server";
+import { Note } from "@prisma/client";
 
-const AppSidebar: React.FC = () => {
+const AppSidebar: React.FC = async () => {
+  const user = await currentUser();
+
+  const _notes: Note[] | false = await getAllUserNotes(user?.id as string);
+
+  if (!_notes) {
+    return;
+  }
+
   return (
     <aside
       className={cn(
@@ -44,10 +55,13 @@ const AppSidebar: React.FC = () => {
             .slice(0, _notes.length > 3 ? 3 : _notes.length)
             .map((_note) => (
               <li
-                key={String(_note._id)}
+                key={String(_note.id)}
                 className="flex items-center text-sm text-white/30 hover:text-white border-l-2 border-primary pl-6 py-1 after:absolute after:left-0 after:top-1/2 after:-translate-y-1/2 after:bg-[#424549] after:w-5 after:h-[2px] relative"
               >
-                <Link href="#" className="flex items-center">
+                <Link
+                  href={`/notes/${_note.slug}`}
+                  className="flex items-center"
+                >
                   <NotepadText size={16} className="mr-2" />{" "}
                   {_note.title.slice(
                     0,

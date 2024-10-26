@@ -1,12 +1,17 @@
 import { _notes } from "@/_mocks/notes";
-import { DatePicker } from "@/components/ui/date-picker";
 import { Input } from "@/components/ui/input";
 import { BookKey } from "lucide-react";
 import Image from "next/image";
 import React from "react";
 import NoteCard from "./note-card";
+import NoteFilter from "./note-filter";
+import { Prisma } from "@prisma/client";
 
-const NotesContainer: React.FC = () => {
+interface NotesContainerProps {
+  notes: Prisma.NoteGetPayload<{ include: { user: true } }>[];
+}
+
+const NotesContainer: React.FC<NotesContainerProps> = ({ notes }) => {
   return (
     <div className="max-w-screen-lg space-y-6">
       <div className="flex space-x-6 ">
@@ -30,59 +35,25 @@ const NotesContainer: React.FC = () => {
       </div>
 
       <div className="flex space-x-6">
-        <div className="w-[280px] sticky top-4  h-fit bg-foreground border-2 border-secondary rounded-xl p-2">
-          <p className="text-white/30 uppercase font-semibold text-center text-xl">
-            Filters
-          </p>
-
-          <div className="rounded-full h-[1px] w-full bg-secondary my-2"></div>
-          <div className="space-y-2">
-            <div className="space-y-1">
-              <p className="text-sm text-white/30 font-medium">Tags</p>
-              <Input className="focus-visible:ring-secondary text-white text-xs" />
-            </div>
-
-            <div className="space-y-1">
-              <p className="text-sm text-white/30 font-medium">Author</p>
-              <Input className="focus-visible:ring-secondary text-white text-xs" />
-            </div>
-
-            <div className="space-y-1">
-              <p className="text-sm text-white/30 font-medium">
-                Published Date
-              </p>
-              <DatePicker />
-            </div>
-          </div>
-        </div>
+        <NoteFilter />
 
         <div className="flex flex-col w-full space-y-6">
           <Input
-            placeholder="Search - Start typing..."
+            placeholder="Start searching..."
             className="bg-foreground text-sm border-2 border-secondary p-4 rounded-xl h-[48px] focus-visible:ring-secondary text-white placeholder:text-secondary"
           />
 
-          <div className="grid grid-cols-3 gap-4">
-            {_notes.map((_note) => (
+          <div className="grid grid-cols-4 gap-4">
+            {notes.map((note) => (
               <NoteCard
-                key={String(_note._id)}
-                thumbnailUrl={
-                  "https://brnx9rsmvjqlixb6.public.blob.vercel-storage.com/note-thumbnail-ocljbibQObbWyd07Q57xus6LIYOw2v.jpg"
-                }
-                avatarUrl={
-                  "https://brnx9rsmvjqlixb6.public.blob.vercel-storage.com/note-thumbnail-ocljbibQObbWyd07Q57xus6LIYOw2v.jpg"
-                }
-                title={`Lorem ipsum dolor sit amet. LoremLorem ipsum dolor sit amet. LoremLorem ipsum dolor sit amet. Lorem`}
-                description={`
-                  Lorem ipsum, dolor sit amet consectetur adipisicing elit.
-                  Aliquid sit, expedita sapiente eveniet eum repellendus labore
-                  quas eligendi nihil quam itaque accusamus autem aut commodi
-                  delectus voluptas facilis? Excepturi fugiat ullam distinctio
-                  minima eaque soluta eum, odio maxime, vero repellat laborum
-                  sunt ducimus sint omnis quibusdam quisquam sequi voluptate
-                  natus cumque, non nulla facilis iste eius. Exercitationem
-                  tempora ipsam ipsum accusamus, porro reprehenderit!`}
-                author="John Doe"
+                key={String(note.id)}
+                thumbnailUrl={note.thumbnail as string}
+                avatarUrl={note.user.avatar as string}
+                title={note.title}
+                description={note.description}
+                createdAt={note.createdAt}
+                author={note.user.fullname}
+                slug={note.slug}
               />
             ))}
           </div>
