@@ -3,12 +3,14 @@ import starlette.datastructures as starlette
 import google.generativeai as genai
 from pydantic import BaseModel
 from google.cloud import storage
-import fitz, io, os, json
+from pydantic import HttpUrl
+import fitz, io, os, json, asyncio
 from google.ai.generativelanguage_v1beta.types import content
 from langchain_community.document_loaders import YoutubeLoader
 from typing import List, Union
+from typing import Optional
+from google.api_core.exceptions import ResourceExhausted
 from io import BytesIO
-
 
 AUDIO_EXTENSIONS = ['mp3', 'wav', 'aac', 'm4a', 'wma']
 PDF_EXTENSIONS = ['pdf']
@@ -17,8 +19,8 @@ IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg']
 class MainBody(BaseModel):
     user_id: str
     option: str = 'user'
-    command: str | None = None
-    prompt: str | None = None
+    command: Optional[str] = None
+    prompt: Optional[str] = None
 
 class SearchINNotes(BaseModel):
     query: str
@@ -31,6 +33,10 @@ class FileUploadBody(BaseModel):
 class FileDownloadBody(BaseModel):
     user_id: str
     file_name: str
+
+class FileExtract(BaseModel):
+    url: HttpUrl
+    user_id: str    
 
 class Prompt():
     def __init__(self, safety_category: int = 0, generation_config: dict = None) -> None:
@@ -132,85 +138,97 @@ class Loaders():
             return "No caption found."
 
     @staticmethod
-    def pdf_loader(file: Union[UploadFile, bytes]):
-        pdf_stream: io.BytesIO
-        if isinstance(file, starlette.UploadFile):
-            pdf_bytes = file.file.read()
-            if not pdf_bytes:
-                raise HTTPException(status_code=400, detail="Uploaded PDF file is empty.")
-
-            pdf_stream = io.BytesIO(pdf_bytes)
-        elif isinstance(file, bytes):
-            pdf_stream = io.BytesIO(file)
-
+    def pdf_loader(file: bytes):
+        """Extract text from a PDF file."""
         try:
-            pdf_document = fitz.open("pdf", pdf_stream)
+            pdf_document = fitz.open("pdf", file)
         except Exception as e:
             raise HTTPException(status_code=400, detail=f"Failed to open PDF: {str(e)}")
-
-        extracted_text = ""
         for page in pdf_document:
-            extracted_text += page.get_text()
-
-        pdf_document.close()
-
-        return extracted_text
+            yield page.get_text()
 
     @staticmethod
-    def audio_loader(file: Union[UploadFile, bytes], model: genai.GenerativeModel):
-        if not file.filename.endswith(tuple(AUDIO_EXTENSIONS)):
-            raise HTTPException(status_code=400, detail="Invalid file type. Please upload an audio file (mp3, wav, or m4a).")
+    async def audio_loader(file: bytes, file_name: str, model, user_id: str):
+        """Process audio and generate content using the AI model."""
+        if not file_name.endswith(tuple(AUDIO_EXTENSIONS)):
+            raise HTTPException(status_code=400, detail="Invalid file type. Please upload an audio file (mp3, wav).")
 
-        file_location = f"./{file.filename}"
+        file_location = f"./{file_name}"
         with open(file_location, "wb") as f:
-            content = file.file.read()
-            f.write(content)
+            f.write(file.getvalue())
 
         prompt = "You are an AI writing assistant that creates closed captions from an existing audio. Make sure to construct complete sentences. Use Markdown formatting when appropriate."
 
         audio_file = genai.upload_file(path=file_location)
-        response = model.generate_content([prompt, audio_file])
-
         if os.path.exists(file_location):
             os.remove(file_location)
-        else: pass
-
-        return response.text
+        text_response = ""
+        max_retries = 3
+        retry_delay = 0.2
+        for attempt in range(max_retries):
+            try:
+                for chunk in model.generate_content([prompt, audio_file], stream=True):
+                    try:
+                        text_response += chunk.text
+                        yield chunk.text
+                    except: 
+                        pass
+                if text_response != "": ChatHistory.update_chat_history(user_id, [{"role": "model", "parts": [text_response]}])
+                break
+            except ResourceExhausted as e:
+                if attempt < max_retries - 1:
+                    await asyncio.sleep(retry_delay)
+                    retry_delay *= 2
+                else:
+                    raise HTTPException(status_code=429, detail="API quota exceeded. Please try again later.")
 
     @staticmethod
-    def image_loader(file: Union[UploadFile, bytes], model: genai.GenerativeModel) -> str:
+    async def image_loader(file: bytes, file_name: str, model, user_id: str):
+        """Process image and generate content using the AI model."""
+        if not file_name.endswith(tuple(IMAGE_EXTENSIONS)):
+            raise HTTPException(status_code=400, detail="Invalid file type. Please upload an image file (jpg, jpeg, png).")
 
-        if not file.filename.endswith(tuple(IMAGE_EXTENSIONS)):
-            raise HTTPException(status_code=400, detail="Invalid file type. Please upload an audio file (jpg, .jpeg, .png, .gif, .webp, .svg).")
-
-        file_location = f"./{file.filename}"
+        file_location = f"./{file_name}"
         with open(file_location, "wb") as f:
-            content = file.file.read()
-            f.write(content)
+            f.write(file.getvalue())
 
-        prompt = "You are an AI writing assistant that creates closed captions from an existing audio. Make sure to construct complete sentences. Use Markdown formatting when appropriate."
+        prompt = "You are an AI writing assistant that creates closed captions from an existing image."
 
         image_file = genai.upload_file(path=file_location)
-        response = model.generate_content([prompt, image_file])
-
         if os.path.exists(file_location):
             os.remove(file_location)
-        else: pass
 
-        return response.text
+        max_retries = 3
+        retry_delay = 0.2
+        for attempt in range(max_retries):
+            try:
+                for chunk in model.generate_content([prompt, image_file], stream=True):
+                    try:
+                        text_response += chunk.text
+                        yield chunk.text
+                    except: 
+                        pass
+                ChatHistory.update_chat_history(user_id, [{"role": "model", "parts": [text_response]}])
+                break
+            except ResourceExhausted as e:
+                if attempt < max_retries - 1:
+                    await asyncio.sleep(retry_delay)
+                    retry_delay *= 2
+                else:
+                    raise HTTPException(status_code=429, detail="API quota exceeded. Please try again later.") 
 
 class Process():
-    
+
     @staticmethod
-    def extract_text(file, extension, model):
+    def extract_text(file, filename, extension, model, user_id):
         if extension in AUDIO_EXTENSIONS:
-            return {file.filename : Loaders.audio_loader(file, model)}
+            return Loaders.audio_loader(file, filename, model, user_id)
         elif extension in PDF_EXTENSIONS:
-            return {file.filename : Loaders.pdf_loader(file)}
+            return Loaders.pdf_loader(file)
         elif extension in IMAGE_EXTENSIONS:
-            return {file.filename : Loaders.image_loader(file)}
+            return Loaders.image_loader(file, filename, model, user_id)
         else:
-            raise HTTPException(status_code=400, detail=f"Unsupported file type: {extension}")        
+            raise HTTPException(status_code=400, detail=f"Unsupported file type: {extension}")    
 
     @staticmethod
     async def download_file(blob):
