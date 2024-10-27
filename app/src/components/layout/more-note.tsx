@@ -11,7 +11,6 @@ import {
 } from "@/components/ui/sheet";
 import Image from "next/image";
 import { Input } from "../ui/input";
-import { _notes } from "@/_mocks/notes";
 import { Note } from "@prisma/client";
 import Link from "next/link";
 import { ChangeEvent, useEffect, useState } from "react";
