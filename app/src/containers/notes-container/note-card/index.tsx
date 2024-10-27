@@ -1,7 +1,7 @@
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import Image from "next/image";
 
-import { formatDistance, parseISO } from "date-fns";
+import { formatDistance } from "date-fns";
 import Link from "next/link";
 
 interface NoteCardProps {

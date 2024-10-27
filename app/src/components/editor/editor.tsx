@@ -29,7 +29,7 @@ import { uploadFn } from "./image-upload";
 import { slashCommand, suggestionItems } from "./slash-commands";
 
 // import hljs from "highlight.js";
-import { checkImageDeleted } from "@/actions/blob";
+// import { checkImageDeleted } from "@/actions/blob";
 import { Note } from "@prisma/client";
 import EditorHeader from "./editor-header";
 import { updateNote } from "@/actions/notes";
@@ -69,10 +69,10 @@ const EdunoteEditor: React.FC<EdunoteEditorProps> = ({ note, settingsOff }) => {
     async (editor: EditorInstance) => {
       const json = editor.getJSON();
 
-      const images =
-        json.content
-          ?.filter((contentItem) => contentItem.type === "image")
-          .map((item) => item.attrs?.src) ?? [];
+      // const images =
+      //   json.content
+      //     ?.filter((contentItem) => contentItem.type === "image")
+      //     .map((item) => item.attrs?.src) ?? [];
 
       // checkImageDeleted(images);
 

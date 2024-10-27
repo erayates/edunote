@@ -14,7 +14,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import AICompletionCommands from "../generative/ai-completion-commands";
 import { useUser } from "@clerk/nextjs";
 import useFetchStream from "@/hooks/use-fetch-stream";
-import { extractVideoId } from "@/lib/helpers";
+// import { extractVideoId } from "@/lib/helpers";
 import YoutubeAISelectorCommands from "./youtube-ai-selector-commands";
 
 export function YoutubeAISelector() {
@@ -36,10 +36,10 @@ export function YoutubeAISelector() {
   const hasCompletion = completion.length > 0;
 
   if (isYoutubeSelected) {
-    const videoURL =
-      editor?.state.selection.content().content.firstChild?.attrs.src;
+    // const videoURL =
+    //   editor?.state.selection.content().content.firstChild?.attrs.src;
 
-    const videoId = extractVideoId(videoURL);
+    // const videoId = extractVideoId(videoURL);
 
     return (
       <Command className="w-[350px] absolute right-0 top-0 bg-foreground">
