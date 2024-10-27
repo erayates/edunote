@@ -1,9 +1,8 @@
 from fastapi import FastAPI, HTTPException, File, Depends, Request
 from fastapi.responses import PlainTextResponse
 import google.generativeai as genai
-from typing import List, Optional
 import Secrets.KEY as KEY
-import asyncio
+import asyncio, requests
 from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from google.api_core.exceptions import ResourceExhausted
@@ -110,10 +109,23 @@ async def file_download(body: FileDownloadBody = Depends()):
         raise HTTPException(status_code=500, detail=f"File download failed: {str(e)}")
 
 @app.post("/file/extract/")
-async def file_text_extraction(file: Optional[UploadFile] = File(None)):
+async def file_text_extraction(body: FileExtract):
     global model
-    ext = file.filename.split('.')[-1].lower()
-    return Process.extract_text(file, ext, model)
+    url = body.url
+    user_id = body.user_id
+    try:
+        response = requests.get(str(url))
+        response.raise_for_status()
+    except requests.exceptions.RequestException as e:
+        raise HTTPException(status_code=400, detail=f"Error downloading file: {e}")
+
+    ext = str(url).split('.')[-1].lower()
+
+    if ext in AUDIO_EXTENSIONS+PDF_EXTENSIONS+IMAGE_EXTENSIONS:
+        file_content = io.BytesIO(response.content)
+        return StreamingResponse(Process.extract_text(file_content, str(url).replace('https://brnx9rsmvjqlixb6.public.blob.vercel-storage.com/', ''), ext, model, user_id), media_type="text/plain")
+    else:
+        raise HTTPException(status_code=400, detail="Unsupported file type")
 
 @app.post("/caption/extract/")
 async def file_text_extraction(youtube_video_id: str):
@@ -149,7 +161,7 @@ async def stream_text(option: str, text: str, user_query: str, user_id: str):
             for chunk in model.generate_content(**prompt_obj.generate_response(user_id, text, option, user_query), stream=True):
                 try:
                     text_response += chunk.text
-                    yield chunk.text  # Yield only the text
+                    yield chunk.text
                 except: 
                     pass
             ChatHistory.update_chat_history(user_id, [{"role": "model", "parts": [text_response]}])
