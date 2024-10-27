@@ -22,7 +22,7 @@ const AICompletionCommands = ({
       <CommandGroup>
         <CommandList>
           <CommandItem
-            className="gap-2 px-4"
+            className="gap-2 px-4 text-white/30"
             value="replace"
             onSelect={() => {
               if (editor) {
@@ -45,7 +45,7 @@ const AICompletionCommands = ({
             Replace selection
           </CommandItem>
           <CommandItem
-            className="gap-2 px-4"
+            className="gap-2 px-4 text-white/30"
             value="insert"
             onSelect={() => {
               if (editor) {
@@ -70,7 +70,7 @@ const AICompletionCommands = ({
           <CommandItem
             onSelect={onDiscard}
             value="thrash"
-            className="gap-2 px-4"
+            className="gap-2 px-4 text-white/30"
           >
             <TrashIcon className="h-4 w-4 text-muted-foreground" />
             Discard

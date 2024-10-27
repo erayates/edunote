@@ -110,7 +110,7 @@ const EditorSettings: React.FC<EditorSettingsProps> = ({ note }) => {
   };
 
   // Handle func. to save tags
-  const handleSaveTags = async () => {};
+  // const handleSaveTags = async () => {};
 
   return (
     <Dialog>

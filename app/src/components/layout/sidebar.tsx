@@ -13,7 +13,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { Button } from "../ui/button";
 import { MoreNote } from "./more-note";
-import { _notes } from "@/_mocks/notes";
 import { getAllUserNotes } from "@/actions/notes";
 import { currentUser } from "@clerk/nextjs/server";
 import { Note } from "@prisma/client";
@@ -72,7 +71,7 @@ const AppSidebar: React.FC = async () => {
               </li>
             ))}
 
-          {_notes.length > 3 && <MoreNote />}
+          {_notes.length > 3 && <MoreNote notes={_notes}/>}
         </ul>
 
         <ul className="mt-8">

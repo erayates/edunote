@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -10,8 +12,25 @@ import {
 import Image from "next/image";
 import { Input } from "../ui/input";
 import { _notes } from "@/_mocks/notes";
+import { Note } from "@prisma/client";
+import Link from "next/link";
+import { ChangeEvent, useEffect, useState } from "react";
 
-export function MoreNote() {
+export function MoreNote({ notes }: { notes: Note[] }) {
+  const [filteredNotes, setFilteredNotes] = useState<Note[]>([]);
+
+  useEffect(() => {
+    setFilteredNotes(notes);
+  }, [notes]);
+
+  const onSearching = (e: ChangeEvent<HTMLInputElement>) => {
+    const filtered = notes.filter((note) =>
+      note.title.toLowerCase().includes(e.target.value)
+    );
+
+    setFilteredNotes(filtered);
+  };
+
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -34,29 +53,44 @@ export function MoreNote() {
           <Input
             placeholder="Search..."
             className="border-zinc-700 text-white text-xs"
+            onChange={onSearching}
           />
 
           <div className="grid gap-4">
-            {_notes.map((_note) => (
-              <div
-                key={String(_note._id)}
-                className="flex border w-full max-h-[100px] h-[100px] border-secondary rounded-xl p-2 space-x-2 items-center"
-              >
-                <div className="w-16 h-full min-w-16 min-h-16 overflow-hidden relative rounded-2xl">
-                  <Image
-                    width={0}
-                    height={0}
-                    sizes="100vw"
-                    alt="Note Thumbnail"
-                    className="w-full h-auto rounded-2xl object-cover"
-                    src={_note.note_thumbnail}
-                  />
+            {filteredNotes.length === 0 && (
+              <p className="text-white/30 text-md font-medium">
+                There is no item.
+              </p>
+            )}
+
+            {filteredNotes.map((_note) => (
+              <Link href={`/notes/${_note.slug}`} key={_note.id}>
+                <div className="flex border w-full max-h-[64px] h-[64px] border-secondary rounded-xl space-x-2 items-center">
+                  <div className="w-16 h-full min-w-16 min-h-16 overflow-hidden relative rounded-l-2xl">
+                    <Image
+                      width={0}
+                      height={0}
+                      sizes="100vw"
+                      alt="Note Thumbnail"
+                      className="w-full rounded-l-2xl object-cover h-full"
+                      src={"/assets/images/default-note-thumbnail.jpg"}
+                    />
+                  </div>
+                  <div className="col-span-2">
+                    <h3 className="text-white text-sm">
+                      {_note.title.length > 30
+                        ? _note.title.slice(0, 30) + "..."
+                        : _note.title}
+                    </h3>
+                    <p className="text-xs text-white/30">
+                      {" "}
+                      {_note.description.length > 70
+                        ? _note.description.slice(0, 70) + "..."
+                        : _note.title}
+                    </p>
+                  </div>
                 </div>
-                <div className="col-span-2">
-                  <h3 className="text-white text-sm">{_note.title}</h3>
-                  <p className="text-xs text-white/30">{_note.description}</p>
-                </div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>

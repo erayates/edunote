@@ -2,21 +2,19 @@
 
 import { Command, CommandInput } from "@/components/ui/command";
 
-import { useCompletion } from "ai/react";
 import { ArrowUp } from "lucide-react";
 import { useEditor } from "novel";
 import { addAIHighlight } from "novel/extensions";
 import { useState } from "react";
 import Markdown from "react-markdown";
-import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import CrazySpinner from "@/components/ui/icons/crazy-spinner";
 import Magic from "@/components/ui/icons/magic";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import AICompletionCommands from "./ai-completion-commands";
 import AISelectorCommands from "./ai-selector-commands";
-
-//TODO: I think it makes more sense to create a custom Tiptap extension for this functionality https://tiptap.dev/docs/editor/ai/introduction
+import { useUser } from "@clerk/nextjs";
+import useFetchStream from "@/hooks/use-fetch-stream";
 
 interface AISelectorProps {
   open: boolean;
@@ -27,24 +25,16 @@ export function AISelector({ onOpenChange }: AISelectorProps) {
   const { editor } = useEditor();
   const [inputValue, setInputValue] = useState("");
 
-  const { completion, complete, isLoading } = useCompletion({
-    // id: "novel",
-    api: "/api/generate",
-    onResponse: (response) => {
-      if (response.status === 429) {
-        toast.error("You have reached your request limit for the day.");
-        return;
-      }
-    },
-    onError: (e) => {
-      toast.error(e.message);
-    },
+  const { user } = useUser();
+
+  const { completion, complete, isLoading } = useFetchStream({
+    api: "https://btk-demo-file-634181987121.europe-central2.run.app/gemini/",
   });
 
   const hasCompletion = completion.length > 0;
 
   return (
-    <Command className="w-[350px]">
+    <Command className="w-[350px] bg-foreground">
       {hasCompletion && (
         <div className="flex max-h-[400px]">
           <ScrollArea>
@@ -55,7 +45,6 @@ export function AISelector({ onOpenChange }: AISelectorProps) {
         </div>
       )}
 
-      {/* Çalışıyor */}
       {isLoading && (
         <div className="flex h-12 w-full items-center px-4 text-sm font-medium text-muted-foreground text-purple-500">
           <Magic className="mr-2 h-4 w-4 shrink-0  " />
@@ -87,7 +76,11 @@ export function AISelector({ onOpenChange }: AISelectorProps) {
               onClick={() => {
                 if (completion)
                   return complete(completion, {
-                    body: { option: "zap", command: inputValue },
+                    body: {
+                      option: "zap",
+                      command: inputValue,
+                      user_id: user?.id,
+                    },
                   }).then(() => setInputValue(""));
 
                 const slice = editor?.state.selection.content();
@@ -96,7 +89,12 @@ export function AISelector({ onOpenChange }: AISelectorProps) {
                 );
 
                 complete(text, {
-                  body: { option: "zap", command: inputValue },
+                  body: {
+                    option: "zap",
+                    command: inputValue,
+                    prompt: "",
+                    user_id: user?.id,
+                  },
                 }).then(() => setInputValue(""));
               }}
             >
@@ -114,9 +112,11 @@ export function AISelector({ onOpenChange }: AISelectorProps) {
             />
           ) : (
             <AISelectorCommands
-              onSelect={(value, option) =>
-                complete(value, { body: { option } })
-              }
+              onSelect={(value, option) => {
+                complete(value, {
+                  body: { option, user_id: user?.id as string, prompt: value },
+                });
+              }}
             />
           )}
         </>

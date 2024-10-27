@@ -28,12 +28,13 @@ import { uploadFn } from "./image-upload";
 
 import { slashCommand, suggestionItems } from "./slash-commands";
 
-import hljs from "highlight.js";
+// import hljs from "highlight.js";
 import { checkImageDeleted } from "@/actions/blob";
 import { Note } from "@prisma/client";
 import EditorHeader from "./editor-header";
 import { updateNote } from "@/actions/notes";
 import { toast } from "sonner";
+import { YoutubeAISelector } from "./generative-youtube/youtube-ai-selector";
 
 const extensions = [...defaultExtensions, slashCommand];
 
@@ -58,7 +59,7 @@ const EdunoteEditor: React.FC<EdunoteEditorProps> = ({ note, settingsOff }) => {
   // const highlightCodeblocks = (content: string) => {
   //   const doc = new DOMParser().parseFromString(content, "text/html");
   //   doc.querySelectorAll("pre code").forEach((el) => {
-  //     // https://highlightjs.readthedocs.io/en/latest/api.html?highlight=highlightElement#highlightelement
+  //     https://highlightjs.readthedocs.io/en/latest/api.html?highlight=highlightElement#highlightelement
   //     hljs.highlightElement(el as HTMLElement);
   //   });
   //   return new XMLSerializer().serializeToString(doc);
@@ -73,7 +74,7 @@ const EdunoteEditor: React.FC<EdunoteEditorProps> = ({ note, settingsOff }) => {
           ?.filter((contentItem) => contentItem.type === "image")
           .map((item) => item.attrs?.src) ?? [];
 
-      checkImageDeleted(images);
+      // checkImageDeleted(images);
 
       setCharsCount(editor.storage.characterCount.words());
       const isUpdated = await updateNote(note.id, {
@@ -127,6 +128,7 @@ const EdunoteEditor: React.FC<EdunoteEditorProps> = ({ note, settingsOff }) => {
               },
               handlePaste: (view, event) =>
                 handleImagePaste(view, event, uploadFn),
+
               handleDrop: (view, event, _slice, moved) =>
                 handleImageDrop(view, event, moved, uploadFn),
               attributes: {
@@ -140,7 +142,7 @@ const EdunoteEditor: React.FC<EdunoteEditorProps> = ({ note, settingsOff }) => {
             }}
             slotAfter={<ImageResizer />}
           >
-            <EditorCommand className="z-50 h-auto max-h-[330px] overflow-y-auto rounded-md border border-muted bg-background px-1 py-2 shadow-md transition-all">
+            <EditorCommand className="z-50 h-auto max-h-[330px] bg-foreground overflow-y-auto rounded-md border border-muted px-1 py-2 shadow-md transition-all">
               <EditorCommandEmpty className="px-2 text-muted-foreground">
                 No results
               </EditorCommandEmpty>
@@ -152,11 +154,11 @@ const EdunoteEditor: React.FC<EdunoteEditorProps> = ({ note, settingsOff }) => {
                     className="flex w-full items-center space-x-2 rounded-md px-2 py-1 text-left text-sm hover:bg-accent aria-selected:bg-accent"
                     key={item.title}
                   >
-                    <div className="flex h-10 w-10 items-center justify-center rounded-md border border-muted bg-background">
+                    <div className="flex h-10 w-10 items-center text-white justify-center rounded-md border border-muted bg-background">
                       {item.icon}
                     </div>
                     <div>
-                      <p className="font-medium">{item.title}</p>
+                      <p className="font-medium text-white">{item.title}</p>
                       <p className="text-xs text-muted-foreground">
                         {item.description}
                       </p>
@@ -165,6 +167,8 @@ const EdunoteEditor: React.FC<EdunoteEditorProps> = ({ note, settingsOff }) => {
                 ))}
               </EditorCommandList>
             </EditorCommand>
+
+            <YoutubeAISelector />
 
             <GenerativeMenuSwitch open={openAI} onOpenChange={setOpenAI}>
               <Separator orientation="vertical" />

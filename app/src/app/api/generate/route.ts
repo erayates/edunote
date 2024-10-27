@@ -2,6 +2,7 @@ import { streamText } from "ai";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { match } from "ts-pattern";
 
+
 export const maxDuration = 30;
 
 export async function POST(req: Request): Promise<Response> {
@@ -87,12 +88,13 @@ export async function POST(req: Request): Promise<Response> {
   // Combine system prompt and user prompt for Gemini
   const fullPrompt = `${systemPrompt}\n\nUser: ${userPrompt}`;
 
-
-
   const result = await streamText({
     model: google("gemini-1.5-pro"),
     prompt: fullPrompt,
   });
+
+
+  console.log(result.toDataStreamResponse())
 
   return result.toDataStreamResponse();
 }

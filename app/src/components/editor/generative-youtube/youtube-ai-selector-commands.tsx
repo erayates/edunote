@@ -1,15 +1,11 @@
 "use client";
 
 import {
-  ArrowDownWideNarrow,
   ChartNoAxesGantt,
-  CheckCheck,
-  LayoutTemplate,
-  RefreshCcwDot,
+  LetterText,
   Speech,
   StepForward,
   StickyNote,
-  WrapText,
 } from "lucide-react";
 import { useEditor } from "novel";
 import { getPrevText } from "novel/utils";
@@ -22,18 +18,6 @@ import {
 } from "@/components/ui/command";
 
 const options = [
-  {
-    value: "improve",
-    label: "Improve writing",
-    icon: RefreshCcwDot,
-  },
-
-  {
-    value: "fix",
-    label: "Fix grammar",
-    icon: CheckCheck,
-  },
-
   {
     value: "summarize",
     label: "Summarize text",
@@ -53,20 +37,9 @@ const options = [
   },
 
   {
-    value: "template",
-    label: "Template it",
-    icon: LayoutTemplate,
-  },
-
-  {
-    value: "shorter",
-    label: "Make shorter",
-    icon: ArrowDownWideNarrow,
-  },
-  {
-    value: "longer",
-    label: "Make longer",
-    icon: WrapText,
+    value: "caption",
+    label: "Get caption",
+    icon: LetterText,
   },
 ];
 
@@ -74,7 +47,7 @@ interface AISelectorCommandsProps {
   onSelect: (value: string, option: string) => void;
 }
 
-const AISelectorCommands = ({ onSelect }: AISelectorCommandsProps) => {
+const YoutubeAISelectorCommands = ({ onSelect }: AISelectorCommandsProps) => {
   const { editor } = useEditor();
 
   return (
@@ -125,4 +98,4 @@ const AISelectorCommands = ({ onSelect }: AISelectorCommandsProps) => {
   );
 };
 
-export default AISelectorCommands;
+export default YoutubeAISelectorCommands;

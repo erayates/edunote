@@ -1,5 +1,3 @@
-import { Trash2 } from "lucide-react";
-
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -16,7 +14,6 @@ export function DeleteNote() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-       
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>

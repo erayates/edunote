@@ -1,4 +1,3 @@
-import { _notes } from "@/_mocks/notes";
 import { Input } from "@/components/ui/input";
 import { BookKey } from "lucide-react";
 import Image from "next/image";
@@ -13,19 +12,24 @@ interface NotesContainerProps {
 
 const NotesContainer: React.FC<NotesContainerProps> = ({ notes }) => {
   return (
-    <div className="max-w-screen-lg space-y-6">
-      <div className="flex space-x-6 ">
-        <div className="bg-foreground border-2 border-secondary relative w-[150px] h-[150px] rounded-full">
+    <div className="space-y-6 w-full">
+      <div className="flex space-x-6 w-full">
+        <div className="bg-foreground border-2 border-secondary relative w-[180px] h-[160px] rounded-full">
           <Image
             src="/assets/images/note-icon.webp"
             alt="Note Icon"
             width={250}
             height={75}
+            sizes="100vw"
+            className="absolute left-0 top-0 scale-110"
           />
         </div>
 
-        <div className="bg-foreground border-2 border-secondary rounded-lg p-4 relative">
-          <p className="text-6xl text-white font-bold">UNLOCK YOUR KNOWLEDGE</p>
+        <div className="bg-foreground border-2 border-secondary rounded-lg p-4 relative w-full">
+          <p className="text-6xl text-white font-bold">
+            UNLOCK YOUR
+            <br /> KNOWLEDGE
+          </p>
           <BookKey className="absolute right-4 top-4" size={32} color="white" />
           <p className="absolute bottom-4 right-4 text-secondary font-semibold text-right">
             Explore all public notes <br /> from the world & unlock your
