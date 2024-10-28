@@ -67,13 +67,13 @@ class Prompt():
     def generate_response(self, user_id, prompt, option, note_id, user_query = None):
         messages = ChatHistory.get_chat_history(user_id=user_id, note_id=note_id)
         messages_history = messages.copy()
+        if note_id != 'gemini': prompt = self.load_note(note_id=note_id)
         if option == 'ask':
             messages.append({'role': 'user', 'parts': [self.categorized_propmt[option]]})
             messages.append({'role': 'model', 'parts': ['I am an AI writing assistant and I will provide you only the text you desire.']})
             messages.append({'role': 'user', 'parts': [f'{user_query}\nHere is the text: {prompt}']})
-            messages_history.append({'role': 'user', 'parts': [f'{user_query}\nHere is the text: {prompt}']})
+            messages_history.append({'role': 'user', 'parts': [user_query, f"{prompt}"]})
         elif option == 'ask_note':
-            prompt = self.load_note(note_id=note_id)
             messages.append({'role': 'user', 'parts': [self.categorized_propmt[option]]})
             messages.append({'role': 'model', 'parts': ['I am an AI writing assistant and I will provide you only the text you desire.']})
             messages.append({'role': 'user', 'parts': [f'{user_query}\nHere is the text: {prompt}']})
@@ -83,7 +83,7 @@ class Prompt():
                 messages.append({'role': 'user', 'parts': [self.categorized_propmt[option]]})
                 messages.append({'role': 'model', 'parts': ['I am an AI writing assistant and I will provide you only the text you desire.']})
                 messages.append({'role': 'user', 'parts': [f'Here is the text: {prompt}']})
-                messages_history.append({'role': 'user', 'parts': [f'{option} this!\nHere is the text: {prompt}']})
+                messages_history.append({'role': 'user', 'parts': [option, f"{prompt}"]})
             else:
                 messages.append({'role': 'user', 'parts': [user_query]})
                 messages_history.append({'role': 'user', 'parts': [user_query]})
@@ -97,6 +97,7 @@ class Prompt():
     def load_note(self, note_id: str):
         try:
             note = NOTES.find_one({"_id": ObjectId(note_id)})
+            note = {'Title': note['title'], 'Description': note['description'], 'Content': note['content']}
             return note
         except Exception as e:
             raise HTTPException(status_code=404, detail=f"Note {note_id} not found. {e}")
