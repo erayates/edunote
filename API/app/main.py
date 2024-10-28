@@ -4,6 +4,7 @@ import google.generativeai as genai
 import Secrets.KEY as KEY
 import asyncio, requests
 import io
+from nomic import embed
 from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from google.api_core.exceptions import ResourceExhausted
@@ -31,9 +32,15 @@ client = KEY.ELASTICSEARCH_CLIENT
 
 @app.get("/embedding/")
 async def get_embedding(query: str):
-   embedding = SENTENCE_TRANSFORMER_MODEL.encode(query)
-   return {'embedding': embedding.tolist()}
-
+    output = embed.text(
+        texts=[query],
+        model='nomic-embed-text-v1.5',
+        task_type='search_document',
+        long_text_mode='mean',
+        dimensionality = 3072
+    )
+    return {'embedding': output['embeddings']}
+    
 @app.get("/search/vector-all/")
 async def atlas_vector_search_all(query: str, limit: int = 5):
     query_embedding = await get_embedding(query)
