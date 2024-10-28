@@ -10,8 +10,7 @@ from google.api_core.exceptions import ResourceExhausted
 from app.loaders import *
 
 # TODO: 
-# - Check functions: get_embedding, atlas_vector_search_all, atlas_vector_search_ask
-# - Rewrite elasticsearch_ask model response. (Check atlas_vector_search_ask)
+# - Check functions: get_embedding, atlas_vector_search_all
 # - Add MongoDB Trigger or auto update embedding and TEST it. (Check Functions/atlas_embedding_update_trigger.js)
 # - Dummy User User Update for Dummy Note Data Import
 
@@ -97,9 +96,9 @@ async def atlas_vector_search_ask(user_id: str, note_id: str, query: str, limit:
     results = {'results': [note for note in results]}
     try:
         messages = [
-            {'role': 'user', 'parts': ["You are an AI assistant that takes some notes and a question or a query or else. In the result, you will answer the question with only using the information in the notes provided to you. You will answer me with a string of JSON. Add JSON only the note ids you use to answer the query and the answer. So the JSON template is {{'notes': [note_ids...], 'response': 'response...'}}"]},
-            {'role': 'user', 'parts': ['Notes:\n']+[note for note in results]},
-            {'role': 'user', 'parts': [f'Answer the following query using below texts. Query: {query}']}
+            {'role': 'user', 'parts': ["You are an AI assistant that takes some notes and a question or a query or else. In the result, you will answer the question with only using the information in the notes provided to you. You will answer me with a string of JSON. Add JSON only the note ids you use to answer the query and the answer. So the JSON template is {{'notes': [note_ids...], 'response': 'response...'}}\n Example JSON response result (for the user query 'When was the Spiderman 3 movie ?')(assume that the response is taken from those notes...) : '{{'notes': ['671c237d736e85a7f30525a7', '671c4916736e85a7f30525ac'], 'response': 'You very liked the movie Spiderman 3. Actually, you have screamed 'Yeaaahhh' when you see the last scene in the Cinema The Kazabalanca.'}}'"]},
+            {'role': 'user', 'parts': ['Here are the Notes:\n']+[note for note in results]},
+            {'role': 'user', 'parts': [f'Answer the following query using below texts now. Remember to give the format desired JSON format! Query: {query}']}
         ]
 
         result = model.generate_content(contents=messages, stream=True)
@@ -139,13 +138,20 @@ async def elasticsearch_ask(body: SearchINNotes):
             }
         )
         messages = [
-            {'role': 'user', 'parts': ["You are an AI assistant that takes some notes and a question or a query or else. In the result, you will answer the question with only using the information in the notes provided to you. You will answer me with a string of JSON. Add JSON only the notes you use to answer the query and the answer. So the JSON template is {{'notes': [notes...], 'response': 'response...'}}"]},
-            # {'role': 'user', 'parts': [f'{user_query}, Here is the text: {prompt}']}
+            {'role': 'user', 'parts': ["You are an AI assistant that takes some notes and a question or a query or else. In the result, you will answer the question with only using the information in the notes provided to you. You will answer me with a string of JSON. Add JSON only the note ids you use to answer the query and the answer. So the JSON template is {{'notes': [note_ids...], 'response': 'response...'}}\n Example JSON response result (for the user query 'When was the Spiderman 3 movie ?')(assume that the response is taken from those notes...) : '{{'notes': ['671c237d736e85a7f30525a7', '671c4916736e85a7f30525ac'], 'response': 'You very liked the movie Spiderman 3. Actually, you have screamed 'Yeaaahhh' when you see the last scene in the Cinema The Kazabalanca.'}}'"]},
+            {'role': 'user', 'parts': ['Here are the Notes:\n']+[response]},
+            {'role': 'user', 'parts': [f'Answer the following query using below texts now. Remember to give the format desired JSON format! Query: {query}']}
         ]
 
         result = model.generate_content(contents=messages, stream=True)
+        dictionary: dict = json.loads(result.text)
 
-        return result.text
+        # messages_history = [
+        #     {'role': 'user', 'parts': [query]},
+        #     {'role': 'model', 'parts': [dictionary['response']]}
+        # ]
+
+        return dictionary
     except Exception as e:
         raise HTTPException(status_code=404, detail=f"Elasticsearch client error: {str(e)}")
 
