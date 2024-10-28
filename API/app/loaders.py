@@ -1,14 +1,15 @@
 from fastapi import UploadFile, HTTPException, File
-import starlette.datastructures as starlette
 import google.generativeai as genai
 from pydantic import BaseModel
 from google.cloud import storage
 from pydantic import HttpUrl
-import fitz, io, os, json, asyncio
+from bson import ObjectId
+import fitz, os, json, asyncio
 from google.ai.generativelanguage_v1beta.types import content
 from langchain_community.document_loaders import YoutubeLoader
-from typing import List, Union
+from typing import List
 from typing import Optional
+from Secrets.KEY import NOTES 
 from google.api_core.exceptions import ResourceExhausted
 from io import BytesIO
 
@@ -19,8 +20,13 @@ IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg']
 class MainBody(BaseModel):
     user_id: str
     option: str = 'user'
+    note_id: str = 'gemini'
     command: Optional[str] = None
     prompt: Optional[str] = None
+
+class NoteBody(BaseModel):
+    user_id: str
+    note_id: str = 'gemini'
 
 class SearchINNotes(BaseModel):
     query: str
@@ -39,13 +45,14 @@ class FileExtract(BaseModel):
     user_id: str    
 
 class Prompt():
-    def __init__(self, safety_category: int = 0, generation_config: dict = None) -> None:
+    def __init__(self, safety_category: int = 0) -> None:
         self.safety_settings = self.safety_category_choose(safety_category)
         # self.generation_config = self.generation_config_choose(generation_config)
         self.categorized_propmt = {
-            "user" : "",
+            "user": "",
             "template" : "You are an AI writing assistant that creates a template of titles and subtitles and other neccessary items from the existing text. Make sure to construct complete sentences. Use Markdown formatting when appropriate.",
-            "ask" : "You are an AI writing assistant that answers the questions about the existing text or done the desired changes or else on the existing text. Make sure to construct complete sentences. Use Markdown formatting when appropriate.",
+            "ask" : "You are an AI writing assistant that answers the questions about the existing text or done the desired changes or anything else the user want using the existing text. Make sure to construct complete sentences. Use Markdown formatting when appropriate.",
+            "ask_note" : "You are an AI writing assistant that answers the questions about the existing text or done the desired changes or anything else the user want using the existing text. Make sure to construct complete sentences. Use Markdown formatting when appropriate.",
             "explain" : "You are an AI writing assistant that explains the existing text. Make sure to construct complete sentences. Use Markdown formatting when appropriate.",
             "summarize" : "You are an AI writing assistant that summarizes existing text. Make sure to construct complete sentences. Use Markdown formatting when appropriate.",
             "note" : "You are an AI writing/note taking assistant that creates notes from existing text. Make sure to construct complete sentences. Use Markdown formatting when appropriate.",
@@ -57,25 +64,42 @@ class Prompt():
             "zap" : "You area an AI writing assistant that generates text based on a prompt. You take an input from the user and a command for manipulating the text. Use Markdown formatting when appropriate."
         }
 
-    def generate_response(self, user_id, prompt, option, user_query = None):
-        messages = ChatHistory.get_chat_history(user_id=user_id)
+    def generate_response(self, user_id, prompt, option, note_id, user_query = None):
+        messages = ChatHistory.get_chat_history(user_id=user_id, note_id=note_id)
+        messages_history = messages.copy()
         if option == 'ask':
             messages.append({'role': 'user', 'parts': [self.categorized_propmt[option]]})
             messages.append({'role': 'model', 'parts': ['I am an AI writing assistant and I will provide you only the text you desire.']})
-            messages.append({'role': 'user', 'parts': [f'{user_query}, Here is the text: {prompt}']})
+            messages.append({'role': 'user', 'parts': [f'{user_query}\nHere is the text: {prompt}']})
+            messages_history.append({'role': 'user', 'parts': [f'{user_query}\nHere is the text: {prompt}']})
+        elif option == 'ask_note':
+            prompt = self.load_note(note_id=note_id)
+            messages.append({'role': 'user', 'parts': [self.categorized_propmt[option]]})
+            messages.append({'role': 'model', 'parts': ['I am an AI writing assistant and I will provide you only the text you desire.']})
+            messages.append({'role': 'user', 'parts': [f'{user_query}\nHere is the text: {prompt}']})
+            messages_history.append({'role': 'user', 'parts': [user_query]})
         else:
             if option != 'user':
                 messages.append({'role': 'user', 'parts': [self.categorized_propmt[option]]})
                 messages.append({'role': 'model', 'parts': ['I am an AI writing assistant and I will provide you only the text you desire.']})
                 messages.append({'role': 'user', 'parts': [f'Here is the text: {prompt}']})
+                messages_history.append({'role': 'user', 'parts': [f'{option} this!\nHere is the text: {prompt}']})
             else:
                 messages.append({'role': 'user', 'parts': [user_query]})
-        ChatHistory.upload_chat_history(user_id=user_id, chat_history=messages)
+                messages_history.append({'role': 'user', 'parts': [user_query]})
+        ChatHistory.upload_chat_history(user_id=user_id, chat_history=messages_history, note_id=note_id)
         return {
             'contents': messages,
             # 'generation_config': self.generation_config,
             'safety_settings': self.safety_settings
         }
+
+    def load_note(self, note_id: str):
+        try:
+            note = NOTES.find_one({"_id": ObjectId(note_id)})
+            return note
+        except Exception as e:
+            raise HTTPException(status_code=404, detail=f"Note {note_id} not found. {e}")
 
     def generation_config_choose(self, generation_config: dict = None):
         if not generation_config:
@@ -217,6 +241,8 @@ class Loaders():
                 else:
                     raise HTTPException(status_code=429, detail="API quota exceeded. Please try again later.") 
 
+BUCKET = Loaders.config_bucket()
+
 class Process():
 
     @staticmethod
@@ -243,13 +269,11 @@ class Process():
         if not files:
             raise HTTPException(status_code=400, detail="No files uploaded")
 
-        bucket = Loaders.config_bucket()
-
         for file in files:
             destination_file_name = f'{user_id}/{file.filename}'
 
             try:
-                blob = bucket.blob(destination_file_name)
+                blob = BUCKET.blob(destination_file_name)
                 if not blob.exists() or update_if_exists:
                     try:
                         blob.upload_from_file(file.file)
@@ -264,13 +288,9 @@ class Process():
 class ChatHistory():
     
     @staticmethod
-    def get_chat_history(user_id: str) -> list:
-        try:
-            bucket = Loaders.config_bucket()
-        except:
-            raise HTTPException(status_code=404, detail=f"Bucket load failed.")
-        destination_file_name = f'chat/history-{user_id}.json'
-        blob = bucket.blob(destination_file_name)
+    def get_chat_history(user_id: str, note_id: str) -> list:
+        destination_file_name = f'chat/history/{user_id}/{note_id}.json'
+        blob = BUCKET.blob(destination_file_name)
 
         if not blob.exists():
             # raise HTTPException(status_code=404, detail=f"File {destination_file_name} not found in bucket.")
@@ -285,42 +305,42 @@ class ChatHistory():
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"File download failed: {str(e)}")
 
-    def update_chat_history(user_id: str, propmts: list[dict]):
-        chat_history = ChatHistory.get_chat_history(user_id=user_id)
+    @staticmethod
+    def update_chat_history(user_id: str, propmts: list[dict], note_id: str):
+        chat_history = ChatHistory.get_chat_history(user_id=user_id, note_id=note_id)
         for row in propmts:
             chat_history.append(row)
 
-        bucket = Loaders.config_bucket()
-        destination_file_name = f'chat/history-{user_id}.json'
-        blob = bucket.blob(destination_file_name)
+        
+        destination_file_name = f'chat/history/{user_id}/{note_id}.json'
+        blob = BUCKET.blob(destination_file_name)
 
         try:
             json_data = json.dumps(chat_history, indent=2) 
             json_bytes = BytesIO(json_data.encode('utf-8'))
             blob.upload_from_file(json_bytes) 
-        except Exception as e: HTTPException(status_code=500, detail=f"destination_file_name : File upload failed: {str(e)}")
+        except Exception as e: HTTPException(status_code=500, detail=f"{destination_file_name} : File upload failed: {str(e)}")
 
-    def upload_chat_history(user_id: str, chat_history: list[dict]):
-        bucket = Loaders.config_bucket()
-        destination_file_name = f'chat/history-{user_id}.json'
-        blob = bucket.blob(destination_file_name)
+    @staticmethod
+    def upload_chat_history(user_id: str, chat_history: list[dict], note_id: str):
+        destination_file_name = f'chat/history/{user_id}/{note_id}.json'
+        blob = BUCKET.blob(destination_file_name)
 
         try:
             json_data = json.dumps(chat_history, indent=2) 
             json_bytes = BytesIO(json_data.encode('utf-8'))
             blob.upload_from_file(json_bytes) 
-        except Exception as e: HTTPException(status_code=500, detail=f"destination_file_name : File upload failed: {str(e)}")
+        except Exception as e: HTTPException(status_code=500, detail=f"{destination_file_name} : File upload failed: {str(e)}")
 
-    def clear_chat_history(user_id: str):
+    @staticmethod
+    def clear_chat_history(user_id: str, note_id: str):
         chat_history = []
-
-        bucket = Loaders.config_bucket()
-        destination_file_name = f'chat/history-{user_id}.json'
-        blob = bucket.blob(destination_file_name)
+        destination_file_name = f'chat/history/{user_id}/{note_id}.json'
+        blob = BUCKET.blob(destination_file_name)
 
         try:
             json_data = json.dumps(chat_history, indent=2) 
             json_bytes = BytesIO(json_data.encode('utf-8'))
             blob.upload_from_file(json_bytes) 
-        except Exception as e: HTTPException(status_code=500, detail=f"destination_file_name : File upload failed: {str(e)}")
+        except Exception as e: HTTPException(status_code=404, detail=f"{destination_file_name} : File not found: {str(e)}")
 

@@ -3,6 +3,7 @@ from fastapi.responses import PlainTextResponse
 import google.generativeai as genai
 import Secrets.KEY as KEY
 import asyncio, requests
+import io
 from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from google.api_core.exceptions import ResourceExhausted
@@ -143,28 +144,32 @@ async def file_text_extraction(body: FileDownloadBody = Depends()):
         return {'details': f"{user_id}/{file_name} found.", 'state': 1}
     return {'details': f"{user_id}/{file_name} not found.", 'state': 0}
 
-@app.post("/chat/history/")
-async def get_chat_history(user_id: str):
-    return ChatHistory.get_chat_history(user_id=user_id)
+@app.get("/chat/history/")
+async def get_chat_history(user_id: str, note_id: str = 'gemini'):
+    return ChatHistory.get_chat_history(user_id=user_id, note_id=note_id)
+
+@app.get("/chat/clear/")
+async def clear_chat_history(user_id: str, note_id: str = 'gemini'):
+    return ChatHistory.clear_chat_history(user_id=user_id, note_id=note_id)
 
 @app.post("/gemini/", response_class=PlainTextResponse)
 async def gemini_process(body: MainBody):
-    return StreamingResponse(stream_text(body.option, body.prompt, body.command, body.user_id), media_type="text/plain")
+    return StreamingResponse(stream_text(body.option, body.prompt, body.command, body.user_id, body.note_id), media_type="text/plain")
 
-async def stream_text(option: str, text: str, user_query: str, user_id: str):
+async def stream_text(option: str, text: str, user_query: str, user_id: str, note_id: str):
     global prompt_obj
     text_response = ""
     max_retries = 3
     retry_delay = 0.2
     for attempt in range(max_retries):
         try:
-            for chunk in model.generate_content(**prompt_obj.generate_response(user_id, text, option, user_query), stream=True):
+            for chunk in model.generate_content(**prompt_obj.generate_response(user_id=user_id, prompt=text, option=option, note_id=note_id, user_query=user_query), stream=True):
                 try:
                     text_response += chunk.text
                     yield chunk.text
                 except: 
                     pass
-            ChatHistory.update_chat_history(user_id, [{"role": "model", "parts": [text_response]}])
+            ChatHistory.update_chat_history(user_id=user_id, propmts=[{"role": "model", "parts": [text_response]}], note_id=note_id)
             break
         except ResourceExhausted as e:
             if attempt < max_retries - 1:
