@@ -30,6 +30,18 @@ client = KEY.ELASTICSEARCH_CLIENT
 
 @app.post("/search/simple/")
 async def elasticsearch_simple(query: str):
+    """
+    Search in Elasticsearch using a simple query string.
+
+    Args:
+        query (str): The search query string.
+
+    Returns:
+        dict: Elasticsearch search results.
+
+    Raises:
+        HTTPException: If there's an error with the Elasticsearch client.
+    """    
     global client
     try:
         response = client.search(q=query)
@@ -39,6 +51,18 @@ async def elasticsearch_simple(query: str):
 
 @app.post("/search/all/")
 async def elasticsearch_all(body: Request):
+    """
+    Search in Elasticsearch using a detailed body request.
+
+    Args:
+        body (Request): The search query body (in JSON format).
+
+    Returns:
+        dict: Elasticsearch search results.
+
+    Raises:
+        HTTPException: If there's an error with the Elasticsearch client.
+    """    
     global client
     try:
         response = client.search(body=body)
@@ -48,6 +72,18 @@ async def elasticsearch_all(body: Request):
 
 @app.post("/search/ask/")
 async def elasticsearch_ask(body: SearchINNotes):
+    """
+    Perform a filtered Elasticsearch search based on user query and user ID.
+
+    Args:
+        body (SearchINNotes): The search input, containing `query` and `user_id`.
+
+    Returns:
+        dict: Elasticsearch search results filtered by content and user ID.
+
+    Raises:
+        HTTPException: If there's an error with the Elasticsearch client.
+    """
     query = body.query
     user_id = body.user_id
     global client
@@ -82,10 +118,32 @@ async def elasticsearch_ask(body: SearchINNotes):
 
 @app.post("/file/upload/")
 async def file_upload(body: FileUploadBody = Depends(), files: List[UploadFile] = File(...)):
+    """
+    Upload files to the server.
+
+    Args:
+        body (FileUploadBody): Metadata for file upload.
+        files (List[UploadFile]): List of files to upload.
+
+    Returns:
+        dict: File upload results.
+    """
     return Process.file_upload(body ,files)
 
 @app.post("/file/download/")
 async def file_download(body: FileDownloadBody = Depends()):
+    """
+    Download a file from the storage bucket.
+
+    Args:
+        body (FileDownloadBody): Contains the user ID and file name.
+
+    Returns:
+        StreamingResponse: The file data as a stream.
+
+    Raises:
+        HTTPException: If the file is not found or download fails.
+    """
     user_id = body.user_id
     file_name = body.file_name    
 
@@ -111,6 +169,18 @@ async def file_download(body: FileDownloadBody = Depends()):
 
 @app.post("/file/extract/")
 async def file_text_extraction(body: FileExtract):
+    """
+    Extract text from a file (audio, image, PDF).
+
+    Args:
+        body (FileExtract): Contains the URL of the file and user ID.
+
+    Returns:
+        StreamingResponse: The extracted text.
+
+    Raises:
+        HTTPException: If the file is not supported or download fails.
+    """
     global model
     url = body.url
     user_id = body.user_id
@@ -130,11 +200,29 @@ async def file_text_extraction(body: FileExtract):
 
 @app.post("/caption/extract/")
 async def file_text_extraction(youtube_video_id: str):
+    """
+    Extract captions from a YouTube video.
+
+    Args:
+        youtube_video_id (str): The YouTube video ID.
+
+    Returns:
+        dict: Extracted captions from the video.
+    """
     link = f"https://www.youtube.com/watch?v={youtube_video_id}"
     return Loaders.caption_loader(link)
 
 @app.post("/bucket/check/")
 async def file_text_extraction(body: FileDownloadBody = Depends()):
+    """
+    Check if a file exists in the storage bucket.
+
+    Args:
+        body (FileDownloadBody): Contains the user ID and file name.
+
+    Returns:
+        dict: Status of the file in the bucket.
+    """
     user_id = body.user_id
     file_name = body.file_name    
     bucket = Loaders.config_bucket()
@@ -146,17 +234,62 @@ async def file_text_extraction(body: FileDownloadBody = Depends()):
 
 @app.get("/chat/history/")
 async def get_chat_history(user_id: str, note_id: str = 'gemini'):
+    """
+    Retrieve chat history based on user ID and note ID.
+
+    Args:
+        user_id (str): The user ID.
+        note_id (str): The note ID, default is 'gemini'.
+
+    Returns:
+        dict: Chat history for the user.
+    """
     return ChatHistory.get_chat_history(user_id=user_id, note_id=note_id)
 
 @app.get("/chat/clear/")
 async def clear_chat_history(user_id: str, note_id: str = 'gemini'):
+    """
+    Clear the chat history for a user and note ID.
+
+    Args:
+        user_id (str): The user ID.
+        note_id (str): The note ID, default is 'gemini'.
+
+    Returns:
+        dict: Result of clearing chat history.
+    """
     return ChatHistory.clear_chat_history(user_id=user_id, note_id=note_id)
 
 @app.post("/gemini/", response_class=PlainTextResponse)
 async def gemini_process(body: MainBody):
+    """
+    Process Gemini content generation request.
+
+    Args:
+        body (MainBody): Contains the prompt and user metadata.
+
+    Returns:
+        StreamingResponse: Generated text response from Gemini.
+    """
     return StreamingResponse(stream_text(body.option, body.prompt, body.command, body.user_id, body.note_id), media_type="text/plain")
 
 async def stream_text(option: str, text: str, user_query: str, user_id: str, note_id: str):
+    """
+    Stream generated content from Gemini with retries.
+
+    Args:
+        option (str): The option for content generation.
+        text (str): The user prompt.
+        user_query (str): The query related to the prompt.
+        user_id (str): The user ID.
+        note_id (str): The note ID.
+
+    Yields:
+        str: Streamed chunks of generated content.
+
+    Raises:
+        HTTPException: If API quota is exceeded.
+    """
     global prompt_obj
     text_response = ""
     max_retries = 3
@@ -180,7 +313,12 @@ async def stream_text(option: str, text: str, user_query: str, user_id: str, not
 
 @app.get("/")
 async def root():
-    """Root endpoint providing information about the API."""
+    """
+    Root endpoint providing information about the Edunote API.
+
+    Returns:
+        dict: A welcome message and a summary of available API endpoints.
+    """
     return {
         "message": "Welcome to the Edunote API",
         "description": "This API leverages Gemini by Google to enhance note-taking, file handling, and content generation.",
@@ -190,84 +328,95 @@ async def root():
                     "method": "POST",
                     "description": "Upload files to the server.",
                     "parameters": {
-                        "user_id": "User ID for tracking the file.",
-                        "if_exists": "Replace the file if it already exists.",
-                        "files": "List of files to be uploaded."
+                        "user_id": "User ID for tracking the file. (required)",
+                        "if_exists": "Flag to indicate if the file should be replaced if it already exists. (optional)",
+                        "files": "List of files to be uploaded. (required)"
                     }
                 },
                 "/file/download/": {
                     "method": "POST",
-                    "description": "Download a file from the storage bucket.",
+                    "description": "Download a specified file from the storage bucket.",
                     "parameters": {
-                        "user_id": "User ID for tracking the file.",
-                        "file_name": "Name of the file to download."
+                        "user_id": "User ID for tracking the file. (required)",
+                        "file_name": "Name of the file to be downloaded. (required)"
                     }
                 },
                 "/file/extract/": {
                     "method": "POST",
-                    "description": "Extract text from a file (audio, image, PDF).",
+                    "description": "Extract text content from supported file types (audio, image, PDF).",
                     "parameters": {
-                        "file": "The file from which text will be extracted."
+                        "url": "URL of the file from which text will be extracted. (required)",
+                        "user_id": "User ID for tracking the extraction process. (required)"
                     }
                 },
                 "/caption/extract/": {
                     "method": "POST",
-                    "description": "Extract captions from a YouTube video.",
+                    "description": "Extract captions from a specified YouTube video.",
                     "parameters": {
-                        "youtube_video_id": "The ID of the YouTube video."
+                        "youtube_video_id": "The ID of the YouTube video from which to extract captions. (required)"
                     }
                 },
                 "/bucket/check/": {
                     "method": "POST",
-                    "description": "Check if a file exists in the storage bucket.",
+                    "description": "Check if a specified file exists in the storage bucket.",
                     "parameters": {
-                        "user_id": "User ID for tracking the file.",
-                        "file_name": "Name of the file to check."
+                        "user_id": "User ID for tracking the file. (required)",
+                        "file_name": "Name of the file to check for existence. (required)"
                     }
                 }
             },
             "Elasticsearch Operations": {
                 "/search/simple/": {
-                    "method": "GET",
-                    "description": "Perform a simple search in Elasticsearch.",
+                    "method": "POST",
+                    "description": "Perform a simple search using a query string in Elasticsearch.",
                     "parameters": {
-                        "query": "Search query string."
+                        "query": "The search query string. (required)"
                     }
                 },
                 "/search/all/": {
-                    "method": "GET",
-                    "description": "Perform a search with a request body in Elasticsearch.",
+                    "method": "POST",
+                    "description": "Perform a search in Elasticsearch using a detailed body request.",
                     "parameters": {
-                        "body": "Request body for the search."
+                        "body": "JSON body containing the search criteria. (required)"
                     }
                 },
                 "/search/ask/": {
-                    "method": "GET",
+                    "method": "POST",
                     "description": "Perform a filtered search in Elasticsearch based on user notes and queries.",
                     "parameters": {
-                        "query": "Search query string.",
-                        "user_id": "User ID to filter the search results."
+                        "query": "The specific search query. (required)",
+                        "user_id": "User ID to filter the search results. (required)"
                     }
                 }
             },
             "Gemini Operations": {
                 "/gemini/": {
-                    "method": "GET",
-                    "description": "Interact with Gemini AI for text processing and queries.",
+                    "method": "POST",
+                    "description": "Interact with the Gemini AI for content generation based on user prompts.",
                     "parameters": {
-                        "option": "Option for processing the text (e.g., summarize, explain, note, etc.).",
-                        "prompt": "The text to be processed.",
-                        "command": "Specific user command for the text (optional).",
-                        "user_id": "User ID for tracking."
+                        "option": ["user (Default)", "template", "ask", "ask_note", "explain", "summarize", "note", "improve", "shorter", "longer", "continue", "fix", "zap",],
+                        "prompt": "The input text to be processed.",
+                        "command": "Optional command for further processing.",
+                        "user_id": "User ID for tracking interactions.",
+                        "note_id": "Default 'gemini'. Note ID for context.",
+                        "user_query": "Specific query related to the prompt."
                     }
                 }
             },
             "Chat History": {
                 "/chat/history/": {
                     "method": "GET",
-                    "description": "Retrieve chat history for a given user.",
+                    "description": "Retrieve the chat history for a specified user.",
                     "parameters": {
-                        "user_id": "User ID to retrieve the chat history."
+                        "user_id": "User ID for which to retrieve chat history. (required)"
+                    }
+                },
+                "/chat/clear/": {
+                    "method": "GET",
+                    "description": "Clear the chat history for a specified user.",
+                    "parameters": {
+                        "user_id": "User ID for which to clear chat history. (required)",
+                        "note_id": "Note ID to specify the context of the chat. (optional)"
                     }
                 }
             }
