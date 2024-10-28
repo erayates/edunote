@@ -34,13 +34,13 @@ client = KEY.ELASTICSEARCH_CLIENT
 async def get_embedding(query: str):
     output = embed.text(
         texts=[query],
-        model='nomic-embed-text-v1.5',
+        model='nomic-embed-text-v1',
         task_type='search_document',
         long_text_mode='mean',
-        dimensionality = 3072
+        dimensionality = 768
     )
     return {'embedding': output['embeddings']}
-    
+
 @app.get("/search/vector-all/")
 async def atlas_vector_search_all(query: str, limit: int = 5):
     query_embedding = await get_embedding(query)
