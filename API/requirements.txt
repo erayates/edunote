@@ -8,3 +8,5 @@ python-multipart==0.0.12
 google-cloud-storage==2.18.2
 elasticsearch==8.15.1
 pymongo==4.10.1
+sentence-transformers==3.2.1
+einops==0.8.0

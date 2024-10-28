@@ -9,9 +9,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from google.api_core.exceptions import ResourceExhausted
 from app.loaders import *
 
-# TODO: MongoDB Tag Propriety Check
-# TODO: API Test
-# TODO: Elasticsearch Implementation Test
+# TODO: 
+# - Check functions: get_embedding, atlas_vector_search_all, atlas_vector_search_ask
+# - Rewrite elasticsearch_ask model response. (Check atlas_vector_search_ask)
+# - Add MongoDB Trigger or auto update embedding and TEST it. (Check Functions/atlas_embedding_update_trigger.js)
+# - Dummy User User Update for Dummy Note Data Import
 
 origins = ["*"]
 
@@ -28,62 +30,94 @@ genai.configure(api_key=KEY.GEMINI_API_KEY)
 prompt_obj = Prompt()
 client = KEY.ELASTICSEARCH_CLIENT
 
-@app.post("/search/simple/")
-async def elasticsearch_simple(query: str):
-    """
-    Search in Elasticsearch using a simple query string.
+@app.get("/embedding/")
+async def get_embedding(query: str):
+   embedding = SENTENCE_TRANSFORMER_MODEL.encode(query)
+   return {'embedding': embedding.tolist()}
 
-    Args:
-        query (str): The search query string.
+@app.get("/search/vector-all/")
+async def atlas_vector_search_all(query: str, limit: int = 5):
+    query_embedding = await get_embedding(query)
+    pipeline = [
+        {
+            "$vectorSearch": {
+                    "index": "vector_index",
+                    "queryVector": query_embedding,
+                    "path": "embedding",
+                    "exact": True,
+                    "limit": limit
+            }
+        }, 
+        {
+            "$project": {
+                "_id": 1,
+                "title": 1,
+                "desciption": 1,
+                "content": 1,
+                "score": {
+                    "$meta": "vectorSearchScore"
+                }
+            }
+        }
+    ]
+    results = NOTES.aggregate(pipeline)
+    return {'results': [note for note in results]}
 
-    Returns:
-        dict: Elasticsearch search results.
-
-    Raises:
-        HTTPException: If there's an error with the Elasticsearch client.
-    """    
-    global client
+@app.get("/search/vector-ask/")
+async def atlas_vector_search_ask(user_id: str, note_id: str, query: str, limit: int = 5):
+    query_embedding = await get_embedding(query)
+    pipeline = [
+        {
+            "$vectorSearch": {
+                "index": "vector_index",
+                "queryVector": query_embedding,
+                "path": "embedding",
+                "exact": True,
+                "limit": limit
+            }
+        },
+        {
+            "$match": {
+                "_id": { "$in": user_id }
+            }
+        },
+        {
+            "$project": {
+                "_id": 1,
+                "title": 1,
+                "description": 1,
+                "content": 1,
+                "score": {
+                    "$meta": "vectorSearchScore"
+                }
+            }
+        }
+    ]
+    results = NOTES.aggregate(pipeline)
+    results = {'results': [note for note in results]}
     try:
-        response = client.search(q=query)
-        return response.body
+        messages = [
+            {'role': 'user', 'parts': ["You are an AI assistant that takes some notes and a question or a query or else. In the result, you will answer the question with only using the information in the notes provided to you. You will answer me with a string of JSON. Add JSON only the note ids you use to answer the query and the answer. So the JSON template is {{'notes': [note_ids...], 'response': 'response...'}}"]},
+            {'role': 'user', 'parts': ['Notes:\n']+[note for note in results]},
+            {'role': 'user', 'parts': [f'Answer the following query using below texts. Query: {query}']}
+        ]
+
+        result = model.generate_content(contents=messages, stream=True)
+        dictionary: dict = json.loads(result.text)
+
+        messages_history = [
+            {'role': 'user', 'parts': [query]},
+            {'role': 'model', 'parts': [dictionary['response']]}
+        ]
+
+        ChatHistory.update_chat_history(user_id=user_id, note_id=note_id, propmts=messages_history)
+
+        return dictionary
     except Exception as e:
         raise HTTPException(status_code=404, detail=f"Elasticsearch client error: {str(e)}")
 
-@app.post("/search/all/")
-async def elasticsearch_all(body: Request):
-    """
-    Search in Elasticsearch using a detailed body request.
-
-    Args:
-        body (Request): The search query body (in JSON format).
-
-    Returns:
-        dict: Elasticsearch search results.
-
-    Raises:
-        HTTPException: If there's an error with the Elasticsearch client.
-    """    
-    global client
-    try:
-        response = client.search(body=body)
-        return response.body
-    except Exception as e:
-        raise HTTPException(status_code=404, detail=f"Elasticsearch client error: {str(e)}")
-
-@app.post("/search/ask/")
+@app.post("/search/elastic-ask/")
 async def elasticsearch_ask(body: SearchINNotes):
-    """
-    Perform a filtered Elasticsearch search based on user query and user ID.
-
-    Args:
-        body (SearchINNotes): The search input, containing `query` and `user_id`.
-
-    Returns:
-        dict: Elasticsearch search results filtered by content and user ID.
-
-    Raises:
-        HTTPException: If there's an error with the Elasticsearch client.
-    """
     query = body.command
     user_id = body.user_id
     global client
@@ -104,14 +138,55 @@ async def elasticsearch_ask(body: SearchINNotes):
                 "size": 5
             }
         )
-        
         messages = [
             {'role': 'user', 'parts': ["You are an AI assistant that takes some notes and a question or a query or else. In the result, you will answer the question with only using the information in the notes provided to you. You will answer me with a string of JSON. Add JSON only the notes you use to answer the query and the answer. So the JSON template is {{'notes': [notes...], 'response': 'response...'}}"]},
             # {'role': 'user', 'parts': [f'{user_query}, Here is the text: {prompt}']}
         ]
 
-        model.generate_content(contents=messages, stream=True)
+        result = model.generate_content(contents=messages, stream=True)
 
+        return result.text
+    except Exception as e:
+        raise HTTPException(status_code=404, detail=f"Elasticsearch client error: {str(e)}")
+
+@app.post("/search/elastic-simple/")
+async def elasticsearch_simple(query: str):
+    """
+    Search in Elasticsearch using a simple query string.
+
+    Args:
+        query (str): The search query string.
+
+    Returns:
+        dict: Elasticsearch search results.
+
+    Raises:
+        HTTPException: If there's an error with the Elasticsearch client.
+    """    
+    global client
+    try:
+        response = client.search(q=query)
+        return response.body
+    except Exception as e:
+        raise HTTPException(status_code=404, detail=f"Elasticsearch client error: {str(e)}")
+
+@app.post("/search/elastic-all/")
+async def elasticsearch_all(body: Request):
+    """
+    Search in Elasticsearch using a detailed body request.
+
+    Args:
+        body (Request): The search query body (in JSON format).
+
+    Returns:
+        dict: Elasticsearch search results.
+
+    Raises:
+        HTTPException: If there's an error with the Elasticsearch client.
+    """    
+    global client
+    try:
+        response = client.search(body=body)
         return response.body
     except Exception as e:
         raise HTTPException(status_code=404, detail=f"Elasticsearch client error: {str(e)}")
@@ -198,21 +273,7 @@ async def file_text_extraction(body: FileExtract):
     else:
         raise HTTPException(status_code=400, detail="Unsupported file type")
 
-@app.post("/caption/extract/")
-async def file_text_extraction(youtube_video_id: str):
-    """
-    Extract captions from a YouTube video.
-
-    Args:
-        youtube_video_id (str): The YouTube video ID.
-
-    Returns:
-        dict: Extracted captions from the video.
-    """
-    link = f"https://www.youtube.com/watch?v={youtube_video_id}"
-    return Loaders.caption_loader(link)
-
-@app.post("/bucket/check/")
+@app.post("/file/check/")
 async def file_text_extraction(body: FileDownloadBody = Depends()):
     """
     Check if a file exists in the storage bucket.
@@ -231,6 +292,20 @@ async def file_text_extraction(body: FileDownloadBody = Depends()):
     if blob.exists():
         return {'details': f"{user_id}/{file_name} found.", 'state': 1}
     return {'details': f"{user_id}/{file_name} not found.", 'state': 0}
+
+@app.post("/caption/extract/")
+async def file_text_extraction(youtube_video_id: str):
+    """
+    Extract captions from a YouTube video.
+
+    Args:
+        youtube_video_id (str): The YouTube video ID.
+
+    Returns:
+        dict: Extracted captions from the video.
+    """
+    link = f"https://www.youtube.com/watch?v={youtube_video_id}"
+    return Loaders.caption_loader(link)
 
 @app.get("/chat/history/")
 async def get_chat_history(user_id: str, note_id: str = 'gemini'):

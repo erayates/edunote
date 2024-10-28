@@ -12,10 +12,13 @@ from typing import Optional
 from Secrets.KEY import NOTES 
 from google.api_core.exceptions import ResourceExhausted
 from io import BytesIO
+from sentence_transformers import SentenceTransformer
 
 AUDIO_EXTENSIONS = ['mp3', 'wav', 'aac', 'm4a', 'wma']
 PDF_EXTENSIONS = ['pdf']
 IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg']
+
+SENTENCE_TRANSFORMER_MODEL = SentenceTransformer("nomic-ai/nomic-embed-text-v1", trust_remote_code=True)
 
 class MainBody(BaseModel):
     user_id: str
