@@ -29,7 +29,7 @@ class NoteBody(BaseModel):
     note_id: str = 'gemini'
 
 class SearchINNotes(BaseModel):
-    query: str
+    command: str
     user_id: str
 
 class FileUploadBody(BaseModel):
@@ -52,7 +52,6 @@ class Prompt():
             "user": "",
             "template" : "You are an AI writing assistant that creates a template of titles and subtitles and other neccessary items from the existing text. Make sure to construct complete sentences. Use Markdown formatting when appropriate.",
             "ask" : "You are an AI writing assistant that answers the questions about the existing text or done the desired changes or anything else the user want using the existing text. Make sure to construct complete sentences. Use Markdown formatting when appropriate.",
-            "ask_note" : "You are an AI writing assistant that answers the questions about the existing text or done the desired changes or anything else the user want using the existing text. Make sure to construct complete sentences. Use Markdown formatting when appropriate.",
             "explain" : "You are an AI writing assistant that explains the existing text. Make sure to construct complete sentences. Use Markdown formatting when appropriate.",
             "summarize" : "You are an AI writing assistant that summarizes existing text. Make sure to construct complete sentences. Use Markdown formatting when appropriate.",
             "note" : "You are an AI writing/note taking assistant that creates notes from existing text. Make sure to construct complete sentences. Use Markdown formatting when appropriate.",
@@ -64,20 +63,24 @@ class Prompt():
             "zap" : "You area an AI writing assistant that generates text based on a prompt. You take an input from the user and a command for manipulating the text. Use Markdown formatting when appropriate."
         }
 
-    def generate_response(self, user_id, prompt, option, note_id, user_query = None):
+    def generate_response(self, user_id, prompt, option: str, note_id, user_query = None):
         messages = ChatHistory.get_chat_history(user_id=user_id, note_id=note_id)
         messages_history = messages.copy()
-        if note_id != 'gemini': prompt = self.load_note(note_id=note_id)
+        keep__prompt_history = True
+        if option.startswith('fromnote_'): 
+            prompt = self.load_note(note_id=note_id)
+            option = option.replace('fromnote_', '')
+            keep__prompt_history = False
         if option == 'ask':
             messages.append({'role': 'user', 'parts': [self.categorized_propmt[option]]})
             messages.append({'role': 'model', 'parts': ['I am an AI writing assistant and I will provide you only the text you desire.']})
             messages.append({'role': 'user', 'parts': [f'{user_query}\nHere is the text: {prompt}']})
-            messages_history.append({'role': 'user', 'parts': [user_query, f"{prompt}"]})
+            messages_history.append({'role': 'user', 'parts': [user_query, f"{prompt}"]}) if keep__prompt_history else messages_history.append({'role': 'user', 'parts': [user_query]})
         elif option == 'ask_note':
-            messages.append({'role': 'user', 'parts': [self.categorized_propmt[option]]})
+            messages.append({'role': 'user', 'parts': [self.categorized_propmt['ask']]})
             messages.append({'role': 'model', 'parts': ['I am an AI writing assistant and I will provide you only the text you desire.']})
             messages.append({'role': 'user', 'parts': [f'{user_query}\nHere is the text: {prompt}']})
-            messages_history.append({'role': 'user', 'parts': [user_query]})
+            messages_history.append({'role': 'user', 'parts': [user_query, f"{prompt}"]}) if keep__prompt_history else messages_history.append({'role': 'user', 'parts': [user_query]})
         else:
             if option != 'user':
                 messages.append({'role': 'user', 'parts': [self.categorized_propmt[option]]})

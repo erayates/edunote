@@ -84,7 +84,7 @@ async def elasticsearch_ask(body: SearchINNotes):
     Raises:
         HTTPException: If there's an error with the Elasticsearch client.
     """
-    query = body.query
+    query = body.command
     user_id = body.user_id
     global client
     try:
