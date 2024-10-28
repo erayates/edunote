@@ -28,7 +28,7 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en" suppressHydrationWarning>
         <body
-          className={`${poppins.className} min-h-screen bg-background antialiased relative w-screen overflow-x-clip`}
+          className={`${poppins.className} h-full bg-background antialiased relative w-screen overflow-x-clip`}
         >
           <Toaster position="bottom-right" duration={2000} richColors />
           <ThemeProvider
@@ -38,7 +38,7 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             <AppSidebar />
-            <main className="relative top-[80px] ml-[280px] h-full px-4">
+            <main className="relative pt-[120px] ml-[280px] h-full px-4 z-20">
               <div className="max-w-screen-xl mx-auto">{children}</div>
             </main>
             <AppBottomBar />

@@ -22,12 +22,12 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { Switch } from "../ui/switch";
 import { Note } from "@prisma/client";
-import { deleteNote, setNoteVisibility } from "@/actions/notes";
+import { deleteNote, setNoteVisibility, updateNote } from "@/actions/notes";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { APP_BASE_URL } from "@/lib/constants";
 import ComboBox from "../ui/combobox";
-import { getAllTags } from "@/actions/tags";
+import { getAllTags, getAllTagsWithoutPartial } from "@/actions/tags";
 
 interface EditorSettingsProps {
   note: Note;
@@ -38,11 +38,11 @@ const EditorSettings: React.FC<EditorSettingsProps> = ({ note }) => {
   const [_, setCopiedLink] = useCopyToClipboard();
   const [shareLink, setShareLink] = useState("");
   const [defaultTags, setDefaultTags] = useState<
-    { value: string; label: string }[]
+    { value: string; label: string; id: string }[]
   >([]);
 
   const [selectedTags, setSelectedTags] = useState<
-    { value: string; label: string }[]
+    { value: string; label: string; id: string }[]
   >([]);
 
   const router = useRouter();
@@ -57,6 +57,19 @@ const EditorSettings: React.FC<EditorSettingsProps> = ({ note }) => {
       const tags = await getAllTags();
       if (tags) {
         setDefaultTags(tags);
+      }
+
+      const allTags = await getAllTagsWithoutPartial();
+      if (allTags) {
+        note.tagIds.forEach((tagId) => {
+          const tag = allTags.find((tag) => tag.id === tagId);
+          if (tag) {
+            setSelectedTags((prev) => [
+              ...prev,
+              { id: tag.id, value: tag.name, label: tag.name },
+            ]);
+          }
+        });
       }
     };
 
@@ -110,7 +123,24 @@ const EditorSettings: React.FC<EditorSettingsProps> = ({ note }) => {
   };
 
   // Handle func. to save tags
-  // const handleSaveTags = async () => {};
+  const handleSaveTagsToNote = async () => {
+    const tags = selectedTags;
+    const isUpdated = await updateNote(note.id, {
+      tags: {
+        connect: tags.map((tag) => ({
+          id: tag.id,
+        })),
+      },
+    });
+
+    if (isUpdated) {
+      toast.success("Tags updated successfully.");
+      router.refresh();
+      return;
+    }
+
+    toast.error("Something went wrong!");
+  };
 
   return (
     <Dialog>
@@ -179,6 +209,7 @@ const EditorSettings: React.FC<EditorSettingsProps> = ({ note }) => {
             <Button
               className="mt-2 text-foreground bg-white w-fit hover:bg-white/70"
               size="sm"
+              onClick={handleSaveTagsToNote}
             >
               Save Tags
             </Button>

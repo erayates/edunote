@@ -37,6 +37,10 @@ export async function fetchSingleNote(slug: string) {
     where: {
       slug: slug,
     },
+    include: {
+      tags: true,
+      user: true,
+    },
   });
 
   if (note) {

@@ -2,7 +2,6 @@ import { cn } from "@/lib/utils";
 import {
   Boxes,
   Earth,
-  LogOut,
   MessagesSquare,
   Notebook,
   NotepadText,
@@ -16,10 +15,10 @@ import { MoreNote } from "./more-note";
 import { getAllUserNotes } from "@/actions/notes";
 import { currentUser } from "@clerk/nextjs/server";
 import { Note } from "@prisma/client";
+import { LogoutButton } from "../logout-button";
 
 const AppSidebar: React.FC = async () => {
   const user = await currentUser();
-
   const _notes: Note[] | false = await getAllUserNotes(user?.id as string);
 
   if (!_notes) {
@@ -29,7 +28,7 @@ const AppSidebar: React.FC = async () => {
   return (
     <aside
       className={cn(
-        "w-[280px] fixed left-0 flex flex-col justify-between top-0 bg-foreground h-screen p-8 z-50 "
+        "w-[280px] fixed left-0 flex flex-col justify-between top-0 bg-foreground h-screen p-8 z-20 "
       )}
     >
       <div className="">
@@ -71,7 +70,7 @@ const AppSidebar: React.FC = async () => {
               </li>
             ))}
 
-          {_notes.length > 3 && <MoreNote notes={_notes}/>}
+          {_notes.length > 3 && <MoreNote notes={_notes} />}
         </ul>
 
         <ul className="mt-8">
@@ -169,9 +168,7 @@ const AppSidebar: React.FC = async () => {
         </ul>
       </div>
 
-      <Button variant="destructive">
-        <LogOut /> Logout
-      </Button>
+      <LogoutButton />
     </aside>
   );
 };

@@ -51,7 +51,7 @@ const EditorHeader: React.FC<EditorHeaderProps> = ({ note, settingsOff }) => {
   return (
     <React.Fragment>
       {!settingsOff && (
-        <div className="w-full flex justify-end mb-4">
+        <div className="w-full flex justify-end mb-4 pt-6">
           <EditorSettings note={note} />
         </div>
       )}
