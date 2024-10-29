@@ -130,9 +130,8 @@ async def elasticsearch_ask(body: SearchINNotes):
     query = body.command
     user_id = body.user_id
     public_search = body.public_search
-    print(public_search)
     global client
-    filter = { "term": { "is_public": True } } if public_search else { "match": { "user_id": user_id } }
+    filter = { "term": { "is_public": "true" } } if public_search else { "match": { "user_id": user_id } }
     body={
         "query": {
             "bool": {
