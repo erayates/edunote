@@ -11,9 +11,9 @@ from google.api_core.exceptions import ResourceExhausted
 from app.loaders import *
 
 # TODO: 
-# - Local embedding model can be added ?? 
+# - Local embedding model can be added for sentiment search using Atlas Vector Search
 #   - Add MongoDB Trigger (Completed) or auto update embedding and TEST it. (Check Functions/atlas_embedding_update_trigger.js)
-# - Dummy User User Update for Dummy Note Data Import
+# - Dummy User Update for Dummy Note Data Import
 
 origins = ["*"]
 
@@ -30,98 +30,100 @@ genai.configure(api_key=KEY.GEMINI_API_KEY)
 prompt_obj = Prompt()
 client = KEY.ELASTICSEARCH_CLIENT
 
-# @app.post("/embedding/")
-# async def get_embedding(body: Embedding):
-#     query = body.query
-#     output = embed.text(
-#         texts=[query],
-#         model='nomic-embed-text-v1',
-#         task_type='search_document',
-#         long_text_mode='mean',
-#         dimensionality = 768
-#     )
-#     return {'embedding': output['embeddings']}
+'''
+@app.post("/embedding/")
+async def get_embedding(body: Embedding):
+    query = body.query
+    output = embed.text(
+        texts=[query],
+        model='nomic-embed-text-v1',
+        task_type='search_document',
+        long_text_mode='mean',
+        dimensionality = 768
+    )
+    return {'embedding': output['embeddings']}
 
-# @app.get("/search/vector-all/")
-# async def atlas_vector_search_all(query: str, limit: int = 5):
-#     query_embedding = Loaders.get_embedding(query)
-#     pipeline = [
-#         {
-#             "$vectorSearch": {
-#                     "index": "vector_index",
-#                     "queryVector": query_embedding,
-#                     "path": "embedding",
-#                     "exact": True,
-#                     "limit": limit
-#             }
-#         }, 
-#         {
-#             "$project": {
-#                 "_id": 1,
-#                 "title": 1,
-#                 "desciption": 1,
-#                 "content": 1,
-#                 "score": {
-#                     "$meta": "vectorSearchScore"
-#                 }
-#             }
-#         }
-#     ]
-#     results = NOTES.aggregate(pipeline)
-#     return {'results': [note for note in results]}
+@app.get("/search/vector-all/")
+async def atlas_vector_search_all(query: str, limit: int = 5):
+    query_embedding = Loaders.get_embedding(query)
+    pipeline = [
+        {
+            "$vectorSearch": {
+                    "index": "vector_index",
+                    "queryVector": query_embedding,
+                    "path": "embedding",
+                    "exact": True,
+                    "limit": limit
+            }
+        }, 
+        {
+            "$project": {
+                "_id": 1,
+                "title": 1,
+                "desciption": 1,
+                "content": 1,
+                "score": {
+                    "$meta": "vectorSearchScore"
+                }
+            }
+        }
+    ]
+    results = NOTES.aggregate(pipeline)
+    return {'results': [note for note in results]}
 
-# @app.get("/search/vector-ask/")
-# async def atlas_vector_search_ask(user_id: str, note_id: str, query: str, limit: int = 5):
-#     query_embedding = Loaders.get_embedding(query)
-#     pipeline = [
-#         {
-#             "$vectorSearch": {
-#                 "index": "vector_index",
-#                 "queryVector": query_embedding,
-#                 "path": "embedding",
-#                 "exact": True,
-#                 "limit": limit
-#             }
-#         },
-#         {
-#             "$match": {
-#                 "_id": { "$in": user_id }
-#             }
-#         },
-#         {
-#             "$project": {
-#                 "_id": 1,
-#                 "title": 1,
-#                 "description": 1,
-#                 "content": 1,
-#                 "score": {
-#                     "$meta": "vectorSearchScore"
-#                 }
-#             }
-#         }
-#     ]
-#     results = NOTES.aggregate(pipeline)
-#     results = {'results': [note for note in results]}
-#     try:
-#         messages = [
-#             {'role': 'user', 'parts': ["You are an AI assistant that takes some notes and a question or a query or else. In the result, you will answer the question with only using the information in the notes provided to you. You will answer me with a string of JSON. Add JSON only the note ids you use to answer the query and the answer. So the JSON template is {{'notes': [note_ids...], 'response': 'response...'}}\n Example JSON response result (for the user query 'When was the Spiderman 3 movie ?')(assume that the response is taken from those notes...) : '{{'notes': ['671c237d736e85a7f30525a7', '671c4916736e85a7f30525ac'], 'response': 'You very liked the movie Spiderman 3. Actually, you have screamed 'Yeaaahhh' when you see the last scene in the Cinema The Kazabalanca.'}}'"]},
-#             {'role': 'user', 'parts': ['Here are the Notes:\n']+[note for note in results]},
-#             {'role': 'user', 'parts': [f'Answer the following query using below texts now. Remember to give the format desired JSON format! Query: {query}']}
-#         ]
+@app.get("/search/vector-ask/")
+async def atlas_vector_search_ask(user_id: str, note_id: str, query: str, limit: int = 5):
+    query_embedding = Loaders.get_embedding(query)
+    pipeline = [
+        {
+            "$vectorSearch": {
+                "index": "vector_index",
+                "queryVector": query_embedding,
+                "path": "embedding",
+                "exact": True,
+                "limit": limit
+            }
+        },
+        {
+            "$match": {
+                "_id": { "$in": user_id }
+            }
+        },
+        {
+            "$project": {
+                "_id": 1,
+                "title": 1,
+                "description": 1,
+                "content": 1,
+                "score": {
+                    "$meta": "vectorSearchScore"
+                }
+            }
+        }
+    ]
+    results = NOTES.aggregate(pipeline)
+    results = {'results': [note for note in results]}
+    try:
+        messages = [
+            {'role': 'user', 'parts': ["You are an AI assistant that takes some notes and a question or a query or else. In the result, you will answer the question with only using the information in the notes provided to you. You will answer me with a string of JSON. Add JSON only the note ids you use to answer the query and the answer. So the JSON template is {{'notes': [note_ids...], 'response': 'response...'}}\n Example JSON response result (for the user query 'When was the Spiderman 3 movie ?')(assume that the response is taken from those notes...) : '{{'notes': ['671c237d736e85a7f30525a7', '671c4916736e85a7f30525ac'], 'response': 'You very liked the movie Spiderman 3. Actually, you have screamed 'Yeaaahhh' when you see the last scene in the Cinema The Kazabalanca.'}}'"]},
+            {'role': 'user', 'parts': ['Here are the Notes:\n']+[note for note in results]},
+            {'role': 'user', 'parts': [f'Answer the following query using below texts now. Remember to give the format desired JSON format! Query: {query}']}
+        ]
 
-#         result = model.generate_content(contents=messages, stream=True)
-#         dictionary: dict = json.loads(result.text)
+        result = model.generate_content(contents=messages, stream=True)
+        dictionary: dict = json.loads(result.text)
 
-#         messages_history = [
-#             {'role': 'user', 'parts': [query]},
-#             {'role': 'model', 'parts': [dictionary['response']]}
-#         ]
+        messages_history = [
+            {'role': 'user', 'parts': [query]},
+            {'role': 'model', 'parts': [dictionary['response']]}
+        ]
 
-#         ChatHistory.update_chat_history(user_id=user_id, note_id=note_id, propmts=messages_history)
+        ChatHistory.update_chat_history(user_id=user_id, note_id=note_id, propmts=messages_history)
 
-#         return dictionary
-#     except Exception as e:
-#         raise HTTPException(status_code=404, detail=f"Elasticsearch client error: {str(e)}")
+        return dictionary
+    except Exception as e:
+        raise HTTPException(status_code=404, detail=f"Elasticsearch client error: {str(e)}")
+'''
 
 @app.post("/search/elastic-ask/")
 async def elasticsearch_ask(body: SearchINNotes):
