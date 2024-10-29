@@ -2,7 +2,6 @@
 
 import { getAllUserNotes } from "@/actions/notes";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import Spinner from "@/components/ui/spinner";
 import { cn } from "@/lib/utils";
 import { useUser } from "@clerk/nextjs";
 import { Note } from "@prisma/client";
@@ -13,8 +12,8 @@ import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 
 interface AIChatSelectionProps {
   open: boolean;
-  currentNote: any;
-  setCurrentNote: any;
+  currentNote: Note;
+  setCurrentNote: Dispatch<SetStateAction<Note | undefined>>;
   chatSelection: string;
   setChatSelection: Dispatch<SetStateAction<string>>;
 }

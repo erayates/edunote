@@ -17,7 +17,7 @@ interface NotesContainerProps {
 
 const NotesContainer: React.FC<NotesContainerProps> = ({ notes }) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [hasMore, setHasMore] = useState();
+  // const [hasMore, setHasMore] = useState();
   const [take, setTake] = useState(10);
   const [scrollPosition, setScrollPosition] = useState(0);
 

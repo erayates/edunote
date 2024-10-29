@@ -92,7 +92,7 @@ const ChatAICommands = ({ onSelect }: ChatAICommandsProps) => {
         <DropdownMenuSeparator />
         {options.map((option) => (
           <DropdownMenuItem
-            onClick={(e) => {
+            onClick={() => {
               onSelect(option.value);
             }}
             className="flex gap-2 px-4 cursor-pointer"

@@ -27,7 +27,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { APP_BASE_URL } from "@/lib/constants";
 import ComboBox from "../ui/combobox";
-import { getAllTags, getAllTagsWithoutPartial } from "@/actions/tags";
+import { getAllTagsWithoutPartial } from "@/actions/tags";
 
 interface EditorSettingsProps {
   note: Note;
@@ -37,7 +37,7 @@ const EditorSettings: React.FC<EditorSettingsProps> = ({ note }) => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_, setCopiedLink] = useCopyToClipboard();
   const [shareLink, setShareLink] = useState("");
-  const [defaultSelectedTags, setDefaultSelectedTags] = useState<
+  const [, setDefaultSelectedTags] = useState<
     { value: string; label: string; id: string }[]
   >([]);
 

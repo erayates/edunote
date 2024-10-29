@@ -31,7 +31,7 @@ const AIChat: React.FC<AIChatProps> = ({
     <React.Fragment>
       <AIChatSelection
         open={open}
-        currentNote={currentNote}
+        currentNote={currentNote as Note}
         setCurrentNote={setCurrentNote}
         setChatSelection={setChatSelection}
         chatSelection={chatSelection}

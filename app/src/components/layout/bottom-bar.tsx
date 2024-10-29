@@ -30,14 +30,6 @@ const initialChat: Chat[] = [
   },
 ];
 
-interface AIChatProps {
-  open: boolean;
-  setChat: React.Dispatch<React.SetStateAction<Chat[]>>;
-  setChatSelection: React.Dispatch<React.SetStateAction<string>>;
-  setCurrentNote: React.Dispatch<React.SetStateAction<Note | undefined>>;
-  chatSelection: string;
-  currentNote: Note | undefined;
-}
 
 const AppBottomBar: React.FC = () => {
   const [open, setOpen] = useState(false);
