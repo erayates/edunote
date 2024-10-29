@@ -1,0 +1,13 @@
+[
+    {
+        "_id": "user_cBCtlAUaiDJtnomEmDdKwDhP",
+        "email": "gregoryhall@example.org",
+        "username": "gregoryhall",
+        "fullname": "Stephanie Mason",
+        "avatar": "https://placekitten.com/647/348",
+        "role": "USER",
+        "status": "ACTIVE",
+        "createdAt": "2024-10-29T12:24:11.955579",
+        "updatedAt": "2024-10-29T12:24:11.955579"
+    }
+]
