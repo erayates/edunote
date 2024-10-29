@@ -2,7 +2,7 @@ import AIChatContent from "./chat-content";
 import AIChatSelection from "./chat-selection";
 import React from "react";
 import { Note } from "@prisma/client";
-import { Chat } from "../bottom-bar";
+import { Chat } from "../top-bar";
 
 interface AIChatProps {
   open: boolean;

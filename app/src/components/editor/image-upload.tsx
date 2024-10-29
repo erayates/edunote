@@ -1,7 +1,7 @@
 import { createImageUpload } from "novel/plugins";
 import { toast } from "sonner";
 
-const onUpload = (file: File) => {
+export const onUpload = (file: File) => {
   const promise = fetch("/api/upload", {
     method: "POST",
     headers: {

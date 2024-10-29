@@ -68,6 +68,6 @@ const config: Config = {
       card: "inset 0px -32px 63px -20px rgba(0,0,0,0.75)",
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [require("tailwindcss-animate"), require("@tailwindcss/typography")],
 };
 export default config;

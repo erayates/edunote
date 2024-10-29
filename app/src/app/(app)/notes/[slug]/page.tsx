@@ -3,6 +3,7 @@ import EdunoteEditor from "@/components/editor/editor";
 import Spinner from "@/components/ui/spinner";
 import { Suspense } from "react";
 import { currentUser } from "@clerk/nextjs/server";
+import { notFound } from "next/navigation";
 
 export default async function NoteSlugContainer({
   params,
@@ -50,7 +51,7 @@ export default async function NoteSlugContainer({
       }
     }
 
-    return <h1 className="text-white">We are sorry!</h1>;
+    return notFound();
   }
 
   return <div></div>;

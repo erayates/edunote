@@ -1,6 +1,7 @@
 import { getAllNotes, searchNotes } from "@/actions/notes";
 import NotesContainer from "@/containers/notes-container";
 import { NoteWithRelations } from "@/types/note";
+import { notFound } from "next/navigation";
 
 interface SearchParams {
   search?: string;
@@ -47,6 +48,6 @@ export default async function NotesPage({ searchParams }: NotesPageProps) {
     return <NotesContainer notes={notes} />;
   } catch (error) {
     console.error("Error fetching notes:", error);
-    return null;
+    return notFound();
   }
 }

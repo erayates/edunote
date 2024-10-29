@@ -214,6 +214,9 @@ export async function getAllUserNotes(userId: string) {
       where: {
         userId,
       },
+      orderBy: {
+        createdAt: "desc",
+      },
     });
 
     return userNotes;

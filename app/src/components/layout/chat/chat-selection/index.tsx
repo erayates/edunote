@@ -32,16 +32,18 @@ const AIChatSelection: React.FC<AIChatSelectionProps> = ({
 
   useEffect(() => {
     setIsLoading(true);
-    const fetchAllUserNotes = async () => {
-      const notes = await getAllUserNotes(user?.id as string);
-      if (notes) {
-        setUserNotes(notes as Note[]);
-        setIsLoading(false);
-      }
-    };
+    if (user && open) {
+      const fetchAllUserNotes = async () => {
+        const notes = await getAllUserNotes(user?.id as string);
+        if (notes) {
+          setUserNotes(notes as Note[]);
+          setIsLoading(false);
+        }
+      };
 
-    fetchAllUserNotes();
-  }, []);
+      fetchAllUserNotes();
+    }
+  }, [user, open]);
 
   const handleSingleNote = (note: Note) => {
     setChatSelection("single");
@@ -51,7 +53,7 @@ const AIChatSelection: React.FC<AIChatSelectionProps> = ({
   return (
     <div
       className={cn(
-        "w-[240px] top-0 duration-500 h-0 overflow-hidden -translate-y-16 transition-all bg-foreground rounded-2xl absolute right-[780px] opacity-0 -z-10 p-4",
+        "w-[240px] top-0 border-2 border-secondary duration-500 h-0 overflow-hidden -translate-y-16 transition-all bg-foreground rounded-2xl absolute right-[780px] opacity-0 -z-10 p-4",
         open && "opacity-100 space-y-2 h-[94vh] translate-y-0"
       )}
     >
@@ -95,7 +97,10 @@ const AIChatSelection: React.FC<AIChatSelectionProps> = ({
               </p>
             )}
 
-            <ScrollArea className="space-y-2 h-[640px] pr-2" type="always">
+            <ScrollArea
+              className="space-y-2 h-[640px] pr-4 pb-3 "
+              type="always"
+            >
               {userNotes.map((note) => (
                 <button
                   key={note.id}

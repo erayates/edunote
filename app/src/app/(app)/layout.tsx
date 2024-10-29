@@ -5,8 +5,9 @@ import { ThemeProvider } from "@/components/theme-provider";
 
 import { Poppins } from "next/font/google";
 import AppSidebar from "@/components/layout/sidebar";
-import AppBottomBar from "@/components/layout/bottom-bar";
+import AppBottomBar from "@/components/layout/top-bar";
 import { Toaster } from "sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -37,11 +38,13 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <AppSidebar />
-            <main className="relative pt-[120px] ml-[280px] h-full px-4 z-20">
-              <div className="max-w-screen-xl mx-auto">{children}</div>
-            </main>
-            <AppBottomBar />
+            <TooltipProvider>
+              <AppSidebar />
+              <main className="relative pt-[120px] ml-[280px] h-full px-4 z-20">
+                <div className="max-w-screen-xl mx-auto">{children}</div>
+              </main>
+              <AppBottomBar />
+            </TooltipProvider>
           </ThemeProvider>
         </body>
       </html>

@@ -2,10 +2,12 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { useUser } from "@clerk/nextjs";
-import { Chat } from "../../bottom-bar";
+import { Chat } from "../../top-bar";
 import { Dispatch, SetStateAction } from "react";
 import Spinner from "@/components/ui/spinner";
 import ChatAICommands from "../chat-ai-commands";
+
+import Markdown from "react-markdown";
 
 interface AIChatContentProps {
   chat: Chat[];
@@ -28,7 +30,7 @@ const AIChatContent: React.FC<AIChatContentProps> = ({
   return (
     <div
       className={cn(
-        "h-0 -translate-y-16 mt-4 bg-foreground relative flex  space-y-6 w-full rounded-3xl left-2 transition-all duration-500 ease-in-out py-6 px-6 pr-2",
+        "h-0 -translate-y-[4.5rem] border-2 border-secondary mt-4 bg-foreground relative flex  space-y-6 w-full rounded-3xl left-2 transition-all duration-500 ease-in-out py-6 px-6 pr-2",
         open && "h-[86.5vh] translate-y-0"
       )}
     >
@@ -87,9 +89,12 @@ const AIChatContent: React.FC<AIChatContentProps> = ({
                     </Avatar>
                     <div className="bg-blue-600 rounded-xl p-2">
                       {chatItem.parts.map((message: string, i) => (
-                        <span key={i} className="text-white text-sm leading-6">
-                          {message}
-                        </span>
+                        <div
+                          key={i}
+                          className="prose p-2 px-4 prose-sm prose-h2:text-white prose-h1:text-white prose-p:text-white prose-a:text-blue-500 prose-a:no-underline prose-strong:text-white text-white"
+                        >
+                          <Markdown>{message}</Markdown>
+                        </div>
                       ))}
                     </div>
                   </div>

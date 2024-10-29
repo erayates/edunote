@@ -22,7 +22,7 @@ interface EditorHeaderProps {
 }
 
 const EditorHeader: React.FC<EditorHeaderProps> = ({ note, settingsOff }) => {
-  const { replace } = useRouter();
+  const { replace, refresh } = useRouter();
 
   const debouncedUpdates = useDebouncedCallback(
     async (e: ChangeEvent<HTMLInputElement>) => {
@@ -37,6 +37,7 @@ const EditorHeader: React.FC<EditorHeaderProps> = ({ note, settingsOff }) => {
         if (isTitleUpdated) {
           toast.success("Updated successfully.");
           replace(`/notes/${_slug}`);
+          refresh();
         }
         return;
       }
@@ -46,6 +47,7 @@ const EditorHeader: React.FC<EditorHeaderProps> = ({ note, settingsOff }) => {
       });
       if (isUpdated) {
         toast.success(`Updated successfully.`);
+        refresh();
         return;
       }
       toast.error("Something went wrong!");
@@ -56,7 +58,7 @@ const EditorHeader: React.FC<EditorHeaderProps> = ({ note, settingsOff }) => {
   return (
     <React.Fragment>
       {!settingsOff && (
-        <div className="w-full flex justify-end mb-4 pt-10">
+        <div className="w-full flex justify-end mb-4 pt-16">
           <EditorSettings note={note} />
         </div>
       )}

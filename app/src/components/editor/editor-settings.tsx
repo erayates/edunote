@@ -16,7 +16,16 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import { Copy, Eye, Settings, Share2, Tag, Trash2, X } from "lucide-react";
+import {
+  Copy,
+  Eye,
+  Images,
+  Settings,
+  Share2,
+  Tag,
+  Trash2,
+  X,
+} from "lucide-react";
 import { toast } from "sonner";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
@@ -28,6 +37,9 @@ import { useEffect, useState } from "react";
 import { APP_BASE_URL } from "@/lib/constants";
 import ComboBox from "../ui/combobox";
 import { getAllTagsWithoutPartial } from "@/actions/tags";
+import { Label } from "../ui/label";
+import Image from "next/image";
+import { onUpload } from "./image-upload";
 
 interface EditorSettingsProps {
   note: Note;
@@ -111,6 +123,7 @@ const EditorSettings: React.FC<EditorSettingsProps> = ({ note }) => {
     if (isDeleted) {
       toast.success("Note deleted successfully.");
       router.push("/");
+      router.refresh();
       return;
     }
 
@@ -137,9 +150,44 @@ const EditorSettings: React.FC<EditorSettingsProps> = ({ note }) => {
     toast.error("Something went wrong!");
   };
 
+  // Handle upload image
+  const handleUploadImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Check file type
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please upload an image file.");
+      return;
+    }
+
+    // Check file size (e.g., 5MB limit)
+    const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+    if (file.size > maxSize) {
+      toast.error("File size should be less than 5MB");
+      return;
+    }
+
+    try {
+      const imageUrl = await onUpload(file);
+      if (!imageUrl) return;
+      const isUpdated = await updateNote(note.id, {
+        thumbnail: imageUrl,
+      });
+
+      if (isUpdated) {
+        toast.success("Thumbnail updated successfully.");
+        router.refresh();
+        return;
+      }
+    } catch {
+      toast.error("Something went wrong! Try again.");
+    }
+  };
+
   return (
     <Dialog>
-      <DialogTrigger className="text-white/30 hover:text-white">
+      <DialogTrigger className="text-white/30 hover:text-white z-30">
         <Settings />
       </DialogTrigger>
       <DialogContent>
@@ -148,7 +196,44 @@ const EditorSettings: React.FC<EditorSettingsProps> = ({ note }) => {
           <DialogDescription>Manage your note settings.</DialogDescription>
         </DialogHeader>
         <div className="w-full h-[1px] bg-secondary"></div>
+        {/* Set thumbnail */}
+        <div>
+          <h3 className="text-sm text-white font-semibold flex items-center">
+            <Images className="mr-2" size={16} />
+            Thumbnail
+          </h3>
+          <p className="text-xs text-white/30">
+            {`Set your note thumbnail from below.`}
+          </p>
 
+          <div className="flex space-x-2 mt-2 h-[150px] w-full relative">
+            <Label
+              htmlFor="thumbnail"
+              className="w-full h-full border-2 grid z-10 place-items-center text-white rounded-lg border-white border-dashed cursor-pointer"
+            >
+              Upload your image
+            </Label>
+            <Image
+              src={
+                note.thumbnail ?? "/assets/images/default-note-thumbnail.jpg"
+              }
+              width={0}
+              height={0}
+              alt=""
+              sizes="100vw"
+              className="absolute left-0 z-0 mr-0 p-[2px] w-full h-full rounded-lg object-cover opacity-20"
+              style={{ margin: 0 }}
+            />
+            <Input
+              type="file"
+              name="thumbnail"
+              id="thumbnail"
+              className="text-white/50 hidden"
+              onChange={handleUploadImage}
+            />
+          </div>
+        </div>
+        {/* Share link comp. */}
         <div>
           <h3 className="text-sm text-white font-semibold flex items-center">
             <Share2 className="mr-2" size={16} />
@@ -169,6 +254,7 @@ const EditorSettings: React.FC<EditorSettingsProps> = ({ note }) => {
             </Button>
           </div>
 
+          {/* Change visibility */}
           <div className="mt-4">
             <h3 className="text-sm text-white font-semibold flex items-center">
               <Eye className="mr-2" size={16} />
@@ -209,7 +295,7 @@ const EditorSettings: React.FC<EditorSettingsProps> = ({ note }) => {
             </Button>
           </div>
         </div>
-
+        {/* Delete Process */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="destructive" className="w-fit">

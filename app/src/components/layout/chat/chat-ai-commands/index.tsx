@@ -86,7 +86,7 @@ const ChatAICommands = ({ onSelect }: ChatAICommandsProps) => {
           <Settings2 size={20} />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="bg-foreground">
+      <DropdownMenuContent className="bg-foreground z-50">
         <DropdownMenuLabel>Select a command:</DropdownMenuLabel>
 
         <DropdownMenuSeparator />

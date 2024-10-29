@@ -72,7 +72,11 @@ export function MoreNote({ notes }: { notes: Note[] }) {
                       sizes="100vw"
                       alt="Note Thumbnail"
                       className="w-full rounded-l-2xl object-cover h-full"
-                      src={"/assets/images/default-note-thumbnail.jpg"}
+                      src={
+                        _note.thumbnail
+                          ? _note.thumbnail
+                          : "/assets/images/default-note-thumbnail.jpg"
+                      }
                     />
                   </div>
                   <div className="col-span-2">
@@ -83,9 +87,9 @@ export function MoreNote({ notes }: { notes: Note[] }) {
                     </h3>
                     <p className="text-xs text-white/30">
                       {" "}
-                      {_note.description.length > 70
-                        ? _note.description.slice(0, 70) + "..."
-                        : _note.title}
+                      {_note.description.length > 50
+                        ? _note.description.slice(0, 50) + "..."
+                        : _note.description}
                     </p>
                   </div>
                 </div>

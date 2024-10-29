@@ -7,6 +7,9 @@ const nextConfig = {
             },
             {
                 hostname: "brnx9rsmvjqlixb6.public.blob.vercel-storage.com"
+            },
+            {
+                hostname: "fastly.picsum.photos",
             }
         ]
     }

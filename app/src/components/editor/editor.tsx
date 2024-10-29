@@ -35,6 +35,7 @@ import EditorHeader from "./editor-header";
 import { updateNote } from "@/actions/notes";
 import { toast } from "sonner";
 import { YoutubeAISelector } from "./generative-youtube/youtube-ai-selector";
+import Image from "next/image";
 
 const extensions = [...defaultExtensions, slashCommand];
 
@@ -102,6 +103,20 @@ const EdunoteEditor: React.FC<EdunoteEditorProps> = ({ note, settingsOff }) => {
 
   return (
     <React.Fragment>
+      <div className="w-full h-[200px] mb-20  absolute left-0 top-0 -z-10">
+        <div className="w-full h-full absolute top-0 left-0 bg-gradient-to-t z-10 from-background to-transparent"></div>
+        <div className="w-full h-full relative">
+          <Image
+            src={note.thumbnail ?? "/assets/images/default-note-thumbnail.jpg"}
+            alt={note.description}
+            width={0}
+            height={0}
+            sizes="100vw"
+            className="w-full h-full object-cover z-0 opacity-50"
+          />
+        </div>
+      </div>
+
       <EditorHeader note={note} settingsOff={settingsOff as boolean} />
       <div className="relative w-full mt-12">
         <div className="flex absolute -top-12 right-0 z-10 mb-5 gap-2">

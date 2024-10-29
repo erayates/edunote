@@ -13,6 +13,7 @@ import { GEMINI_API_URL } from "@/lib/constants";
 import useFetchStream from "@/hooks/use-fetch-stream";
 import { Note } from "@prisma/client";
 import { getChatHistory } from "@/lib/service";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 
 export interface Chat {
   role: string;
@@ -29,7 +30,6 @@ const initialChat: Chat[] = [
     ],
   },
 ];
-
 
 const AppBottomBar: React.FC = () => {
   const [open, setOpen] = useState(false);
@@ -53,7 +53,12 @@ const AppBottomBar: React.FC = () => {
 
   const handleClickOutside = (e: MouseEvent) => {
     // Check if the click is outside both chatRef and commandRef
-    if (chatRef.current && !chatRef.current.contains(e.target as Node)) {
+    if (
+      chatRef.current &&
+      !chatRef.current.contains(e.target as Node) &&
+      !(e.target as HTMLElement).attributes.getNamedItem("role") &&
+      (e.target as Node).nextSibling
+    ) {
       setOpen(false);
     }
   };
@@ -95,20 +100,12 @@ const AppBottomBar: React.FC = () => {
   useEffect(() => {
     if (open) {
       setPrompt("");
-      document.body.style.height = "100vh";
       document.body.style.overflow = "hidden";
       return;
     }
-
     document.body.style.height = "auto";
     document.body.style.overflowX = "clip";
     document.body.style.overflowY = "auto";
-
-    return () => {
-      document.body.style.height = "auto";
-      document.body.style.overflowX = "clip";
-      document.body.style.overflowY = "auto";
-    };
   }, [open]);
 
   // Setting keypress and mousedown events
@@ -221,25 +218,25 @@ const AppBottomBar: React.FC = () => {
   return (
     <div
       className={cn(
-        "absolute inset-0 top-0 left-0 ease-linear transition-all duration-500 z-20 h-fit w-screen ",
-        open && "bg-black/70 backdrop-blur-sm z-50 h-screen"
+        "fixed inset-0 top-0 left-0 ease-linear transition-all duration-500 z-20 h-fit w-screen ",
+        open && "bg-black/70 backdrop-blur-sm z-50 h-full"
       )}
     >
       <div
         ref={chatRef}
-        className="fixed flex flex-col right-12 top-8 rounded-3xl space-x-4 max-w-[780px] "
+        className="fixed flex flex-col right-12 top-8 rounded-3xl space-x-4 max-w-[60%]"
       >
-        <div className="flex items-center py-2 rounded-3xl bg-foreground relative pl-4 -right-6 z-10">
+        <div className="flex items-center py-2 rounded-3xl bg-foreground relative pl-4 -right-6 z-10  border-2 border-secondary">
           <Input
             className="w-[480px] border-none text-sm placeholder:text-secondary placeholder:font-medium text-white bg-transparent focus-visible:ring-0"
-            placeholder={`Press "TAB" or on focus to chat with Gemini AI about your note...`}
+            placeholder={`Press "Blockquote (")" or on focus to chat with Gemini AI about your note...`}
             onKeyUp={handleInputEnter}
             onChange={handleInputChange}
             value={prompt}
             onFocus={() => setOpen(true)}
           />
 
-          <div className="w-[72px] h-[72px] absolute right-48 -top-2 rounded-full grid place-items-center bg-foreground border-4 border-background ">
+          <div className="w-[72px] h-[72px] absolute right-48 -top-2 rounded-full grid place-items-center bg-foreground border-[3px] border-primary ">
             <Image
               src="/assets/images/magic-wand.png"
               width={28}
@@ -252,19 +249,33 @@ const AppBottomBar: React.FC = () => {
           <div className="flex items-center ml-28 pr-6">
             <ModeToggle />
 
-            <Button
-              variant="outline"
-              className="w-10 h-10 text-xs text-secondary rounded-full bg-foreground border-none px-2 hover:text-white duration-300 transition-all "
-            >
-              <Bell size={24} />
-            </Button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="w-10 h-10 text-xs text-secondary rounded-full bg-foreground border-none px-2 hover:text-white duration-300 transition-all "
+                >
+                  <Bell size={24} />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent className="bg-black text-white txt-sm font-semibold">
+                <p>⏳ Available Soon... ⏳</p>
+              </TooltipContent>
+            </Tooltip>
 
-            <Button
-              variant="outline"
-              className="w-10 h-10 text-xs text-secondary rounded-full bg-foreground border-none px-2 hover:text-white duration-300 transition-all "
-            >
-              <MessageCircle size={24} />
-            </Button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="w-10 h-10 text-xs text-secondary rounded-full bg-foreground border-none px-2 hover:text-white duration-300 transition-all "
+                >
+                  <MessageCircle size={24} />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent className="bg-black text-white txt-sm font-semibold">
+                <p>⏳ Available Soon... ⏳</p>
+              </TooltipContent>
+            </Tooltip>
 
             <UserButton />
           </div>
