@@ -2,7 +2,7 @@
 import { defaultEditorContent } from "@/lib/content";
 import { prisma } from "@/lib/db";
 import { NoteWithRelations, SearchActionParams } from "@/types/note";
-import { Prisma, Tag } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import crypto from "crypto";
 import { addDays, startOfDay } from "date-fns";
 import { fromZonedTime } from "date-fns-tz";
