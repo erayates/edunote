@@ -92,6 +92,31 @@ def create_test_dataset():
 
     return new_list_of_dicts
 
+def format_article(articles: list[dict]):
+    new_content = ''
+    for element in articles:
+        if element['type'] == 'text':
+            new_content += text(element)
+        elif element['type'] == 'image':
+            new_content += image(element)
+        elif element['type'] == 'anchor':
+            new_content += anchor(element)
+
+    return '{"type":"doc","content":[{content}]}'.format(content=new_content)
+
+def text(text: str):
+    return '{"type":"paragraph","content":[{"type":"text","text":"{text}"}]}'.format(text['content'])
+
+def image(image: dict):
+    return '{"type":"image","attrs":{"src":"{src}" ,"alt":"{alt}" ,"title":"{alt}" ,"width":null,"height":null}}'.format(src=image['src'], alt=image['alt'])
+
+def anchor(link: dict):
+    return '{"type":"paragraph","content":[{"type":"text","marks":[{"type":"link","attrs":{"href":"{a_link}","target":"_blank","rel":"noopener noreferrer nofollow","class":"text-muted-foreground underline underline-offset-[3px] hover:text-primary transition-colors cursor-pointer"}}],"text":"{link_text}"}]}'.format(a_link=link['link'], link_text=link['text'])
+
+
+def content_convert(content: list):
+    stringify ={"type":"doc","content":[{"type":"paragraph","content":[{"type":"text","text":"{text}"}]}]}
+
 def generate_realistic_notes(notes: list[dict], users: list[str], tags: list[str]):
     collected_note = []
     total = len(notes)

@@ -148,11 +148,8 @@ class Loaders():
             "candidate_count": 1,
             "temperature": 1,
             "top_p": 0.95,
-            "top_k": 64,
+            "top_k": 40,
             "max_output_tokens": 500,
-            "response_schema": content.Schema(
-                type=content.Type.STRING
-            ),
             "response_mime_type": "text/plain",
         }
         return genai.GenerativeModel(model_name=model_name, generation_config=generation_config)
