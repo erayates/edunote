@@ -37,7 +37,7 @@ const EditorSettings: React.FC<EditorSettingsProps> = ({ note }) => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_, setCopiedLink] = useCopyToClipboard();
   const [shareLink, setShareLink] = useState("");
-  const [defaultTags, setDefaultTags] = useState<
+  const [defaultSelectedTags, setDefaultSelectedTags] = useState<
     { value: string; label: string; id: string }[]
   >([]);
 
@@ -54,17 +54,12 @@ const EditorSettings: React.FC<EditorSettingsProps> = ({ note }) => {
 
   useEffect(() => {
     const fetchTags = async () => {
-      const tags = await getAllTags();
-      if (tags) {
-        setDefaultTags(tags);
-      }
-
       const allTags = await getAllTagsWithoutPartial();
       if (allTags) {
         note.tagIds.forEach((tagId) => {
           const tag = allTags.find((tag) => tag.id === tagId);
           if (tag) {
-            setSelectedTags((prev) => [
+            setDefaultSelectedTags((prev) => [
               ...prev,
               { id: tag.id, value: tag.name, label: tag.name },
             ]);
@@ -74,7 +69,7 @@ const EditorSettings: React.FC<EditorSettingsProps> = ({ note }) => {
     };
 
     fetchTags();
-  }, []);
+  }, [note.tagIds]);
 
   // Copy share link func.
   const handleCopyShareLink = () => {
@@ -201,7 +196,6 @@ const EditorSettings: React.FC<EditorSettingsProps> = ({ note }) => {
             </p>
             <div className="flex items-center justify-between w-full">
               <ComboBox
-                defaultTags={defaultTags}
                 selectedTags={selectedTags}
                 setSelectedTags={setSelectedTags}
               />

@@ -1,6 +1,6 @@
 "use client";
 
-import { Note } from "@prisma/client";
+import { Note, User } from "@prisma/client";
 import EditorSettings from "./editor-settings";
 import React, { ChangeEvent } from "react";
 
@@ -11,8 +11,13 @@ import { updateNote } from "@/actions/notes";
 import slug from "slug";
 import { useRouter } from "next/navigation";
 
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { formatDistance } from "date-fns";
+
 interface EditorHeaderProps {
-  note: Note;
+  note: Note & {
+    user: User;
+  };
   settingsOff: boolean;
 }
 
@@ -51,8 +56,42 @@ const EditorHeader: React.FC<EditorHeaderProps> = ({ note, settingsOff }) => {
   return (
     <React.Fragment>
       {!settingsOff && (
-        <div className="w-full flex justify-end mb-4 pt-6">
+        <div className="w-full flex justify-end mb-4 pt-10">
           <EditorSettings note={note} />
+        </div>
+      )}
+
+      {settingsOff && (
+        <div className="flex justify-between mt-6">
+          <div className="flex w-fit mb-4 space-x-2 items-center p-2 bg-foreground border-2 border-secondary rounded-lg">
+            <Avatar className="border-2 border-gray-700 ">
+              <AvatarImage src={note.user.avatar as string} />
+              <AvatarFallback className="w-full grid place-items-center bg-background text-white/30 text-md">
+                U
+              </AvatarFallback>
+            </Avatar>
+            <p className="text-sm text-muted-foreground flex flex-col ">
+              {note.user.fullname}
+              <span className="text-xs text-muted-foreground/60">
+                @{note.user.username}
+              </span>
+            </p>
+          </div>
+
+          <div className="text-right flex space-x-6">
+            <div>
+              <p className="text-md text-white">Published</p>
+              <p className="text-sm text-muted-foreground/60">
+                {formatDistance(new Date(note.createdAt), new Date())}
+              </p>
+            </div>
+            <div>
+              <p className="text-md text-white">Updated</p>
+              <p className="text-sm text-muted-foreground/60">
+                {formatDistance(new Date(note.updatedAt), new Date())}
+              </p>
+            </div>
+          </div>
         </div>
       )}
 

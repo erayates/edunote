@@ -30,7 +30,7 @@ import { slashCommand, suggestionItems } from "./slash-commands";
 
 // import hljs from "highlight.js";
 // import { checkImageDeleted } from "@/actions/blob";
-import { Note } from "@prisma/client";
+import { Note, User } from "@prisma/client";
 import EditorHeader from "./editor-header";
 import { updateNote } from "@/actions/notes";
 import { toast } from "sonner";
@@ -39,7 +39,9 @@ import { YoutubeAISelector } from "./generative-youtube/youtube-ai-selector";
 const extensions = [...defaultExtensions, slashCommand];
 
 interface EdunoteEditorProps {
-  note: Note;
+  note: Note & {
+    user: User;
+  };
   settingsOff?: boolean;
 }
 
@@ -101,7 +103,7 @@ const EdunoteEditor: React.FC<EdunoteEditorProps> = ({ note, settingsOff }) => {
   return (
     <React.Fragment>
       <EditorHeader note={note} settingsOff={settingsOff as boolean} />
-      <div className="relative w-full mt-16">
+      <div className="relative w-full mt-12">
         <div className="flex absolute -top-12 right-0 z-10 mb-5 gap-2">
           <div className="rounded-lg bg-accent px-2 py-1 text-sm text-muted-foreground text-center">
             {saveStatus}
@@ -119,6 +121,7 @@ const EdunoteEditor: React.FC<EdunoteEditorProps> = ({ note, settingsOff }) => {
         <EditorRoot>
           <EditorContent
             initialContent={initialContent}
+            immediatelyRender={false}
             extensions={extensions}
             editable={!settingsOff}
             className="relative min-h-[500px] w-full border-muted bg-transparent sm:mb-[calc(20vh)] sm:rounded-lg text-white"

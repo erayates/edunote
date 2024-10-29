@@ -10,8 +10,9 @@ interface NoteCardProps {
   thumbnailUrl: string;
   avatarUrl: string;
   author: string;
-  createdAt: Date;
+  updatedAt: Date;
   slug: string;
+  tags: string[];
 }
 
 const NoteCard: React.FC<NoteCardProps> = ({
@@ -20,8 +21,9 @@ const NoteCard: React.FC<NoteCardProps> = ({
   thumbnailUrl,
   avatarUrl,
   author,
-  createdAt,
+  updatedAt,
   slug,
+  tags,
 }) => {
   return (
     <Link href={`/notes/${slug}`}>
@@ -51,21 +53,31 @@ const NoteCard: React.FC<NoteCardProps> = ({
 
         <div className="flex flex-col p-2">
           <h3 className="text-white text-lg leading-6 font-semibold">
-            {title.slice(0, title.length > 40 ? 40 : title.length)}
-            {title.length > 40 && "..."}
+            {title.length > 25 ? title.slice(0, 20) + "..." : title}
           </h3>
 
           <p className="text-white/30 text-xs">
-            {description.slice(
-              0,
-              description.length > 260 ? 260 : description.length
-            )}
-            {description.length > 260 && "..."}
+            {description.length > 75
+              ? description.slice(0, 75) + "..."
+              : description}
           </p>
+
+          <div className="">
+            <div className="flex flex-wrap gap-2 mt-2">
+              {tags.map((tag) => (
+                <span
+                  key={tag}
+                  className=" text-[8px] font-semibold bg-green-300 text-primary px-2 py-1 rounded-full"
+                >
+                  {tag.length > 8 ? tag.slice(0, 8) + "..." : tag}
+                </span>
+              ))}
+            </div>
+          </div>
 
           <div className="bg-background h-[64px] rounded-full mt-4 absolute -bottom-10 left-0 text-center w-full">
             <p className=" text-white/30 text-[12px] mt-1 font-medium">
-              {formatDistance(new Date(createdAt), new Date())} ago
+              {formatDistance(new Date(updatedAt), new Date())} ago
             </p>
           </div>
         </div>

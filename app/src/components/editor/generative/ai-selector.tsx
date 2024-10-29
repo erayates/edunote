@@ -15,6 +15,7 @@ import AICompletionCommands from "./ai-completion-commands";
 import AISelectorCommands from "./ai-selector-commands";
 import { useUser } from "@clerk/nextjs";
 import useFetchStream from "@/hooks/use-fetch-stream";
+import { GEMINI_API_URL } from "@/lib/constants";
 
 interface AISelectorProps {
   open: boolean;
@@ -28,7 +29,7 @@ export function AISelector({ onOpenChange }: AISelectorProps) {
   const { user } = useUser();
 
   const { completion, complete, isLoading } = useFetchStream({
-    api: "https://btk-demo-file-634181987121.europe-central2.run.app/gemini/",
+    api: GEMINI_API_URL as string,
   });
 
   const hasCompletion = completion.length > 0;

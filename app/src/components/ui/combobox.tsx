@@ -31,28 +31,29 @@ interface Tag {
 }
 
 interface ComboBoxProps {
-  defaultTags: Tag[];
   selectedTags: Tag[];
   setSelectedTags: React.Dispatch<
     React.SetStateAction<{ value: string; label: string; id: string }[]>
   >;
+  type?: string;
 }
 
 const ITEMS_PER_PAGE = 15;
 const MAX_SELECTED_TAGS = 5;
 
 export default function ComboBox({
-  defaultTags,
   selectedTags,
   setSelectedTags,
+  type,
 }: ComboBoxProps) {
   const [open, setOpen] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
   const [hasMore, setHasMore] = React.useState(true);
   const [skippedTag, setSkippedTag] = React.useState(15);
   const [defaultDisplayedTags, setDefaultDisplayedTags] = React.useState<Tag[]>(
-    defaultTags || []
+    []
   );
+
   const [searchResults, setSearchResults] = React.useState<Tag[]>([]);
   const [isSearching, setIsSearching] = React.useState(false);
   const [inputValue, setInputValue] = React.useState("");
@@ -63,6 +64,17 @@ export default function ComboBox({
     threshold: 0.1,
     rootMargin: "100px",
   });
+
+  React.useEffect(() => {
+    const fetchAllTags = async () => {
+      const tags = await getAllTags();
+      if (tags) {
+        setDefaultDisplayedTags(tags);
+      }
+    };
+
+    fetchAllTags();
+  }, []);
 
   const displayedTags = isSearching ? searchResults : defaultDisplayedTags;
 
@@ -150,6 +162,8 @@ export default function ComboBox({
 
   // Creating new tag
   const handleKeyDown = async (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (type === "search") return;
+
     if (e.key === "Enter" && inputValue.trim()) {
       e.preventDefault();
 
@@ -204,7 +218,7 @@ export default function ComboBox({
             {selectedTags.map((tag) => (
               <span
                 key={tag.id + randomBytes(5).toString("hex")}
-                className="bg-secondary text-secondary-foreground px-2 py-1 rounded-md text-sm flex items-center"
+                className="bg-secondary text-balance text-secondary-foreground px-2 py-1 rounded-md text-sm flex items-center"
               >
                 {tag.label}
                 <button
@@ -228,7 +242,11 @@ export default function ComboBox({
       <PopoverContent className="w-[400px] p-0 bg-foreground" align="start">
         <Command className="bg-foreground">
           <CommandInput
-            placeholder="Search or create new tag..."
+            placeholder={
+              type === "search"
+                ? "Search a tag..."
+                : "Search or create new tag..."
+            }
             className="h-9 text-white text-xs"
             value={inputValue}
             onKeyDown={handleKeyDown}
@@ -238,6 +256,8 @@ export default function ComboBox({
             <CommandEmpty className="text-white/30 text-sm p-4 text-center">
               {loading
                 ? "Searching..."
+                : type === "search"
+                ? "No tags found."
                 : `No tags found. Press enter to create "${inputValue}" tag.`}
             </CommandEmpty>
             <CommandGroup>

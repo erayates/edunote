@@ -1,8 +1,11 @@
 "use server";
 import { defaultEditorContent } from "@/lib/content";
 import { prisma } from "@/lib/db";
-import { Prisma } from "@prisma/client";
+import { NoteWithRelations, SearchActionParams } from "@/types/note";
+import { Prisma, Tag } from "@prisma/client";
 import crypto from "crypto";
+import { addDays, startOfDay } from "date-fns";
+import { fromZonedTime } from "date-fns-tz";
 import slug from "slug";
 
 export async function createNote(userId: string) {
@@ -73,6 +76,10 @@ export async function fetchNoteWithSharelink(shareLink: string) {
       where: {
         shareLink,
       },
+      include: {
+        user: true,
+        tags: true,
+      },
     });
 
     return note;
@@ -81,13 +88,20 @@ export async function fetchNoteWithSharelink(shareLink: string) {
   }
 }
 
-export async function getAllNotes(): Promise<
-  Prisma.NoteGetPayload<{ include: { user: true } }>[] | false
+export async function getAllNotes(
+  take: number
+): Promise<
+  Prisma.NoteGetPayload<{ include: { user: true; tags: true } }>[] | false
 > {
   try {
     const notes = await prisma.note.findMany({
       include: {
         user: true,
+        tags: true,
+      },
+      take: take || 10,
+      orderBy: {
+        createdAt: "desc",
       },
       where: {
         isPublic: true,
@@ -121,13 +135,77 @@ export async function updateNote(
   try {
     await prisma.note.update({
       where: { id: noteId },
-      data,
+      data: {
+        ...data,
+        updatedAt: new Date(),
+      },
     });
 
     return true;
   } catch {
     return false;
   }
+}
+
+export async function searchNotes({
+  query,
+  tags,
+  createdAt,
+  author,
+  take,
+}: SearchActionParams): Promise<NoteWithRelations[]> {
+  const conditions: Prisma.NoteWhereInput[] = [];
+
+  if (query) {
+    conditions.push({
+      OR: [
+        { title: { contains: query, mode: "insensitive" } },
+        { description: { contains: query, mode: "insensitive" } },
+      ],
+    });
+  }
+
+  if (tags) {
+    const tagArray = (
+      typeof tags === "string"
+        ? decodeURIComponent(tags).split(",")
+        : tags.map((tag) => decodeURIComponent(tag))
+    ).map((tag) => tag.trim().toLowerCase());
+
+    conditions.push({
+      tags: { some: { slug: { in: tagArray } } },
+    });
+  }
+
+  if (createdAt) {
+    const sOfDay = fromZonedTime(startOfDay(new Date(createdAt)), "UTC");
+    const eOfDay = fromZonedTime(addDays(sOfDay, 1), "UTC");
+
+    conditions.push({
+      createdAt: { gte: sOfDay, lte: eOfDay },
+    });
+  }
+
+  if (author) {
+    conditions.push({
+      user: { fullname: { contains: author, mode: "insensitive" } },
+    });
+  }
+
+  const where: Prisma.NoteWhereInput =
+    conditions.length > 0 ? { AND: conditions } : {};
+
+  return prisma.note.findMany({
+    where,
+    take: take || 10,
+    orderBy: {
+      createdAt: "desc",
+    },
+    include: {
+      user: true,
+      tags: true,
+    },
+  });
 }
 
 export async function getAllUserNotes(userId: string) {

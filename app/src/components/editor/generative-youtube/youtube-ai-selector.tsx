@@ -31,8 +31,6 @@ export function YoutubeAISelector() {
     api: "https://btk-demo-file-634181987121.europe-central2.run.app/caption/extract",
   });
 
-  console.log(editor?.state.selection.content().content)
-
   const hasCompletion = completion.length > 0;
 
   if (isYoutubeSelected) {

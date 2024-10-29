@@ -1,1 +1,3 @@
 export const APP_BASE_URL = process.env.NEXT_PUBLIC_APP_BASE_URL;
+export const GEMINI_API_URL = process.env.NEXT_PUBLIC_GEMINI_API_URL;
+export const GEMINI_API_HISTORY_URL = process.env.NEXT_PUBLIC_GEMINI_API_HISTORY_URL;
