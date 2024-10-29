@@ -78,9 +78,9 @@ def generate_realistic_notes(notes: list[dict], users: list[str], tags: list[str
             random_favorited.append(random.choice(users))
 
         note = {
-            "title": note['title'],
-            "content": note['content'],
-            "description": note['description'],
+            "title": str(note['title']),
+            "content": str(note['content']),
+            "description": str(note['description']),
             "is_public": bool(random.getrandbits(1)),
             "share_link": "TEST",
             "user_id": random.choice(users),
@@ -92,6 +92,7 @@ def generate_realistic_notes(notes: list[dict], users: list[str], tags: list[str
         }
 
         collected_note.append(note)
+    print(len(collected_note))
 
     return collected_note
 
