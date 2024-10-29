@@ -59,7 +59,7 @@ async function handler(req: NextRequest) {
     try {
       const user = await prisma.user.create({
         data: {
-          id: id, // Using Clerk's user ID
+          id: id,
           email: email_addresses[0].email_address,
           username: username || email_addresses[0].email_address.split("@")[0],
           fullname: `${first_name || ""} ${last_name || ""}`.trim(),
@@ -80,6 +80,28 @@ async function handler(req: NextRequest) {
     } catch (error) {
       console.error("Error creating user:", error);
       return NextResponse.json("Error creating user", { status: 500 });
+    }
+  }
+
+  if (eventType === "user.updated") {
+    const { id, email_addresses, username, first_name, last_name, image_url } =
+      evt.data;
+
+    try {
+      const user = await prisma.user.update({
+        where: { id },
+        data: {
+          email: email_addresses[0].email_address,
+          username: username || email_addresses[0].email_address.split("@")[0],
+          fullname: `${first_name || ""} ${last_name || ""}`.trim(),
+          avatar: image_url,
+        },
+      });
+
+      return NextResponse.json(user, { status: 200 });
+    } catch (error) {
+      console.error("Error updating user:", error);
+      return NextResponse.json("Error updating user", { status: 500 });
     }
   }
 
