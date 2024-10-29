@@ -149,8 +149,35 @@ class Loaders():
             "temperature": 1,
             "top_p": 0.95,
             "top_k": 40,
-            "max_output_tokens": 500,
+            "max_output_tokens": 1000,
             "response_mime_type": "text/plain",
+        }
+        return genai.GenerativeModel(model_name=model_name, generation_config=generation_config)
+
+    @staticmethod
+    def config_model_search(model_name="gemini-1.5-flash"):
+        generation_config = {
+            "candidate_count": 1,
+            "temperature": 1,
+            "top_p": 0.95,
+            "top_k": 40,
+            "max_output_tokens": 1000,
+            "response_schema": content.Schema(
+                type = content.Type.OBJECT,
+                required = ["answer_found_in_the_notes_with_these_note_slugs", "response"],
+                properties = {
+                    "answer_found_in_the_notes_with_these_note_slugs": content.Schema(
+                        type = content.Type.ARRAY,
+                        items = content.Schema(
+                            type = content.Type.STRING,
+                        ),
+                    ),
+                    "response": content.Schema(
+                        type = content.Type.STRING,
+                    ),
+                },
+            ),
+            "response_mime_type": "application/json",
         }
         return genai.GenerativeModel(model_name=model_name, generation_config=generation_config)
 
@@ -175,7 +202,7 @@ class Loaders():
             return content
 
         except Exception as e:
-            print(f"Error loading video data: {e}")
+            # print(f"Error loading video data: {e}")
             return "No caption found."
 
     @staticmethod
