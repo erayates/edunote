@@ -193,7 +193,7 @@ export async function searchNotes({
   }
 
   const where: Prisma.NoteWhereInput =
-    conditions.length > 0 ? { AND: conditions } : {};
+    conditions.length > 0 ? { AND: conditions, isPublic: true } : {};
 
   return prisma.note.findMany({
     where,

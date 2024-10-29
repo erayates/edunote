@@ -56,6 +56,7 @@ async function handler(req: NextRequest) {
     const { id, email_addresses, username, first_name, last_name, image_url } =
       evt.data;
 
+
     try {
       const user = await prisma.user.create({
         data: {
@@ -105,7 +106,7 @@ async function handler(req: NextRequest) {
     }
   }
 
-  return NextResponse.json("", { status: 200 });
+  return NextResponse.json("", { status: 500 });
 }
 
 export const GET = handler;

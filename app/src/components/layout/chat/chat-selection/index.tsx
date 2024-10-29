@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import { useUser } from "@clerk/nextjs";
 import { Note } from "@prisma/client";
 import { Scrollbar } from "@radix-ui/react-scroll-area";
-import { GalleryVerticalEnd } from "lucide-react";
+import { BookUser, GalleryVerticalEnd } from "lucide-react";
 import Image from "next/image";
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 
@@ -59,7 +59,7 @@ const AIChatSelection: React.FC<AIChatSelectionProps> = ({
     >
       <button
         className={cn(
-          "border border-secondary hover:bg-primary p-2 rounded-xl w-full flex items-center justify-center text-white text-sm",
+          "border border-secondary hover:bg-primary relative p-2 rounded-xl w-full flex items-center justify-center text-white text-xs",
           chatSelection === "gemini" && "bg-secondary"
         )}
         onClick={() => setChatSelection("gemini")}
@@ -74,9 +74,28 @@ const AIChatSelection: React.FC<AIChatSelectionProps> = ({
         Chat with Gemini
       </button>
 
-      <button className="border border-secondary hover:bg-primary p-2 rounded-xl w-full flex items-center justify-center text-white text-sm">
+      <button
+        className={cn(
+          "border border-secondary hover:bg-primary p-2 rounded-xl w-full flex items-center justify-center text-white text-xs",
+          chatSelection === "public-notes" && "bg-secondary"
+        )}
+        onClick={() => {
+          setChatSelection("public-notes");
+        }}
+      >
         <GalleryVerticalEnd className="mr-2" />
-        Chat with All Notes
+        Chat with Public Notes
+      </button>
+
+      <button
+        className={cn(
+          "border border-secondary hover:bg-primary p-2 rounded-xl w-full flex items-center justify-center text-white text-xs",
+          chatSelection === "my-notes" && "bg-secondary"
+        )}
+        onClick={() => setChatSelection("my-notes")}
+      >
+        <BookUser className="mr-2" />
+        Chat with My Notes
       </button>
 
       <div className="pt-4">

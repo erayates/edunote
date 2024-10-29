@@ -8,6 +8,7 @@ import Spinner from "@/components/ui/spinner";
 import ChatAICommands from "../chat-ai-commands";
 
 import Markdown from "react-markdown";
+import Link from "next/link";
 
 interface AIChatContentProps {
   chat: Chat[];
@@ -26,6 +27,8 @@ const AIChatContent: React.FC<AIChatContentProps> = ({
   onUserSelectCommand,
 }) => {
   const { user } = useUser();
+
+  console.log(chat);
 
   return (
     <div
@@ -88,14 +91,45 @@ const AIChatContent: React.FC<AIChatContentProps> = ({
                       </AvatarFallback>
                     </Avatar>
                     <div className="bg-blue-600 rounded-xl p-2">
-                      {chatItem.parts.map((message: string, i) => (
-                        <div
-                          key={i}
-                          className="prose p-2 px-4 prose-sm prose-h2:text-white prose-h1:text-white prose-p:text-white prose-a:text-blue-500 prose-a:no-underline prose-strong:text-white text-white"
-                        >
-                          <Markdown>{message}</Markdown>
-                        </div>
-                      ))}
+                      {chatItem.parts.map((message: string, i) => {
+                        try {
+                          const parsedMessage: {
+                            response: string;
+                            notes: string[];
+                          } = JSON.parse(message);
+                          return (
+                            <div
+                              key={i}
+                              className="prose p-2 px-4 prose-sm prose-h2:text-white prose-h1:text-white prose-p:text-white prose-a:text-blue-500 prose-a:no-underline prose-strong:text-white text-white"
+                            >
+                              <Markdown>{parsedMessage.response}</Markdown>
+
+                              <p className="text-sm text-white font-semibold">
+                                Associated Notes:
+                              </p>
+                              {parsedMessage.notes.length > 0 &&
+                                parsedMessage.notes.map((note: string) => (
+                                  <Link
+                                    href={`/notes/${note}`}
+                                    key={note}
+                                    className="text-sm text-white font-semibold bg-foreground p-2 rounded-sm"
+                                  >
+                                    {note}
+                                  </Link>
+                                ))}
+                            </div>
+                          );
+                        } catch {
+                          return (
+                            <div
+                              key={i}
+                              className="prose p-2 px-4 prose-sm prose-h2:text-white prose-h1:text-white prose-p:text-white prose-a:text-blue-500 prose-a:no-underline prose-strong:text-white text-white"
+                            >
+                              <Markdown>{message}</Markdown>
+                            </div>
+                          );
+                        }
+                      })}
                     </div>
                   </div>
                 )

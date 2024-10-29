@@ -45,6 +45,10 @@ export default async function NotesPage({ searchParams }: NotesPageProps) {
       }
     }
 
+    if (!notes) {
+      return notFound();
+    }
+
     return <NotesContainer notes={notes} />;
   } catch (error) {
     console.error("Error fetching notes:", error);

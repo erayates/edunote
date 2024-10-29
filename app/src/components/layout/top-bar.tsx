@@ -9,7 +9,7 @@ import { Input } from "../ui/input";
 import React, { ChangeEvent, useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 import AIChat from "./chat";
-import { GEMINI_API_URL } from "@/lib/constants";
+import { GEMINI_API_SEARCH_URL, GEMINI_API_URL } from "@/lib/constants";
 import useFetchStream from "@/hooks/use-fetch-stream";
 import { Note } from "@prisma/client";
 import { getChatHistory } from "@/lib/service";
@@ -47,10 +47,19 @@ const AppBottomBar: React.FC = () => {
     api: `${GEMINI_API_URL}`,
   });
 
+  const {
+    completion: searchCompletion,
+    complete: searchComplete,
+    isLoading: searchIsLoading,
+  } = useFetchStream({
+    api: `${GEMINI_API_SEARCH_URL}`,
+  });
+
   const chatRef = useRef<HTMLDivElement>(null);
 
   const commandRef = useRef<HTMLDivElement>(null);
 
+  // Handle click outside
   const handleClickOutside = (e: MouseEvent) => {
     // Check if the click is outside both chatRef and commandRef
     if (
@@ -96,6 +105,17 @@ const AppBottomBar: React.FC = () => {
     }
   }, [completion, isLoading]);
 
+  useEffect(() => {
+    if (searchIsLoading && !searchCompletion) {
+      addModelChat("⏳⏳ Gemini is thinking... Please be patient... ⏳⏳");
+    }
+
+    if (searchCompletion && !searchIsLoading) {
+      setChat((prev) => prev.slice(0, -1));
+      addModelChat(searchCompletion);
+    }
+  }, [searchCompletion, searchIsLoading]);
+
   // Set body style settings to prevent overflow
   useEffect(() => {
     if (open) {
@@ -124,12 +144,8 @@ const AppBottomBar: React.FC = () => {
     }
 
     if (chatSelection === "gemini") {
-      setChat([
-        {
-          role: "model",
-          parts: ["Type something and press ENTER to start with Gemini AI."],
-        },
-      ]);
+      setChat([]);
+      addModelChat("Type something and press ENTER to start with Gemini AI.");
     }
 
     if (chatSelection === "single") {
@@ -152,7 +168,18 @@ const AppBottomBar: React.FC = () => {
       fetchChatHistory();
     }
 
-    if (chatSelection === "all") {
+    if (chatSelection === "public-notes") {
+      setChat([]);
+      addModelChat(
+        "Type something and press ENTER to start search something within all public notes in the app."
+      );
+    }
+
+    if (chatSelection === "my-notes") {
+      setChat([]);
+      addModelChat(
+        "Type something and press ENTER to start with Gemini AI about all your notes."
+      );
     }
   }, [chatSelection, currentNote]);
 
@@ -181,6 +208,27 @@ const AppBottomBar: React.FC = () => {
             user_id: user?.id as string,
             note_id: currentNote?.id as string,
             option: "fromnote_ask",
+          },
+        });
+      }
+
+      if (chatSelection === "my-notes") {
+        addUserChat(prompt);
+        searchComplete(prompt, {
+          body: {
+            command: prompt,
+            user_id: user?.id as string,
+          },
+        });
+      }
+
+      if (chatSelection === "public-notes") {
+        addUserChat(prompt);
+        searchComplete(prompt, {
+          body: {
+            command: prompt,
+            user_id: user?.id as string,
+            public_search: true,
           },
         });
       }

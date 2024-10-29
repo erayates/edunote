@@ -36,6 +36,7 @@ const AIChat: React.FC<AIChatProps> = ({
         setChatSelection={setChatSelection}
         chatSelection={chatSelection}
       />
+      
       <AIChatContent
         open={open}
         chat={chat}

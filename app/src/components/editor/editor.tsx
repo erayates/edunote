@@ -34,7 +34,6 @@ import { Note, User } from "@prisma/client";
 import EditorHeader from "./editor-header";
 import { updateNote } from "@/actions/notes";
 import { toast } from "sonner";
-import { YoutubeAISelector } from "./generative-youtube/youtube-ai-selector";
 import Image from "next/image";
 
 const extensions = [...defaultExtensions, slashCommand];
@@ -103,7 +102,7 @@ const EdunoteEditor: React.FC<EdunoteEditorProps> = ({ note, settingsOff }) => {
 
   return (
     <React.Fragment>
-      <div className="w-full h-[200px] mb-20  absolute left-0 top-0 -z-10">
+      <div className="w-full h-[200px] mb-20 absolute left-0 top-0 -z-10">
         <div className="w-full h-full absolute top-0 left-0 bg-gradient-to-t z-10 from-background to-transparent"></div>
         <div className="w-full h-full relative">
           <Image
@@ -185,8 +184,6 @@ const EdunoteEditor: React.FC<EdunoteEditorProps> = ({ note, settingsOff }) => {
                 ))}
               </EditorCommandList>
             </EditorCommand>
-
-            <YoutubeAISelector />
 
             <GenerativeMenuSwitch open={openAI} onOpenChange={setOpenAI}>
               <Separator orientation="vertical" />
