@@ -1,15 +1,41 @@
 import json
 import pandas as pd
 import sys
-sys.path.append('API/Secrets')
-sys.path.append('Functions/Data')
 from datetime import datetime
 import random
-from KEY import *
+sys.path.append('Functions/Data')
+import KEY # type: ignore
+import re, pytz, string, requests
+from bson.objectid import ObjectId
+import time
+import sys
+
+def generate_id(length=24):
+    # Generate a random 24-character hex string
+    return ''.join(random.choices('0123456789abcdef', k=length))
+
+def remove_non_english_chars(text):
+    # This pattern matches any character that is not a basic Latin character (ASCII)
+    return re.sub(r'[^\x00-\x7F]+', '', text)
+
+def thumbnail_list(total = 100):
+    urls = []
+    for index in range(total):
+        percent = (index / total)
+        filled_length = int(40 * percent)
+        bar = '█' * filled_length + '-' * (40 - filled_length)
+        
+        prefix = 'Creating Thumbnail List: '
+        sys.stdout.write(f'\r{prefix} |{bar}| {percent:.2%}')
+        sys.stdout.flush()        
+        response = requests.get("https://picsum.photos/640/640")
+        urls.append(response.url)
+    print()
+    return urls
 
 def load_note():
-    users = USERS.find()
-    tags = TAGS.find()
+    users = KEY.USERS.find()
+    tags = KEY.TAGS.find()
     user_ids = [str(user['_id']) for user in users]
     tag_ids = [str(tag['_id']) for tag in tags]
     return user_ids, tag_ids
@@ -68,38 +94,66 @@ def create_test_dataset():
 
 def generate_realistic_notes(notes: list[dict], users: list[str], tags: list[str]):
     collected_note = []
-    for note in notes:
+    total = len(notes)
+    thumbnails = thumbnail_list()
+    for index, note in enumerate(notes):
+        percent = (index / total)
+        filled_length = int(40 * percent)
+        bar = '█' * filled_length + '-' * (40 - filled_length)
+        
+        prefix = 'Realistic Notes: '
+        sys.stdout.write(f'\r{prefix} |{bar}| {percent:.2%}')
+        sys.stdout.flush()
+        
         random_tags = []
         for _ in range(random.randint(0, 5)):
-            random_tags.append(random.choice(tags))
+            random_tags.append(ObjectId(random.choice(tags)))
 
         random_favorited = []
         for _ in range(random.randint(0, 5)):
             random_favorited.append(random.choice(users))
 
+        id = ObjectId(generate_id())
+        thumbnail = random.choice(thumbnails)     
+
         note = {
+            "_id": id,
             "title": str(note['title']),
             "content": str(note['content']),
             "description": str(note['description']),
             "is_public": bool(random.getrandbits(1)),
-            "share_link": "TEST",
+            "share_link": generate_id(length=20),
             "user_id": random.choice(users),
-            "group_ids": [],
+            "group_ids": ['test'],
             "tag_ids": random_tags,
+            "thumbnail": thumbnail,
             "favorited_by_ids": random_favorited,
-            "created_at": datetime.now().isoformat(),
-            "updated_at": datetime.now().isoformat()
+            "createdAt": datetime.now(pytz.utc),
+            "updatedAt": datetime.now(pytz.utc),
+            "slug": f"{remove_non_english_chars(str(note['title'])).lower().replace(' ', '-').replace('---', '-').replace('--', '-')}-{id}"
         }
 
         collected_note.append(note)
-    print(len(collected_note))
-
+    percent = 1
+    filled_length = int(40 * percent)
+    bar = '█' * filled_length + '-' * (40 - filled_length)
+    
+    prefix = 'Realistic Notes: '
+    sys.stdout.write(f'\r{prefix} |{bar}| {percent:.2%}')
+    sys.stdout.flush()        
+    print()
     return collected_note
 
 users, tags = load_note()
 
 notes = create_test_dataset() + create_article_dataset()
 
-realistic_notes = generate_realistic_notes(notes, users=users, tags=tags)
-with open("Functions/Data/extracted_notes.json", "w") as file:
-    json.dump(realistic_notes, file, indent=4)
+notes = generate_realistic_notes(notes, users, tags)
+
+print(len(notes))
+
+# Connect to MongoDB
+collection = KEY.NOTES
+
+# Insert data into MongoDB
+collection.insert_many(notes)
