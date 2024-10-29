@@ -17,13 +17,15 @@ AUDIO_EXTENSIONS = ['mp3', 'wav', 'aac', 'm4a', 'wma']
 PDF_EXTENSIONS = ['pdf']
 IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg']
 
-
 class MainBody(BaseModel):
     user_id: str
     option: str = 'user'
     note_id: str = 'gemini'
     command: Optional[str] = None
     prompt: Optional[str] = None
+
+class Embedding(BaseModel):
+    query: str
 
 class NoteBody(BaseModel):
     user_id: str
@@ -32,6 +34,7 @@ class NoteBody(BaseModel):
 class SearchINNotes(BaseModel):
     command: str
     user_id: str
+    public_search: bool = False
 
 class FileUploadBody(BaseModel):
     user_id: str
@@ -87,7 +90,7 @@ class Prompt():
                 messages.append({'role': 'user', 'parts': [self.categorized_propmt[option]]})
                 messages.append({'role': 'model', 'parts': ['I am an AI writing assistant and I will provide you only the text you desire.']})
                 messages.append({'role': 'user', 'parts': [f'Here is the text: {prompt}']})
-                messages_history.append({'role': 'user', 'parts': [option, f"{prompt}"]})
+                messages_history.append({'role': 'user', 'parts': [f"Make my note {option}."]})
             else:
                 messages.append({'role': 'user', 'parts': [user_query]})
                 messages_history.append({'role': 'user', 'parts': [user_query]})
@@ -126,6 +129,18 @@ class Prompt():
         ][safety_category]
 
 class Loaders():
+
+    # def get_embedding(query: str):
+    #     output = embed.text(
+    #         texts=[query],
+    #         model='nomic-embed-text-v1',
+    #         task_type='search_document',
+    #         long_text_mode='mean',
+    #         dimensionality = 768
+    #     )
+    #     print(type(output['embeddings'][0]))
+    #     print(output['embeddings'][0])
+    #     return output['embeddings'][0]
 
     @staticmethod
     def config_model(model_name="gemini-1.5-pro"):

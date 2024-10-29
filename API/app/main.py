@@ -4,15 +4,15 @@ import google.generativeai as genai
 import Secrets.KEY as KEY
 import asyncio, requests
 import io
-from nomic import embed
+# from nomic import embed
 from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from google.api_core.exceptions import ResourceExhausted
 from app.loaders import *
 
 # TODO: 
-# - Check functions: get_embedding, atlas_vector_search_all
-# - Add MongoDB Trigger or auto update embedding and TEST it. (Check Functions/atlas_embedding_update_trigger.js)
+# - Local embedding model can be added ?? 
+#   - Add MongoDB Trigger (Completed) or auto update embedding and TEST it. (Check Functions/atlas_embedding_update_trigger.js)
 # - Dummy User User Update for Dummy Note Data Import
 
 origins = ["*"]
@@ -30,137 +30,140 @@ genai.configure(api_key=KEY.GEMINI_API_KEY)
 prompt_obj = Prompt()
 client = KEY.ELASTICSEARCH_CLIENT
 
-@app.get("/embedding/")
-async def get_embedding(query: str):
-    output = embed.text(
-        texts=[query],
-        model='nomic-embed-text-v1',
-        task_type='search_document',
-        long_text_mode='mean',
-        dimensionality = 768
-    )
-    return {'embedding': output['embeddings']}
+# @app.post("/embedding/")
+# async def get_embedding(body: Embedding):
+#     query = body.query
+#     output = embed.text(
+#         texts=[query],
+#         model='nomic-embed-text-v1',
+#         task_type='search_document',
+#         long_text_mode='mean',
+#         dimensionality = 768
+#     )
+#     return {'embedding': output['embeddings']}
 
-@app.get("/search/vector-all/")
-async def atlas_vector_search_all(query: str, limit: int = 5):
-    query_embedding = await get_embedding(query)
-    pipeline = [
-        {
-            "$vectorSearch": {
-                    "index": "vector_index",
-                    "queryVector": query_embedding,
-                    "path": "embedding",
-                    "exact": True,
-                    "limit": limit
-            }
-        }, 
-        {
-            "$project": {
-                "_id": 1,
-                "title": 1,
-                "desciption": 1,
-                "content": 1,
-                "score": {
-                    "$meta": "vectorSearchScore"
-                }
-            }
-        }
-    ]
-    results = NOTES.aggregate(pipeline)
-    return {'results': [note for note in results]}
+# @app.get("/search/vector-all/")
+# async def atlas_vector_search_all(query: str, limit: int = 5):
+#     query_embedding = Loaders.get_embedding(query)
+#     pipeline = [
+#         {
+#             "$vectorSearch": {
+#                     "index": "vector_index",
+#                     "queryVector": query_embedding,
+#                     "path": "embedding",
+#                     "exact": True,
+#                     "limit": limit
+#             }
+#         }, 
+#         {
+#             "$project": {
+#                 "_id": 1,
+#                 "title": 1,
+#                 "desciption": 1,
+#                 "content": 1,
+#                 "score": {
+#                     "$meta": "vectorSearchScore"
+#                 }
+#             }
+#         }
+#     ]
+#     results = NOTES.aggregate(pipeline)
+#     return {'results': [note for note in results]}
 
-@app.get("/search/vector-ask/")
-async def atlas_vector_search_ask(user_id: str, note_id: str, query: str, limit: int = 5):
-    query_embedding = await get_embedding(query)
-    pipeline = [
-        {
-            "$vectorSearch": {
-                "index": "vector_index",
-                "queryVector": query_embedding,
-                "path": "embedding",
-                "exact": True,
-                "limit": limit
-            }
-        },
-        {
-            "$match": {
-                "_id": { "$in": user_id }
-            }
-        },
-        {
-            "$project": {
-                "_id": 1,
-                "title": 1,
-                "description": 1,
-                "content": 1,
-                "score": {
-                    "$meta": "vectorSearchScore"
-                }
-            }
-        }
-    ]
-    results = NOTES.aggregate(pipeline)
-    results = {'results': [note for note in results]}
-    try:
-        messages = [
-            {'role': 'user', 'parts': ["You are an AI assistant that takes some notes and a question or a query or else. In the result, you will answer the question with only using the information in the notes provided to you. You will answer me with a string of JSON. Add JSON only the note ids you use to answer the query and the answer. So the JSON template is {{'notes': [note_ids...], 'response': 'response...'}}\n Example JSON response result (for the user query 'When was the Spiderman 3 movie ?')(assume that the response is taken from those notes...) : '{{'notes': ['671c237d736e85a7f30525a7', '671c4916736e85a7f30525ac'], 'response': 'You very liked the movie Spiderman 3. Actually, you have screamed 'Yeaaahhh' when you see the last scene in the Cinema The Kazabalanca.'}}'"]},
-            {'role': 'user', 'parts': ['Here are the Notes:\n']+[note for note in results]},
-            {'role': 'user', 'parts': [f'Answer the following query using below texts now. Remember to give the format desired JSON format! Query: {query}']}
-        ]
+# @app.get("/search/vector-ask/")
+# async def atlas_vector_search_ask(user_id: str, note_id: str, query: str, limit: int = 5):
+#     query_embedding = Loaders.get_embedding(query)
+#     pipeline = [
+#         {
+#             "$vectorSearch": {
+#                 "index": "vector_index",
+#                 "queryVector": query_embedding,
+#                 "path": "embedding",
+#                 "exact": True,
+#                 "limit": limit
+#             }
+#         },
+#         {
+#             "$match": {
+#                 "_id": { "$in": user_id }
+#             }
+#         },
+#         {
+#             "$project": {
+#                 "_id": 1,
+#                 "title": 1,
+#                 "description": 1,
+#                 "content": 1,
+#                 "score": {
+#                     "$meta": "vectorSearchScore"
+#                 }
+#             }
+#         }
+#     ]
+#     results = NOTES.aggregate(pipeline)
+#     results = {'results': [note for note in results]}
+#     try:
+#         messages = [
+#             {'role': 'user', 'parts': ["You are an AI assistant that takes some notes and a question or a query or else. In the result, you will answer the question with only using the information in the notes provided to you. You will answer me with a string of JSON. Add JSON only the note ids you use to answer the query and the answer. So the JSON template is {{'notes': [note_ids...], 'response': 'response...'}}\n Example JSON response result (for the user query 'When was the Spiderman 3 movie ?')(assume that the response is taken from those notes...) : '{{'notes': ['671c237d736e85a7f30525a7', '671c4916736e85a7f30525ac'], 'response': 'You very liked the movie Spiderman 3. Actually, you have screamed 'Yeaaahhh' when you see the last scene in the Cinema The Kazabalanca.'}}'"]},
+#             {'role': 'user', 'parts': ['Here are the Notes:\n']+[note for note in results]},
+#             {'role': 'user', 'parts': [f'Answer the following query using below texts now. Remember to give the format desired JSON format! Query: {query}']}
+#         ]
 
-        result = model.generate_content(contents=messages, stream=True)
-        dictionary: dict = json.loads(result.text)
+#         result = model.generate_content(contents=messages, stream=True)
+#         dictionary: dict = json.loads(result.text)
 
-        messages_history = [
-            {'role': 'user', 'parts': [query]},
-            {'role': 'model', 'parts': [dictionary['response']]}
-        ]
+#         messages_history = [
+#             {'role': 'user', 'parts': [query]},
+#             {'role': 'model', 'parts': [dictionary['response']]}
+#         ]
 
-        ChatHistory.update_chat_history(user_id=user_id, note_id=note_id, propmts=messages_history)
+#         ChatHistory.update_chat_history(user_id=user_id, note_id=note_id, propmts=messages_history)
 
-        return dictionary
-    except Exception as e:
-        raise HTTPException(status_code=404, detail=f"Elasticsearch client error: {str(e)}")
+#         return dictionary
+#     except Exception as e:
+#         raise HTTPException(status_code=404, detail=f"Elasticsearch client error: {str(e)}")
 
 @app.post("/search/elastic-ask/")
 async def elasticsearch_ask(body: SearchINNotes):
     query = body.command
     user_id = body.user_id
+    public_search = body.public_search
+    print(public_search)
     global client
-    try:
-        response = client.search(
-            body={
-                "query": {
-                    "bool": {
-                        "must": [
-                            {"match": {"content": query}}
-                        ],
-                        "filter": [
-                            {"term": {"user_id": user_id}}
-                        ]
+    filter = { "term": { "is_public": True } } if public_search else { "match": { "user_id": user_id } }
+    body={
+        "query": {
+            "bool": {
+                "must": {
+                    "multi_match": {
+                        "query": query,
+                        "fields": ["title", "description", "content"]
                     }
                 },
-                "from": 0,
-                "size": 5
+                "filter": [
+                    filter
+                ]
             }
-        )
-        messages = [
-            {'role': 'user', 'parts': ["You are an AI assistant that takes some notes and a question or a query or else. In the result, you will answer the question with only using the information in the notes provided to you. You will answer me with a string of JSON. Add JSON only the note ids you use to answer the query and the answer. So the JSON template is {{'notes': [note_ids...], 'response': 'response...'}}\n Example JSON response result (for the user query 'When was the Spiderman 3 movie ?')(assume that the response is taken from those notes...) : '{{'notes': ['671c237d736e85a7f30525a7', '671c4916736e85a7f30525ac'], 'response': 'You very liked the movie Spiderman 3. Actually, you have screamed 'Yeaaahhh' when you see the last scene in the Cinema The Kazabalanca.'}}'"]},
-            {'role': 'user', 'parts': ['Here are the Notes:\n']+[response]},
-            {'role': 'user', 'parts': [f'Answer the following query using below texts now. Remember to give the format desired JSON format! Query: {query}']}
-        ]
+        }
+    }
+    response = client.search(
+        index="notes",
+        body=body
+    )
+    print(response.body)
+    messages = [
+        {'role': 'user', 'parts': ["You are an AI assistant that takes some notes and a question or a query or else. In the result, you will answer the question with only using the information in the notes provided to you. You will answer me with a string of JSON. Add JSON only the note ids you use to answer the query and the answer. So the JSON template is {\"notes\": [note_ids...], \"response\": \"response...\"}\n Example JSON response result (for the user query \"When was the Spiderman 3 movie ?\")(assume that the response is taken from those notes...) : \"{\"notes\": [\"671c237d736e85a7f30525a7\", \"671c4916736e85a7f30525ac\"], \"response\": \"You very liked the movie Spiderman 3. Actually, you have screamed \"Yeaaahhh\" when you see the last scene in the Cinema The Kazabalanca.\"}\""]},
+        {'role': 'user', 'parts': [f'Here are the Notes:\n{response}']},
+        {'role': 'user', 'parts': [f'Answer the following query using below texts now. Remember to give the format desired JSON formatted string. Do not add any (` or \'json\'). Query: {query}']}
+    ]
 
-        result = model.generate_content(contents=messages, stream=True)
-        dictionary: dict = json.loads(result.text)
+    # return(response.body)
+    result = model.generate_content(contents=messages)
+    dictionary = json.loads(result.text)
+    print(result.text)
+    print(type(dictionary))
 
-        # messages_history = [
-        #     {'role': 'user', 'parts': [query]},
-        #     {'role': 'model', 'parts': [dictionary['response']]}
-        # ]
-
-        return dictionary
-    except Exception as e:
-        raise HTTPException(status_code=404, detail=f"Elasticsearch client error: {str(e)}")
+    return dictionary
 
 @app.post("/search/elastic-simple/")
 async def elasticsearch_simple(query: str):
@@ -444,7 +447,7 @@ async def root():
                         "youtube_video_id": "The ID of the YouTube video from which to extract captions. (required)"
                     }
                 },
-                "/bucket/check/": {
+                "/file/check/": {
                     "method": "POST",
                     "description": "Check if a specified file exists in the storage bucket.",
                     "parameters": {
@@ -510,4 +513,3 @@ async def root():
             }
         }
     }
-
