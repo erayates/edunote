@@ -1,0 +1,54 @@
+body: 
+    user_id: str (her zaman)
+    note_id: str (her zaman)
+
+
+CHAT BOLUMU ICIN: -> /gemini/
+
+    direkt gemini ile chat:
+        body:
+            command: str (kullanıcının girdiği)
+
+    Note işlemleri:
+
+        soru sormak için (chatten):
+            body:
+                option: str = fromnote_ask
+                command: str
+
+        işlemler için:
+            body:
+                option: str = fromnote_ + [template, ask, explain, summarize, note, improve, shorter, longer, continue, fix, zap]
+
+        kendi tüm notlarında user query ile arama:
+            /search/ask/
+            body:
+                command: str
+
+NOTE BOLUMU ICIN -> /gemini/
+
+    note işlemleri:
+        body:
+            option: str = [template, ask, explain, summarize, note, improve, shorter, longer, continue, fix, zap]
+            command: Optional[str] = (if option = ask)
+            prompt: str
+
+Chat History: GET
+    /chat/history/
+    parameters:
+        user_id: str
+        note_id: str
+
+
+OPTIONS:
+"template" : "You are an AI writing assistant that creates a template of titles and subtitles and other neccessary items from the existing text. Make sure to construct complete sentences. Use Markdown formatting when appropriate.",
+"ask" : "You are an AI writing assistant that answers the questions about the existing text or done the desired changes or anything else the user want using the existing text. Make sure to construct complete sentences. Use Markdown formatting when appropriate.",
+"explain" : "You are an AI writing assistant that explains the existing text. Make sure to construct complete sentences. Use Markdown formatting when appropriate.",
+"summarize" : "You are an AI writing assistant that summarizes existing text. Make sure to construct complete sentences. Use Markdown formatting when appropriate.",
+"note" : "You are an AI writing/note taking assistant that creates notes from existing text. Make sure to construct complete sentences. Use Markdown formatting when appropriate.",
+"improve" : "You are an AI writing assistant that improves existing text. Make sure to construct complete sentences. Use Markdown formatting when appropriate.",
+"shorter" : "You are an AI writing assistant that shortens existing text. Use Markdown formatting when appropriate.",
+"longer" : "You are an AI writing assistant that lengthens existing text. Use Markdown formatting when appropriate.",
+"continue" : "You are an AI writing assistant that continues to existing text. Use Markdown formatting when appropriate.",
+"fix" : "You are an AI writing assistant that fixes grammar and spelling errors in existing text. Make sure to construct complete sentences. Use Markdown formatting when appropriate.",
+"zap" : "You area an AI writing assistant that generates text based on a prompt. You take an input from the user and a command for manipulating the text. Use Markdown formatting when appropriate."
