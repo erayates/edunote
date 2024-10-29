@@ -162,8 +162,6 @@ async def elasticsearch_ask(body: SearchINNotes):
     # return(response.body)
     result = model.generate_content(contents=messages)
     dictionary = json.loads(result.text)
-    print(result.text)
-    print(type(dictionary))
 
     return dictionary
 
