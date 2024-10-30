@@ -46,7 +46,7 @@ class FileDownloadBody(BaseModel):
     file_name: str
 
 class FileExtract(BaseModel):
-    url: HttpUrl
+    url: HttpUrl = None
     user_id: str    
 
 class TranscriptLoad(BaseModel):
@@ -255,7 +255,7 @@ class Loaders():
             yield page.get_text()
 
     @staticmethod
-    async def audio_loader(file: bytes, file_name: str, model, user_id: str):
+    async def audio_loader(file: bytes, file_name: str, model):
         """Process audio and generate content using the AI model."""
         if not file_name.endswith(tuple(AUDIO_EXTENSIONS)):
             raise HTTPException(status_code=400, detail="Invalid file type. Please upload an audio file (mp3, wav).")
@@ -264,7 +264,7 @@ class Loaders():
         with open(file_location, "wb") as f:
             f.write(file.getvalue())
 
-        prompt = "You are an AI writing assistant that creates closed captions from an existing audio. Make sure to construct complete sentences. Use Markdown formatting when appropriate."
+        prompt = "You are an AI writing assistant that creates closed captions with detailed explanations and comments from an existing audio. Make sure to construct complete sentences. Use Markdown formatting when appropriate."
 
         audio_file = genai.upload_file(path=file_location)
         if os.path.exists(file_location):
@@ -280,7 +280,7 @@ class Loaders():
                         yield chunk.text
                     except: 
                         pass
-                if text_response != "": ChatHistory.update_chat_history(user_id, [{"role": "model", "parts": [text_response]}])
+                # if text_response != "": ChatHistory.update_chat_history(user_id, [{"role": "model", "parts": [text_response]}])
                 break
             except ResourceExhausted as e:
                 if attempt < max_retries - 1:
@@ -290,7 +290,7 @@ class Loaders():
                     raise HTTPException(status_code=429, detail="API quota exceeded. Please try again later.")
 
     @staticmethod
-    async def image_loader(file: bytes, file_name: str, model, user_id: str):
+    async def image_loader(file: bytes, file_name: str, model):
         """Process image and generate content using the AI model."""
         if not file_name.endswith(tuple(IMAGE_EXTENSIONS)):
             raise HTTPException(status_code=400, detail="Invalid file type. Please upload an image file (jpg, jpeg, png).")
@@ -299,12 +299,12 @@ class Loaders():
         with open(file_location, "wb") as f:
             f.write(file.getvalue())
 
-        prompt = "You are an AI writing assistant that creates closed captions from an existing image."
+        prompt = "You are an AI writing assistant that creates closed captions/explanation/comment and more from an existing image. Make sure to construct complete sentences. Use Markdown formatting when appropriate."
 
         image_file = genai.upload_file(path=file_location)
         if os.path.exists(file_location):
             os.remove(file_location)
-
+        text_response = ""
         max_retries = 3
         retry_delay = 0.2
         for attempt in range(max_retries):
@@ -315,7 +315,8 @@ class Loaders():
                         yield chunk.text
                     except: 
                         pass
-                ChatHistory.update_chat_history(user_id, [{"role": "model", "parts": [text_response]}])
+                    print(chunk.text)
+                # ChatHistory.update_chat_history(user_id, [{"role": "model", "parts": [text_response]}])
                 break
             except ResourceExhausted as e:
                 if attempt < max_retries - 1:
@@ -329,15 +330,15 @@ BUCKET = Loaders.config_bucket()
 class Process():
 
     @staticmethod
-    def extract_text(file, filename, extension, model, user_id):
+    def extract_text(file, filename, extension, model):
         if extension in AUDIO_EXTENSIONS:
-            return Loaders.audio_loader(file, filename, model, user_id)
+            return Loaders.audio_loader(file, filename, model)
         elif extension in PDF_EXTENSIONS:
             return Loaders.pdf_loader(file)
         elif extension in IMAGE_EXTENSIONS:
-            return Loaders.image_loader(file, filename, model, user_id)
+            return Loaders.image_loader(file, filename, model)
         else:
-            raise HTTPException(status_code=400, detail=f"Unsupported file type: {extension}")    
+            raise HTTPException(status_code=400, detail=f"Unsupported file type: {extension}")
 
     @staticmethod
     async def download_file(blob):
