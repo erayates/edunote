@@ -12,6 +12,7 @@ from typing import Optional
 from Secrets.KEY import NOTES 
 from google.api_core.exceptions import ResourceExhausted
 from io import BytesIO
+from youtube_transcript_api import YouTubeTranscriptApi
 
 AUDIO_EXTENSIONS = ['mp3', 'wav', 'aac', 'm4a', 'wma']
 PDF_EXTENSIONS = ['pdf']
@@ -45,8 +46,12 @@ class FileDownloadBody(BaseModel):
     file_name: str
 
 class FileExtract(BaseModel):
-    url: HttpUrl
+    url: HttpUrl = None
     user_id: str    
+
+class TranscriptLoad(BaseModel):
+    youtube_video_id: str
+    only_transcript: bool = False
 
 class Prompt():
     def __init__(self, safety_category: int = 0) -> None:
@@ -149,19 +154,19 @@ class Loaders():
             "temperature": 1,
             "top_p": 0.95,
             "top_k": 40,
-            "max_output_tokens": 1000,
+            "max_output_tokens": 2000,
             "response_mime_type": "text/plain",
         }
         return genai.GenerativeModel(model_name=model_name, generation_config=generation_config)
 
     @staticmethod
-    def config_model_search(model_name="gemini-1.5-flash"):
+    def config_model_search(model_name="gemini-1.5-pro"):
         generation_config = {
             "candidate_count": 1,
             "temperature": 1,
             "top_p": 0.95,
             "top_k": 40,
-            "max_output_tokens": 1000,
+            "max_output_tokens": 1500,
             "response_schema": content.Schema(
                 type = content.Type.OBJECT,
                 required = ["answer_found_in_the_notes_with_these_note_slugs", "response"],
@@ -190,33 +195,92 @@ class Loaders():
             raise HTTPException(status_code=500, detail=f"Bucket not found: {str(e)}")
 
     @staticmethod
-    def caption_loader(link: str, language: str = "en"):
-        content = ""
-        loader = YoutubeLoader.from_youtube_url(link, add_video_info=True, language=language)
-
+    async def caption_loader(youtube_video_id: str, model, only_transcript: bool):
+        def _time(seconds):
+            minutes = int(seconds // 60)
+            seconds = int(seconds % 60)
+            return (minutes, seconds)
+        def _transcript(transcript: list[dict]):
+            transcript_text = ""
+            last_time = (0,0)
+            for text in transcript:
+                transcript_text += text['text']
+                transcript_text += ' '
+                seconds = float(text['start'])
+                new_time = _time(seconds)
+                if new_time != last_time:
+                    last_time = new_time
+                    transcript_text += f"({new_time[0]}:{new_time[1]}) "
+            return transcript_text
         try:
-            youtube_data = loader.load()
-
-            for doc in youtube_data:
-                content += doc.page_content
-            return content
-
+            try:
+                transcript: list[dict] = _transcript(YouTubeTranscriptApi.get_transcript(youtube_video_id, languages=['en', 'tr']))
+            except: transcript: list[dict] = _transcript(YouTubeTranscriptApi.get_transcript(youtube_video_id))
         except Exception as e:
-            # print(f"Error loading video data: {e}")
-            return "No caption found."
+            raise HTTPException(status_code=404, detail=f"No transcipt found: {str(e)}")
+        if only_transcript: yield transcript
+        else:
+            messages = []
+            prompt = "You are an AI writing assistant that recieves the transcript of a youtube video and creates a detailed note that includes everything in the video. Make sure to construct complete sentences. Make sure to start with a brief summary and add comments or explanations when it is needed for better understanding. Use Markdown formatting when appropriate."
+            messages.append({'role': 'user', 'parts': [prompt]})
+            messages.append({'role': 'model', 'parts': ['I am an AI writing assistant and I will provide you only the text you desire.']})
+            messages.append({'role': 'user', 'parts': [f'Transcript: {transcript}']})
+            text_response = ""
+            max_retries = 3
+            retry_delay = 0.2
+            for attempt in range(max_retries):
+                try:
+                    for chunk in model.generate_content(messages, stream=True):
+                        try:
+                            text_response += chunk.text
+                            yield chunk.text
+                        except: 
+                            pass
+                    break
+                except ResourceExhausted as e:
+                    if attempt < max_retries - 1:
+                        await asyncio.sleep(retry_delay)
+                        retry_delay *= 2
+                    else:
+                        raise HTTPException(status_code=429, detail=f"API quota exceeded. Please try again later: {str(e)}")
 
     @staticmethod
-    def pdf_loader(file: bytes):
+    async def pdf_loader(file: bytes, model):
         """Extract text from a PDF file."""
         try:
             pdf_document = fitz.open("pdf", file)
         except Exception as e:
             raise HTTPException(status_code=400, detail=f"Failed to open PDF: {str(e)}")
+        document_text = ""
         for page in pdf_document:
-            yield page.get_text()
+            document_text += "\n\n"
+            document_text += page.get_text()
+
+        prompt = f"You are an AI writing assistant that takes a pdf file content and creates a note text with detailed explanations and comments to the pdf text (Keep all of the pdf content (except references if exist) and include codes, math equations or else if exist). Make sure to construct complete sentences. Use Markdown formatting when appropriate.\n Here is the pdf content:\n\n{document_text}"
+
+        text_response = ""
+        max_retries = 3
+        retry_delay = 0.2
+        for attempt in range(max_retries):
+            try:
+                for chunk in model.generate_content(prompt, generation_config={ "candidate_count": 1, "temperature": 1, "top_p": 0.95, "top_k": 40, "max_output_tokens": 6000, "response_mime_type": "text/plain" }, stream=True):
+                    try:
+                        text_response += chunk.text
+                        yield chunk.text
+                    except: 
+                        pass
+                # if text_response != "": ChatHistory.update_chat_history(user_id, [{"role": "model", "parts": [text_response]}])
+                break
+            except ResourceExhausted as e:
+                if attempt < max_retries - 1:
+                    await asyncio.sleep(retry_delay)
+                    retry_delay *= 2
+                else:
+                    raise HTTPException(status_code=429, detail="API quota exceeded. Please try again later.")
+
 
     @staticmethod
-    async def audio_loader(file: bytes, file_name: str, model, user_id: str):
+    async def audio_loader(file: bytes, file_name: str, model):
         """Process audio and generate content using the AI model."""
         if not file_name.endswith(tuple(AUDIO_EXTENSIONS)):
             raise HTTPException(status_code=400, detail="Invalid file type. Please upload an audio file (mp3, wav).")
@@ -225,7 +289,7 @@ class Loaders():
         with open(file_location, "wb") as f:
             f.write(file.getvalue())
 
-        prompt = "You are an AI writing assistant that creates closed captions from an existing audio. Make sure to construct complete sentences. Use Markdown formatting when appropriate."
+        prompt = "You are an AI writing assistant that creates closed captions with detailed explanations and comments from an existing audio. Make sure to construct complete sentences. Use Markdown formatting when appropriate."
 
         audio_file = genai.upload_file(path=file_location)
         if os.path.exists(file_location):
@@ -241,7 +305,7 @@ class Loaders():
                         yield chunk.text
                     except: 
                         pass
-                if text_response != "": ChatHistory.update_chat_history(user_id, [{"role": "model", "parts": [text_response]}])
+                # if text_response != "": ChatHistory.update_chat_history(user_id, [{"role": "model", "parts": [text_response]}])
                 break
             except ResourceExhausted as e:
                 if attempt < max_retries - 1:
@@ -251,7 +315,7 @@ class Loaders():
                     raise HTTPException(status_code=429, detail="API quota exceeded. Please try again later.")
 
     @staticmethod
-    async def image_loader(file: bytes, file_name: str, model, user_id: str):
+    async def image_loader(file: bytes, file_name: str, model):
         """Process image and generate content using the AI model."""
         if not file_name.endswith(tuple(IMAGE_EXTENSIONS)):
             raise HTTPException(status_code=400, detail="Invalid file type. Please upload an image file (jpg, jpeg, png).")
@@ -260,12 +324,12 @@ class Loaders():
         with open(file_location, "wb") as f:
             f.write(file.getvalue())
 
-        prompt = "You are an AI writing assistant that creates closed captions from an existing image."
+        prompt = "You are an AI writing assistant that creates closed captions/explanation/comment and more from an existing image. Make sure to construct complete sentences. Use Markdown formatting when appropriate."
 
         image_file = genai.upload_file(path=file_location)
         if os.path.exists(file_location):
             os.remove(file_location)
-
+        text_response = ""
         max_retries = 3
         retry_delay = 0.2
         for attempt in range(max_retries):
@@ -276,7 +340,8 @@ class Loaders():
                         yield chunk.text
                     except: 
                         pass
-                ChatHistory.update_chat_history(user_id, [{"role": "model", "parts": [text_response]}])
+                    print(chunk.text)
+                # ChatHistory.update_chat_history(user_id, [{"role": "model", "parts": [text_response]}])
                 break
             except ResourceExhausted as e:
                 if attempt < max_retries - 1:
@@ -290,15 +355,15 @@ BUCKET = Loaders.config_bucket()
 class Process():
 
     @staticmethod
-    def extract_text(file, filename, extension, model, user_id):
+    def extract_text(file, filename, extension, model):
         if extension in AUDIO_EXTENSIONS:
-            return Loaders.audio_loader(file, filename, model, user_id)
+            return Loaders.audio_loader(file, filename, model)
         elif extension in PDF_EXTENSIONS:
-            return Loaders.pdf_loader(file)
+            return Loaders.pdf_loader(file, model)
         elif extension in IMAGE_EXTENSIONS:
-            return Loaders.image_loader(file, filename, model, user_id)
+            return Loaders.image_loader(file, filename, model)
         else:
-            raise HTTPException(status_code=400, detail=f"Unsupported file type: {extension}")    
+            raise HTTPException(status_code=400, detail=f"Unsupported file type: {extension}")
 
     @staticmethod
     async def download_file(blob):

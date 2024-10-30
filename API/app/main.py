@@ -265,33 +265,32 @@ async def file_download(body: FileDownloadBody = Depends()):
         raise HTTPException(status_code=500, detail=f"File download failed: {str(e)}")
 
 @app.post("/file/extract/")
-async def file_text_extraction(body: FileExtract):
+async def file_text_extraction(file: UploadFile = File(...)):
     """
-    Extract text from a file (audio, image, PDF).
+    Extract text from an uploaded file (audio, image, PDF) and user-provided parameters.
 
     Args:
-        body (FileExtract): Contains the URL of the file and user ID.
+        file (UploadFile): The file to extract text from.
+        body (FileExtract): Additional information (e.g., user ID).
 
     Returns:
         StreamingResponse: The extracted text.
 
     Raises:
-        HTTPException: If the file is not supported or download fails.
+        HTTPException: If the file type is not supported.
     """
     global model
-    url = body.url
-    user_id = body.user_id
-    try:
-        response = requests.get(str(url))
-        response.raise_for_status()
-    except requests.exceptions.RequestException as e:
-        raise HTTPException(status_code=400, detail=f"Error downloading file: {e}")
 
-    ext = str(url).split('.')[-1].lower()
+    # Extract file extension
+    ext = file.filename.split('.')[-1].lower()
 
-    if ext in AUDIO_EXTENSIONS+PDF_EXTENSIONS+IMAGE_EXTENSIONS:
-        file_content = io.BytesIO(response.content)
-        return StreamingResponse(Process.extract_text(file_content, str(url).replace('https://brnx9rsmvjqlixb6.public.blob.vercel-storage.com/', ''), ext, model, user_id), media_type="text/plain")
+    # Check if the file type is supported
+    if ext in AUDIO_EXTENSIONS + PDF_EXTENSIONS + IMAGE_EXTENSIONS:
+        file_content = io.BytesIO(await file.read())  # Read the file content
+        return StreamingResponse(
+            Process.extract_text(file_content, file.filename, ext, model), 
+            media_type="text/plain"
+        )
     else:
         raise HTTPException(status_code=400, detail="Unsupported file type")
 
@@ -316,7 +315,10 @@ async def file_text_extraction(body: FileDownloadBody = Depends()):
     return {'details': f"{user_id}/{file_name} not found.", 'state': 0}
 
 @app.post("/caption/extract/")
-async def file_text_extraction(youtube_video_id: str):
+async def file_text_extraction(body: TranscriptLoad):
+    youtube_video_id = body.youtube_video_id
+    only_transcript = body.only_transcript
+    global model
     """
     Extract captions from a YouTube video.
 
@@ -326,8 +328,7 @@ async def file_text_extraction(youtube_video_id: str):
     Returns:
         dict: Extracted captions from the video.
     """
-    link = f"https://www.youtube.com/watch?v={youtube_video_id}"
-    return Loaders.caption_loader(link)
+    return StreamingResponse(Loaders.caption_loader(youtube_video_id=youtube_video_id, model=model, only_transcript=only_transcript), media_type="text/plain")
 
 @app.get("/chat/history/")
 async def get_chat_history(user_id: str, note_id: str = 'gemini'):
