@@ -315,8 +315,9 @@ async def file_text_extraction(body: FileDownloadBody = Depends()):
         return {'details': f"{user_id}/{file_name} found.", 'state': 1}
     return {'details': f"{user_id}/{file_name} not found.", 'state': 0}
 
-@app.get("/caption/extract/")
-async def file_text_extraction(youtube_video_id: str):
+@app.post("/caption/extract/")
+async def file_text_extraction(body: TranscriptLoad):
+    youtube_video_id = body.youtube_video_id
     global model
     """
     Extract captions from a YouTube video.

@@ -49,6 +49,9 @@ class FileExtract(BaseModel):
     url: HttpUrl
     user_id: str    
 
+class TranscriptLoad(BaseModel):
+    youtube_video_id: str
+
 class Prompt():
     def __init__(self, safety_category: int = 0) -> None:
         self.safety_settings = self.safety_category_choose(safety_category)
