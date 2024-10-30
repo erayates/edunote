@@ -26,6 +26,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 model = Loaders.config_model()
+model_ask = Loaders.config_model_search()
 genai.configure(api_key=KEY.GEMINI_API_KEY)
 prompt_obj = Prompt()
 client = KEY.ELASTICSEARCH_CLIENT
@@ -130,9 +131,9 @@ async def elasticsearch_ask(body: SearchINNotes):
     query = body.command
     user_id = body.user_id
     public_search = body.public_search
-    print(public_search)
     global client
-    filter = { "term": { "is_public": True } } if public_search else { "match": { "user_id": user_id } }
+    global model_ask
+    filter = { "term": { "is_public": "true" } } if public_search else { "match": { "user_id": user_id } }
     body={
         "query": {
             "bool": {
@@ -146,24 +147,27 @@ async def elasticsearch_ask(body: SearchINNotes):
                     filter
                 ]
             }
-        }
+        },
+        "size": 3
     }
     response = client.search(
         index="notes",
         body=body
     )
-    print(response.body)
+    # print(response.body)
     messages = [
-        {'role': 'user', 'parts': ["You are an AI assistant that takes some notes and a question or a query or else. In the result, you will answer the question with only using the information in the notes provided to you. You will answer me with a string of JSON. Add JSON only the note ids you use to answer the query and the answer. So the JSON template is {\"notes\": [note_ids...], \"response\": \"response...\"}\n Example JSON response result (for the user query \"When was the Spiderman 3 movie ?\")(assume that the response is taken from those notes...) : \"{\"notes\": [\"671c237d736e85a7f30525a7\", \"671c4916736e85a7f30525ac\"], \"response\": \"You very liked the movie Spiderman 3. Actually, you have screamed \"Yeaaahhh\" when you see the last scene in the Cinema The Kazabalanca.\"}\""]},
-        {'role': 'user', 'parts': [f'Here are the Notes:\n{response}']},
-        {'role': 'user', 'parts': [f'Answer the following query using below texts now. Remember to give the format desired JSON formatted string. Do not add any (` or \'json\'). Query: {query}']}
+        {'role': 'user', 'parts': ["You are an AI assistant that takes some notes and a question or a query or else. In the result, you will answer the question with only using the information in the notes provided to you. You will answer me with a JSON. Add JSON only the note slugs you use to answer the query and the answer. So the JSON template is {\"answer_found_in_the_notes_with_these_note_slugs\": [note_ids...], \"response\": \"response...\"}\n Example JSON response result (for the user query \"When was the Spiderman 3 movie ?\")(assume that the response is taken from those notes...) : \"{\"answer_found_in_the_notes_with_these_note_slugs\": [\"671c237d736e85a7f30525a7\", \"671c4916736e85a7f30525ac\"], \"response\": \"You very liked the movie Spiderman 3. Actually, you have screamed \"Yeaaahhh\" when you see the last scene in the Cinema The Kazabalanca.\"}\""]},
+        {'role': 'user', 'parts': [f'Here are the Notes:\n{response.body}']},
+        {'role': 'user', 'parts': [f'Answer the following query using below texts now. Remember to give the format desired JSON format. Do not add any (` or \'json\'). If you can not find any answer in the provided notes, your response should be something like \'I could not find any answer in note database for your answer.\' or else, with an empty array for \"answer_found_in_the_notes_with_these_note_slugs\".\nQuery: {query}']}
     ]
 
     # return(response.body)
-    result = model.generate_content(contents=messages)
-    dictionary = json.loads(result.text)
-    print(result.text)
-    print(type(dictionary))
+    result = model_ask.generate_content(contents=messages)
+    try:
+        dictionary = json.loads(result.text)
+    except json.JSONDecodeError as e:
+        return {"Error decoding JSON": e, "Collected answer": result.text if result is not None else 'Fatal Error'}
+    # print(dictionary)
 
     return dictionary
 
@@ -403,6 +407,14 @@ async def stream_text(option: str, text: str, user_query: str, user_id: str, not
                 retry_delay *= 2
             else:
                 raise HTTPException(status_code=429, detail="API quota exceeded. Please try again later.") 
+
+@app.get("/update-api-key/")
+async def update_api_key(api_key: str):
+    try:
+        genai.configure(api_key=api_key)
+        return {'status': 1}
+    except Exception as e:
+        return {'status': 0, 'detail': str(e)}
 
 @app.get("/")
 async def root():
