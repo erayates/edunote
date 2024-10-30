@@ -51,6 +51,7 @@ class FileExtract(BaseModel):
 
 class TranscriptLoad(BaseModel):
     youtube_video_id: str
+    only_transcript: bool = False
 
 class Prompt():
     def __init__(self, safety_category: int = 0) -> None:
@@ -153,7 +154,7 @@ class Loaders():
             "temperature": 1,
             "top_p": 0.95,
             "top_k": 40,
-            "max_output_tokens": 1000,
+            "max_output_tokens": 1500,
             "response_mime_type": "text/plain",
         }
         return genai.GenerativeModel(model_name=model_name, generation_config=generation_config)
@@ -165,7 +166,7 @@ class Loaders():
             "temperature": 1,
             "top_p": 0.95,
             "top_k": 40,
-            "max_output_tokens": 1000,
+            "max_output_tokens": 1500,
             "response_schema": content.Schema(
                 type = content.Type.OBJECT,
                 required = ["answer_found_in_the_notes_with_these_note_slugs", "response"],
@@ -194,7 +195,7 @@ class Loaders():
             raise HTTPException(status_code=500, detail=f"Bucket not found: {str(e)}")
 
     @staticmethod
-    async def caption_loader(youtube_video_id: str, model):
+    async def caption_loader(youtube_video_id: str, model, only_transcript: bool):
         def _time(seconds):
             minutes = int(seconds // 60)
             seconds = int(seconds % 60)
@@ -217,8 +218,9 @@ class Loaders():
             except: transcript: list[dict] = _transcript(YouTubeTranscriptApi.get_transcript(youtube_video_id))
         except Exception as e:
             raise HTTPException(status_code=404, detail=f"No transcipt found: {str(e)}")
+        if only_transcript: yield transcript; return ''
         messages = []
-        prompt = "You are an AI writing assistant that recieves the transcript of a youtube video and creates a detailed note that includes everything in the video. Make sure to construct complete sentences. Make sure to start with a brief summary and add comments or explanations when it is needed for better understanding. Use Markdown formatting when appropriate. Also add the transcript nmarkdown format at the end. Make it more readable."
+        prompt = "You are an AI writing assistant that recieves the transcript of a youtube video and creates a detailed note that includes everything in the video. Make sure to construct complete sentences. Make sure to start with a brief summary and add comments or explanations when it is needed for better understanding. Use Markdown formatting when appropriate."
         messages.append({'role': 'user', 'parts': [prompt]})
         messages.append({'role': 'model', 'parts': ['I am an AI writing assistant and I will provide you only the text you desire.']})
         messages.append({'role': 'user', 'parts': [f'Transcript: {transcript}']})
