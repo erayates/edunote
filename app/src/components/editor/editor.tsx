@@ -35,6 +35,8 @@ import EditorHeader from "./editor-header";
 import { updateNote } from "@/actions/notes";
 import { toast } from "sonner";
 import Image from "next/image";
+import SpecializedAI from "./specialized-ai";
+import { useRouter } from "next/navigation";
 
 const extensions = [...defaultExtensions, slashCommand];
 
@@ -57,6 +59,8 @@ const EdunoteEditor: React.FC<EdunoteEditorProps> = ({ note, settingsOff }) => {
   const [openColor, setOpenColor] = useState(false);
   const [openLink, setOpenLink] = useState(false);
   const [openAI, setOpenAI] = useState(false);
+
+  const { refresh } = useRouter();
 
   //Apply Codeblock Highlighting on the HTML from editor.getHTML()
   // const highlightCodeblocks = (content: string) => {
@@ -86,6 +90,7 @@ const EdunoteEditor: React.FC<EdunoteEditorProps> = ({ note, settingsOff }) => {
 
       if (isUpdated) {
         setSaveStatus("Saved");
+        refresh();
         return;
       }
 
@@ -103,8 +108,9 @@ const EdunoteEditor: React.FC<EdunoteEditorProps> = ({ note, settingsOff }) => {
 
   return (
     <React.Fragment>
-      <div className="w-full h-[200px] mb-20 absolute left-0 top-0 -z-10">
-        <div className="w-full h-full absolute top-0 left-0 bg-gradient-to-t z-10 from-background to-transparent"></div>
+      <div className="w-full h-[200px] mb-20 absolute left-0 top-0 ">
+        <div className="w-full h-full absolute bottom-0 left-0 bg-noteThumbnailGradient z-10"></div>
+
         <div className="w-full h-full relative">
           <Image
             src={note.thumbnail ?? "/assets/images/default-note-thumbnail.jpg"}
@@ -112,27 +118,32 @@ const EdunoteEditor: React.FC<EdunoteEditorProps> = ({ note, settingsOff }) => {
             width={0}
             height={0}
             sizes="100vw"
-            className="w-full h-full object-cover z-0 opacity-50"
+            className="w-full h-full object-cover opacity-50"
           />
         </div>
+
+        {!settingsOff && <SpecializedAI note={note} />}
       </div>
 
       <EditorHeader note={note} settingsOff={settingsOff as boolean} />
-      <div className="relative w-full mt-12">
-        <div className="flex absolute -top-12 right-0 z-10 mb-5 gap-2">
-          <div className="rounded-lg bg-accent px-2 py-1 text-sm text-muted-foreground text-center">
-            {saveStatus}
+      <div className="relativew-full mt-12">
+        {!settingsOff && (
+          <div className="flex justify-between z-10 mb-5 gap-2">
+            <div className="rounded-lg bg-accent px-2 py-1 text-sm text-muted-foreground text-center">
+              {saveStatus}
+            </div>
+            <div
+              className={
+                charsCount
+                  ? "rounded-lg bg-accent px-2 py-1 text-sm text-muted-foreground text-center"
+                  : "hidden"
+              }
+            >
+              {charsCount} Words
+            </div>
           </div>
-          <div
-            className={
-              charsCount
-                ? "rounded-lg bg-accent px-2 py-1 text-sm text-muted-foreground text-center"
-                : "hidden"
-            }
-          >
-            {charsCount} Words
-          </div>
-        </div>
+        )}
+
         <EditorRoot>
           <EditorContent
             initialContent={initialContent}

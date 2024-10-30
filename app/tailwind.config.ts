@@ -64,6 +64,12 @@ const config: Config = {
       },
     },
 
+    backgroundImage: {
+      aiButtonGradient: "linear-gradient(160deg, #0093E9 0%, #80D0C7 100%)",
+      noteThumbnailGradient:
+        "linear-gradient(180deg, transparent 0%, hsl(217, 9.1%, 17.3%) 100%)",
+    },
+
     boxShadow: {
       card: "inset 0px -32px 63px -20px rgba(0,0,0,0.75)",
     },

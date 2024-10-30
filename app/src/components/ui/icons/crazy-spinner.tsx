@@ -1,11 +1,32 @@
-const CrazySpinner = () => {
-    return (
-      <div className="flex items-center justify-center gap-0.5">
-        <div className="h-1.5 w-1.5 animate-bounce rounded-full bg-purple-500 [animation-delay:-0.3s]" />
-        <div className="h-1.5 w-1.5 animate-bounce rounded-full bg-purple-500 [animation-delay:-0.15s]" />
-        <div className="h-1.5 w-1.5 animate-bounce rounded-full bg-purple-500" />
-      </div>
-    );
-  };
-  
-  export default CrazySpinner;
+import { cn } from "@/lib/utils";
+import React from "react";
+
+interface CrazySpinnerProps {
+  className?: string;
+}
+const CrazySpinner: React.FC<CrazySpinnerProps> = ({ className }) => {
+  return (
+    <div className="flex items-center justify-center gap-0.5">
+      <div
+        className={cn(
+          "h-1.5 w-1.5 animate-bounce rounded-full bg-purple-500 [animation-delay:-0.3s]",
+          className && className
+        )}
+      />
+      <div
+        className={cn(
+          "h-1.5 w-1.5 animate-bounce rounded-full bg-purple-500 [animation-delay:-0.15s]",
+          className && className
+        )}
+      />
+      <div
+        className={cn(
+          "h-1.5 w-1.5 animate-bounce rounded-full bg-purple-500",
+          className && className
+        )}
+      />
+    </div>
+  );
+};
+
+export default CrazySpinner;
