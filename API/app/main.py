@@ -408,6 +408,14 @@ async def stream_text(option: str, text: str, user_query: str, user_id: str, not
             else:
                 raise HTTPException(status_code=429, detail="API quota exceeded. Please try again later.") 
 
+@app.get("/update-api-key/")
+async def update_api_key(api_key: str):
+    try:
+        genai.configure(api_key=api_key)
+        return {'status': 1}
+    except Exception as e:
+        return {'status': 0, 'detail': str(e)}
+
 @app.get("/")
 async def root():
     """

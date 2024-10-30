@@ -54,18 +54,6 @@ def format_article(articles: list[dict]):
 
     return '{"type":"doc","content":[CONTENT]}'.replace('CONTENT', new_content)
 
-# qa = {
-#     "type":"doc",
-#     "content":
-#         [
-#             {"type":"paragraph","content":[{"type":"text","text":"hello"}]},
-#             {"type":"paragraph","content":[{"type":"text","text":"hello"}]},
-#             {"type":"paragraph","content":[{"type":"text","text":"asdasdasd asdasds"}]},
-#             {"type":"paragraph","content":[{"type":"text","marks":[{"type":"link","attrs":{"href":"https://stackoverflow.com/questions/4105956/regex-does-not-contain-certain-characters","target":"_blank","rel":"noopener noreferrer nofollow","class":"text-muted-foreground underline underline-offset-[3px] hover:text-primary transition-colors cursor-pointer"}}],"text":"link"}]},
-#             {"type":"image","attrs":{"src":"https://brnx9rsmvjqlixb6.public.blob.vercel-storage.com/image-u1djVUMBzREWkovqUvwLsrC1zFfRm8.png","alt":null,"title":null,"width":null,"height":null}}
-#         ]
-# }
-
 def text(text: str):
     return '{"type":"paragraph","content":[{"type":"text","text":"TEXT"}]}'.replace('TEXT', text['content'].replace('"', '\\"'))
 
@@ -74,6 +62,7 @@ def image(image: dict):
 
 def anchor(link: dict):
     return '{"type":"paragraph","content":[{"type":"text","marks":[{"type":"link","attrs":{"href":"LINK","target":"_blank","rel":"noopener noreferrer nofollow","class":"text-muted-foreground underline underline-offset-[3px] hover:text-primary transition-colors cursor-pointer"}}],"text":"TEXT"}]}'.replace('LINK', link['link']).replace('TEXT', link['text'])
+
 article_list = html_format_article(html_content)
 article_formatted_text = format_article(article_list)
 

@@ -107,7 +107,7 @@ class Prompt():
             note = {'Title': note['title'], 'Description': note['description'], 'Content': note['content']}
             return note
         except Exception as e:
-            raise HTTPException(status_code=404, detail=f"Note {note_id} not found. {e}")
+            raise HTTPException(status_code=404, detail=f"Note {note_id} not found. {str(e)}")
 
     def generation_config_choose(self, generation_config: dict = None):
         if not generation_config:
