@@ -265,9 +265,7 @@ async def file_download(body: FileDownloadBody = Depends()):
         raise HTTPException(status_code=500, detail=f"File download failed: {str(e)}")
 
 @app.post("/file/extract/")
-async def file_text_extraction(
-    file: UploadFile = File(...),
-):
+async def file_text_extraction(file: UploadFile = File(...)):
     """
     Extract text from an uploaded file (audio, image, PDF) and user-provided parameters.
 

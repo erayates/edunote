@@ -148,19 +148,19 @@ class Loaders():
     #     return output['embeddings'][0]
 
     @staticmethod
-    def config_model(model_name="gemini-1.5-flash"):
+    def config_model(model_name="gemini-1.5-pro"):
         generation_config = {
             "candidate_count": 1,
             "temperature": 1,
             "top_p": 0.95,
             "top_k": 40,
-            "max_output_tokens": 1500,
+            "max_output_tokens": 2000,
             "response_mime_type": "text/plain",
         }
         return genai.GenerativeModel(model_name=model_name, generation_config=generation_config)
 
     @staticmethod
-    def config_model_search(model_name="gemini-1.5-flash"):
+    def config_model_search(model_name="gemini-1.5-pro"):
         generation_config = {
             "candidate_count": 1,
             "temperature": 1,
@@ -245,14 +245,39 @@ class Loaders():
                         raise HTTPException(status_code=429, detail=f"API quota exceeded. Please try again later: {str(e)}")
 
     @staticmethod
-    def pdf_loader(file: bytes):
+    async def pdf_loader(file: bytes, model):
         """Extract text from a PDF file."""
         try:
             pdf_document = fitz.open("pdf", file)
         except Exception as e:
             raise HTTPException(status_code=400, detail=f"Failed to open PDF: {str(e)}")
+        document_text = ""
         for page in pdf_document:
-            yield page.get_text()
+            document_text += "\n\n"
+            document_text += page.get_text()
+
+        prompt = f"You are an AI writing assistant that takes a pdf file content and creates a note text with detailed explanations and comments to the pdf text (Keep all of the pdf content (except references if exist) and include codes, math equations or else if exist). Make sure to construct complete sentences. Use Markdown formatting when appropriate.\n Here is the pdf content:\n\n{document_text}"
+
+        text_response = ""
+        max_retries = 3
+        retry_delay = 0.2
+        for attempt in range(max_retries):
+            try:
+                for chunk in model.generate_content(prompt, generation_config={ "candidate_count": 1, "temperature": 1, "top_p": 0.95, "top_k": 40, "max_output_tokens": 6000, "response_mime_type": "text/plain" }, stream=True):
+                    try:
+                        text_response += chunk.text
+                        yield chunk.text
+                    except: 
+                        pass
+                # if text_response != "": ChatHistory.update_chat_history(user_id, [{"role": "model", "parts": [text_response]}])
+                break
+            except ResourceExhausted as e:
+                if attempt < max_retries - 1:
+                    await asyncio.sleep(retry_delay)
+                    retry_delay *= 2
+                else:
+                    raise HTTPException(status_code=429, detail="API quota exceeded. Please try again later.")
+
 
     @staticmethod
     async def audio_loader(file: bytes, file_name: str, model):
@@ -334,7 +359,7 @@ class Process():
         if extension in AUDIO_EXTENSIONS:
             return Loaders.audio_loader(file, filename, model)
         elif extension in PDF_EXTENSIONS:
-            return Loaders.pdf_loader(file)
+            return Loaders.pdf_loader(file, model)
         elif extension in IMAGE_EXTENSIONS:
             return Loaders.image_loader(file, filename, model)
         else:
