@@ -1,6 +1,6 @@
 "use client";
 
-import { Note, User } from "@prisma/client";
+import { Note, Tag, User } from "@prisma/client";
 import EditorSettings from "./editor-settings";
 import React, { ChangeEvent } from "react";
 
@@ -17,6 +17,7 @@ import { formatDistance } from "date-fns";
 interface EditorHeaderProps {
   note: Note & {
     user: User;
+    tags: Tag[];
   };
   settingsOff: boolean;
 }

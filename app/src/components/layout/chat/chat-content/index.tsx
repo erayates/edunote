@@ -28,8 +28,6 @@ const AIChatContent: React.FC<AIChatContentProps> = ({
 }) => {
   const { user } = useUser();
 
-  console.log(chat);
-
   return (
     <div
       className={cn(
@@ -95,7 +93,7 @@ const AIChatContent: React.FC<AIChatContentProps> = ({
                         try {
                           const parsedMessage: {
                             response: string;
-                            notes: string[];
+                            answer_found_in_the_notes_with_these_note_slugs: string[];
                           } = JSON.parse(message);
                           return (
                             <div
@@ -107,16 +105,20 @@ const AIChatContent: React.FC<AIChatContentProps> = ({
                               <p className="text-sm text-white font-semibold">
                                 Associated Notes:
                               </p>
-                              {parsedMessage.notes.length > 0 &&
-                                parsedMessage.notes.map((note: string) => (
-                                  <Link
-                                    href={`/notes/${note}`}
-                                    key={note}
-                                    className="text-sm text-white font-semibold bg-foreground p-2 rounded-sm"
-                                  >
-                                    {note}
-                                  </Link>
-                                ))}
+                              {parsedMessage
+                                .answer_found_in_the_notes_with_these_note_slugs
+                                .length > 0 &&
+                                parsedMessage.answer_found_in_the_notes_with_these_note_slugs.map(
+                                  (note: string) => (
+                                    <Link
+                                      href={`/notes/${note}`}
+                                      key={note}
+                                      className="text-sm text-white font-semibold bg-foreground p-2 rounded-sm"
+                                    >
+                                      {note}
+                                    </Link>
+                                  )
+                                )}
                             </div>
                           );
                         } catch {

@@ -30,28 +30,30 @@ import { toast } from "sonner";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { Switch } from "../ui/switch";
-import { Note } from "@prisma/client";
+import { Note, Tag as TagType, User } from "@prisma/client";
 import { deleteNote, setNoteVisibility, updateNote } from "@/actions/notes";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { APP_BASE_URL } from "@/lib/constants";
 import ComboBox from "../ui/combobox";
-import { getAllTagsWithoutPartial } from "@/actions/tags";
 import { Label } from "../ui/label";
 import Image from "next/image";
 import { onUpload } from "./image-upload";
 
 interface EditorSettingsProps {
-  note: Note;
+  note: Note & {
+    user: User;
+    tags: TagType[];
+  };
 }
 
 const EditorSettings: React.FC<EditorSettingsProps> = ({ note }) => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_, setCopiedLink] = useCopyToClipboard();
   const [shareLink, setShareLink] = useState("");
-  const [, setDefaultSelectedTags] = useState<
-    { value: string; label: string; id: string }[]
-  >([]);
+  // const [defaultSelectedTags, setDefaultSelectedTags] = useState<
+  //   { value: string; label: string; id: string }[]
+  // >([]);
 
   const [selectedTags, setSelectedTags] = useState<
     { value: string; label: string; id: string }[]
@@ -65,23 +67,15 @@ const EditorSettings: React.FC<EditorSettingsProps> = ({ note }) => {
   }, [note]);
 
   useEffect(() => {
-    const fetchTags = async () => {
-      const allTags = await getAllTagsWithoutPartial();
-      if (allTags) {
-        note.tagIds.forEach((tagId) => {
-          const tag = allTags.find((tag) => tag.id === tagId);
-          if (tag) {
-            setDefaultSelectedTags((prev) => [
-              ...prev,
-              { id: tag.id, value: tag.name, label: tag.name },
-            ]);
-          }
-        });
-      }
-    };
+    if (note.tags && note.tags.length > 0) {
+      const noteTags: { value: string; label: string; id: string }[] = [];
+      note.tags.map((tag) => {
+        noteTags.push({ id: tag.id, label: tag.name, value: tag.name });
+      });
 
-    fetchTags();
-  }, [note.tagIds]);
+      setSelectedTags(noteTags);
+    }
+  }, []);
 
   // Copy share link func.
   const handleCopyShareLink = () => {
@@ -133,9 +127,10 @@ const EditorSettings: React.FC<EditorSettingsProps> = ({ note }) => {
   // Handle func. to save tags
   const handleSaveTagsToNote = async () => {
     const tags = selectedTags;
+
     const isUpdated = await updateNote(note.id, {
       tags: {
-        connect: tags.map((tag) => ({
+        set: tags.map((tag) => ({
           id: tag.id,
         })),
       },

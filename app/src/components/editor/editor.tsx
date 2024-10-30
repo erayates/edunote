@@ -30,7 +30,7 @@ import { slashCommand, suggestionItems } from "./slash-commands";
 
 // import hljs from "highlight.js";
 // import { checkImageDeleted } from "@/actions/blob";
-import { Note, User } from "@prisma/client";
+import { Note, Tag, User } from "@prisma/client";
 import EditorHeader from "./editor-header";
 import { updateNote } from "@/actions/notes";
 import { toast } from "sonner";
@@ -41,6 +41,7 @@ const extensions = [...defaultExtensions, slashCommand];
 interface EdunoteEditorProps {
   note: Note & {
     user: User;
+    tags: Tag[];
   };
   settingsOff?: boolean;
 }

@@ -36,6 +36,7 @@ interface ComboBoxProps {
     React.SetStateAction<{ value: string; label: string; id: string }[]>
   >;
   type?: string;
+  // defaultSelectedTags?: { value: string; label: string; id: string }[];
 }
 
 const ITEMS_PER_PAGE = 15;
@@ -44,6 +45,7 @@ const MAX_SELECTED_TAGS = 5;
 export default function ComboBox({
   selectedTags,
   setSelectedTags,
+  // defaultSelectedTags,
   type,
 }: ComboBoxProps) {
   const [open, setOpen] = React.useState(false);
@@ -221,7 +223,7 @@ export default function ComboBox({
                 className="bg-secondary text-balance text-secondary-foreground px-2 py-1 rounded-md text-sm flex items-center"
               >
                 {tag.label}
-                <button
+                <div
                   className="ml-1 text-secondary-foreground/50 hover:text-secondary-foreground"
                   onClick={(e) => {
                     e.stopPropagation();
@@ -229,7 +231,7 @@ export default function ComboBox({
                   }}
                 >
                   <Cross2Icon className="h-3 w-3" />
-                </button>
+                </div>
               </span>
             ))}
             <span className="text-white/30">

@@ -3,12 +3,19 @@
 import { prisma } from "@/lib/db";
 import slug from "slug";
 
-export async function getAllTags(
-  skippedTag: number = 15
-): Promise<{ value: string; label: string; id: string }[] | false> {
+export async function searchTags(search: string, skip: number = 0) {
   try {
     const tags = await prisma.tag.findMany({
-      skip: skippedTag,
+      where: {
+        name: {
+          contains: search,
+          mode: "insensitive",
+        },
+      },
+      orderBy: {
+        name: "asc",
+      },
+      skip,
       take: 15,
     });
 
@@ -17,6 +24,42 @@ export async function getAllTags(
       value: tag.name,
       label: tag.name,
     }));
+  } catch (error) {
+    console.error("Error searching tags:", error);
+    return false;
+  }
+}
+
+export async function getAllTags(skip: number = 0) {
+  try {
+    const tags = await prisma.tag.findMany({
+      orderBy: {
+        name: "asc",
+      },
+      skip,
+      take: 15,
+    });
+
+    return tags.map((tag) => ({
+      id: tag.id,
+      value: tag.name,
+      label: tag.name,
+    }));
+  } catch (error) {
+    console.error("Error getting all tags:", error);
+    return false;
+  }
+}
+
+export async function searchSingleTag(tagId: string) {
+  try {
+    const tag = await prisma.tag.findUnique({
+      where: {
+        id: tagId,
+      },
+    });
+
+    return tag;
   } catch {
     return false;
   }
@@ -26,29 +69,6 @@ export async function getAllTagsWithoutPartial() {
   try {
     const tags = await prisma.tag.findMany();
     return tags;
-  } catch {
-    return false;
-  }
-}
-
-export async function searchTags(search: string, skippedTag: number = 50) {
-  try {
-    const tags = await prisma.tag.findMany({
-      where: {
-        name: {
-          contains: search,
-          mode: "insensitive",
-        },
-      },
-      skip: skippedTag,
-      take: 15,
-    });
-
-    return tags.map((tag) => ({
-      id: tag.id,
-      value: tag.name,
-      label: tag.name,
-    }));
   } catch {
     return false;
   }
