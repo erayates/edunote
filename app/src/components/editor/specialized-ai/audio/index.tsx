@@ -24,6 +24,7 @@ import { Label } from "@/components/ui/label";
 import Image from "next/image";
 import Markdown from "react-markdown";
 import { AIThinking } from "../default";
+import { GEMINI_API_FILE_EXTRACT } from "@/lib/constants";
 
 interface SpecializedAIProps {
   note: Note & {
@@ -44,7 +45,7 @@ const SpecializedAudioIntegration: React.FC<SpecializedAIProps> = ({
 
   const { refresh } = useRouter();
   const { completion, complete, isLoading, reset } = useFetchStream({
-    api: `https://btk-24-634181987121.europe-central2.run.app/file/extract/`,
+    api: `${GEMINI_API_FILE_EXTRACT}`,
     headers: { "Content-Type": "multipart/form-data" },
   });
 
