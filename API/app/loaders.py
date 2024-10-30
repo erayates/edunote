@@ -12,6 +12,7 @@ from typing import Optional
 from Secrets.KEY import NOTES 
 from google.api_core.exceptions import ResourceExhausted
 from io import BytesIO
+from youtube_transcript_api import YouTubeTranscriptApi
 
 AUDIO_EXTENSIONS = ['mp3', 'wav', 'aac', 'm4a', 'wma']
 PDF_EXTENSIONS = ['pdf']
@@ -143,7 +144,7 @@ class Loaders():
     #     return output['embeddings'][0]
 
     @staticmethod
-    def config_model(model_name="gemini-1.5-pro"):
+    def config_model(model_name="gemini-1.5-flash"):
         generation_config = {
             "candidate_count": 1,
             "temperature": 1,
@@ -190,20 +191,52 @@ class Loaders():
             raise HTTPException(status_code=500, detail=f"Bucket not found: {str(e)}")
 
     @staticmethod
-    def caption_loader(link: str, language: str = "en"):
-        content = ""
-        loader = YoutubeLoader.from_youtube_url(link, add_video_info=True, language=language)
-
+    async def caption_loader(youtube_video_id: str, model):
+        def _time(seconds):
+            minutes = int(seconds // 60)
+            seconds = int(seconds % 60)
+            return (minutes, seconds)
+        def _transcript(transcript: list[dict]):
+            transcript_text = ""
+            last_time = (0,0)
+            for text in transcript:
+                transcript_text += text['text']
+                transcript_text += ' '
+                seconds = float(text['start'])
+                new_time = _time(seconds)
+                if new_time != last_time:
+                    last_time = new_time
+                    transcript_text += f"({new_time[0]}:{new_time[1]}) "
+            return transcript_text
         try:
-            youtube_data = loader.load()
-
-            for doc in youtube_data:
-                content += doc.page_content
-            return content
-
+            try:
+                transcript: list[dict] = _transcript(YouTubeTranscriptApi.get_transcript(youtube_video_id, languages=['en', 'tr']))
+            except: transcript: list[dict] = _transcript(YouTubeTranscriptApi.get_transcript(youtube_video_id))
         except Exception as e:
-            # print(f"Error loading video data: {e}")
-            return "No caption found."
+            raise HTTPException(status_code=404, detail=f"No transcipt found: {str(e)}")
+        messages = []
+        prompt = "You are an AI writing assistant that recieves the transcript of a youtube video and creates a detailed note that includes everything in the video. Make sure to construct complete sentences. Make sure to start with a brief summary and add comments or explanations when it is needed for better understanding. Use Markdown formatting when appropriate. Also add the transcript nmarkdown format at the end. Make it more readable."
+        messages.append({'role': 'user', 'parts': [prompt]})
+        messages.append({'role': 'model', 'parts': ['I am an AI writing assistant and I will provide you only the text you desire.']})
+        messages.append({'role': 'user', 'parts': [f'Transcript: {transcript}']})
+        text_response = ""
+        max_retries = 3
+        retry_delay = 0.2
+        for attempt in range(max_retries):
+            try:
+                for chunk in model.generate_content(messages, stream=True):
+                    try:
+                        text_response += chunk.text
+                        yield chunk.text
+                    except: 
+                        pass
+                break
+            except ResourceExhausted as e:
+                if attempt < max_retries - 1:
+                    await asyncio.sleep(retry_delay)
+                    retry_delay *= 2
+                else:
+                    raise HTTPException(status_code=429, detail=f"API quota exceeded. Please try again later: {str(e)}")
 
     @staticmethod
     def pdf_loader(file: bytes):

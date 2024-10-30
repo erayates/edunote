@@ -315,8 +315,9 @@ async def file_text_extraction(body: FileDownloadBody = Depends()):
         return {'details': f"{user_id}/{file_name} found.", 'state': 1}
     return {'details': f"{user_id}/{file_name} not found.", 'state': 0}
 
-@app.post("/caption/extract/")
+@app.get("/caption/extract/")
 async def file_text_extraction(youtube_video_id: str):
+    global model
     """
     Extract captions from a YouTube video.
 
@@ -326,8 +327,7 @@ async def file_text_extraction(youtube_video_id: str):
     Returns:
         dict: Extracted captions from the video.
     """
-    link = f"https://www.youtube.com/watch?v={youtube_video_id}"
-    return Loaders.caption_loader(link)
+    return StreamingResponse(Loaders.caption_loader(youtube_video_id, model), media_type="text/plain")
 
 @app.get("/chat/history/")
 async def get_chat_history(user_id: str, note_id: str = 'gemini'):
