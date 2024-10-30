@@ -15,15 +15,15 @@ import { Input } from "@/components/ui/input";
 import useFetchStream from "@/hooks/use-fetch-stream";
 import Image from "next/image";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { cn, insertPdf } from "@/lib/utils";
+import { cn, insertImage } from "@/lib/utils";
 import { CheckCircle2, GitPullRequestArrow } from "lucide-react";
 import { Note, User, Tag } from "@prisma/client";
 import { updateNote } from "@/actions/notes";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { Label } from "@/components/ui/label";
-import { AIThinking } from "../default";
 import Markdown from "react-markdown";
+import { AIThinking } from "../default";
 
 interface SpecializedAIProps {
   note: Note & {
@@ -33,14 +33,12 @@ interface SpecializedAIProps {
   settingsOff?: boolean;
 }
 
-const SpecializedPdfIntegration: React.FC<SpecializedAIProps> = ({ note }) => {
-  const [pdfFile, setPdfFile] = useState<{
+const SpecializedImageFile: React.FC<SpecializedAIProps> = ({ note }) => {
+  const [imageFile, setImageFile] = useState<{
     name: string;
     file: File | undefined;
     url: string;
   }>();
-
-  const [submitted, setSubmitted] = useState(false);
 
   const { refresh } = useRouter();
   const { completion, complete, isLoading, reset } = useFetchStream({
@@ -51,7 +49,7 @@ const SpecializedPdfIntegration: React.FC<SpecializedAIProps> = ({ note }) => {
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setPdfFile({
+      setImageFile({
         name: file.name,
         file: file,
         url: URL.createObjectURL(file),
@@ -59,23 +57,21 @@ const SpecializedPdfIntegration: React.FC<SpecializedAIProps> = ({ note }) => {
     }
   };
 
-  const handleSummarizePdf = async () => {
-    if (pdfFile?.url && pdfFile?.file) {
+  const handleSummarizeImage = async () => {
+    if (imageFile?.url && imageFile?.file) {
       const formData = new FormData();
-      formData.append("file", pdfFile.file);
+      formData.append("file", imageFile.file);
 
-      await complete(pdfFile.name, {
+      await complete(imageFile.name, {
         body: formData,
       });
-
-      setSubmitted(true);
     }
   };
 
   const handleClose = (open: boolean) => {
     if (!open) {
       reset();
-      setPdfFile({
+      setImageFile({
         name: "",
         file: undefined,
         url: "",
@@ -85,7 +81,7 @@ const SpecializedPdfIntegration: React.FC<SpecializedAIProps> = ({ note }) => {
   };
 
   const handleInsertToNote = async () => {
-    const editedContent = insertPdf(note.content, completion);
+    const editedContent = insertImage(note.content, completion);
 
     const isNoteUpdated = await updateNote(note.id, {
       content: {
@@ -94,7 +90,7 @@ const SpecializedPdfIntegration: React.FC<SpecializedAIProps> = ({ note }) => {
     });
 
     if (isNoteUpdated) {
-      toast.success("PDF file and summarize added to your note successfully.");
+      toast.success("Image summarize added to your note successfully.");
       refresh();
       return;
     }
@@ -108,7 +104,7 @@ const SpecializedPdfIntegration: React.FC<SpecializedAIProps> = ({ note }) => {
         <Button className="h-fit bg-foreground w-auto flex flex-col items-start p-4 border border-secondary">
           <div className="w-16 h-16 relative">
             <Image
-              src="/assets/images/logos/pdf.png"
+              src="/assets/images/logos/image.webp"
               alt=""
               width={0}
               height={0}
@@ -118,25 +114,31 @@ const SpecializedPdfIntegration: React.FC<SpecializedAIProps> = ({ note }) => {
           </div>
 
           <p className="font-medium text-white text-sm text-wrap text-left">
-            PDF Summarizer
+            Image Summarizer
           </p>
           <span className="text-wrap text-white/30 text-xs text-left">
-            Upload a pdf, summarise the uploaded pdf, use it as you wish and add
-            it to your notes.
+            Upload an image, summarise the uploaded image, use it as you wish
+            and add it to your notes.
           </span>
         </Button>
       </DialogTrigger>
       <DialogContent
         className={cn(
-          "flex duration-500 transition-all bg-foreground",
-          submitted && "w-[1024px]"
+          "w-[480px] flex duration-500 transition-all bg-foreground p-2",
+          completion && !isLoading && "w-auto max-h-[720px]"
         )}
       >
         {completion ? (
-          <div className="flex space-x-4">
-            <div style={{ height: "750px" }}>
-              {pdfFile?.url && (
-                <iframe src={pdfFile.url} height={820} width={480} />
+          <div className="flex flex-col space-y-2">
+            <div>
+              {imageFile?.url && (
+                <img
+                  src={imageFile.url}
+                  height={480}
+                  width={480}
+                  alt=""
+                  className="rounded-lg"
+                />
               )}
             </div>
             <div className="max-w-[480px]">
@@ -151,7 +153,7 @@ const SpecializedPdfIntegration: React.FC<SpecializedAIProps> = ({ note }) => {
                   Insert
                 </Button>
               </div>
-              <ScrollArea className="h-[750px] rounded-lg">
+              <ScrollArea className="max-h-[480px] rounded-lg">
                 <p className="text-white bg-blue-500 rounded-lg p-2">
                   <Markdown>{completion}</Markdown>
                 </p>
@@ -162,42 +164,42 @@ const SpecializedPdfIntegration: React.FC<SpecializedAIProps> = ({ note }) => {
         ) : !isLoading ? (
           <DialogHeader className="relative space-y-2 w-full">
             <DialogTitle className="text-3xl font-semibold text-white">
-              Upload Pdf
+              Upload Image
             </DialogTitle>
             <DialogDescription className="text-white/30 text-sm">
-              Upload a pdf, Gemini AI will summarize ait for you.
+              Upload a image, Gemini AI will summarize ait for you.
             </DialogDescription>
             <Label
-              htmlFor="pdf"
+              htmlFor="image"
               className="border-2 border-secondary rounded-lg text-white border-dashed w-full grid place-items-center h-[150px]"
             >
-              Upload a PDF file
+              Upload an Image
             </Label>
-            {pdfFile?.file && (
+            {imageFile?.file && (
               <span className="text-green-400 font-semibold flex items-center">
                 <span className="w-5 h-5 mr-2 grid place-items-center">
                   <CheckCircle2 className="mr-2" />
                 </span>
                 <span className="mt-1">
                   File:{" "}
-                  {pdfFile?.name.length > 30
-                    ? pdfFile.name.slice(0, 30) + "..."
-                    : pdfFile.name}
+                  {imageFile?.name.length > 30
+                    ? imageFile.name.slice(0, 30) + "..."
+                    : imageFile.name}
                 </span>
               </span>
             )}
             <Input
               type="file"
-              id="pdf"
-              name="pdf"
+              id="image"
+              name="image"
               className="hidden"
               onChange={handleFileChange}
-              accept="application/pdf"
+              accept=".jpg, .jpeg, .png, .gif, .webp, .svg"
             />
             <Button
               variant="outline"
               className="bg-white w-fit ml-auto"
-              onClick={handleSummarizePdf}
+              onClick={handleSummarizeImage}
             >
               Submit
             </Button>
@@ -210,4 +212,4 @@ const SpecializedPdfIntegration: React.FC<SpecializedAIProps> = ({ note }) => {
   );
 };
 
-export default SpecializedPdfIntegration;
+export default SpecializedImageFile;

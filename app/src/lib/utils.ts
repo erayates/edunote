@@ -37,7 +37,7 @@ export function insertYoutube(
 export function insertPdf(noteContent: string, text: string) {
   const jsonContent = JSON.parse(noteContent);
 
-  const youtubeContent = {
+  const pdfContent = {
     type: "paragraph",
     content: [
       { type: "hardBreak" },
@@ -45,7 +45,39 @@ export function insertPdf(noteContent: string, text: string) {
     ],
   };
 
-  jsonContent.content.push(youtubeContent);
+  jsonContent.content.push(pdfContent);
+
+  return JSON.stringify(jsonContent);
+}
+
+export function insertImage(noteContent: string, text: string) {
+  const jsonContent = JSON.parse(noteContent);
+
+  const pdfContent = {
+    type: "paragraph",
+    content: [
+      { type: "hardBreak" },
+      { type: "text", text: `Summarized Image: ${text}` },
+    ],
+  };
+
+  jsonContent.content.push(pdfContent);
+
+  return JSON.stringify(jsonContent);
+}
+
+export function insertAudio(noteContent: string, text: string) {
+  const jsonContent = JSON.parse(noteContent);
+
+  const pdfContent = {
+    type: "paragraph",
+    content: [
+      { type: "hardBreak" },
+      { type: "text", text: `Summarized Audio: ${text}` },
+    ],
+  };
+
+  jsonContent.content.push(pdfContent);
 
   return JSON.stringify(jsonContent);
 }

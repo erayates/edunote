@@ -4,6 +4,7 @@ import React, { useState, ChangeEvent } from "react";
 import ReactPlayer from "react-player/lazy";
 
 import { Button } from "@/components/ui/button";
+
 import {
   Dialog,
   DialogContent,
@@ -17,15 +18,15 @@ import useFetchStream from "@/hooks/use-fetch-stream";
 import { GEMINI_API_YOUTUBE_URL } from "@/lib/constants";
 import { extractVideoId } from "@/lib/helpers";
 import Image from "next/image";
-import CrazySpinner from "@/components/ui/icons/crazy-spinner";
-import Magic from "@/components/ui/icons/magic";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { cn, insertYoutube } from "@/lib/utils";
 import { GitPullRequestArrow } from "lucide-react";
 import { Note, User, Tag } from "@prisma/client";
 import { updateNote } from "@/actions/notes";
 import { toast } from "sonner";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
+import Markdown from "react-markdown";
+import { AIThinking } from "../default";
 
 interface SpecializedAIProps {
   note: Note & {
@@ -103,16 +104,17 @@ const SpecializedYoutubeIntegration: React.FC<SpecializedAIProps> = ({
       </DialogTrigger>
       <DialogContent
         className={cn(
-          "w-[480px] flex duration-500 transition-all bg-foreground",
-          completion && !isLoading && "min-w-[1024px]"
+          "flex duration-500 transition-all bg-foreground max-h-[720px]"
         )}
       >
         {completion ? (
-          <div className="flex space-x-4">
-            <ReactPlayer url={videoUrl} width={480} height={480} />
-            <div className="max-w-[480px]">
+          <div className={cn("flex flex-col relative")}>
+            <div className="mt-2">
+              <ReactPlayer url={videoUrl} width={460} height={190} />
+            </div>
+            <div className="w-full">
               <div className="flex items-center justify-between mt-4 mb-2 border-2 border-secondary p-2 rounded-lg ">
-                <p className="text-white font-medium text-xl ">Summary</p>
+                <p className="text-white font-medium text-xl">Summary</p>
                 <Button
                   variant="outline"
                   className="bg-white"
@@ -124,7 +126,7 @@ const SpecializedYoutubeIntegration: React.FC<SpecializedAIProps> = ({
               </div>
               <ScrollArea className="h-[400px] rounded-lg">
                 <p className="text-white bg-blue-500 rounded-lg p-2">
-                  {completion}
+                  <Markdown>{completion}</Markdown>
                 </p>
                 <ScrollBar orientation="vertical" />
               </ScrollArea>
@@ -156,15 +158,7 @@ const SpecializedYoutubeIntegration: React.FC<SpecializedAIProps> = ({
             </Button>
           </DialogHeader>
         ) : (
-          <div className="w-full items-center justify-center -ml-8 text-xl flex flex-col font-medium text-muted-foreground text-white">
-            <div className="flex items-center justify-center">
-              <Magic className="mr-2 h-8 w-8 shrink-0" />
-              AI is thinking
-            </div>
-            <div className="mt-1">
-              <CrazySpinner className="w-3 h-3 bg-white" />
-            </div>
-          </div>
+          <AIThinking />
         )}
       </DialogContent>
     </Dialog>

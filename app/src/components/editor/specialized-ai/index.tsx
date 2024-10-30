@@ -12,6 +12,8 @@ import {
 } from "@/components/ui/dialog";
 import SpecializedYoutubeIntegration from "./youtube";
 import SpecializedPdfIntegration from "./pdf";
+import SpecializedImageFile from "./image";
+import SpecializedAudioIntegration from "./audio";
 
 interface SpecializedAIProps {
   note: Note & {
@@ -49,26 +51,9 @@ const SpecializedAI: React.FC<SpecializedAIProps> = ({ note }) => {
           </DialogHeader>
           <div className="py-4 pl-4 pr-12 grid grid-cols-2 gap-4">
             <SpecializedYoutubeIntegration note={note} />
-
             <SpecializedPdfIntegration note={note} />
-
-            <Button className="h-fit bg-foreground w-auto flex flex-col items-start p-4 border border-secondary">
-              <Image
-                src="/assets/images/logos/image.webp"
-                alt=""
-                width={64}
-                height={64}
-                sizes="100vw"
-              />
-
-              <p className="font-medium text-white text-sm text-wrap text-left">
-                Image Explainer
-              </p>
-              <span className="text-wrap text-white/30 text-xs text-left">
-                Upload an image and the specialised AI will summarise it for
-                you.
-              </span>
-            </Button>
+            <SpecializedImageFile note={note} />
+            <SpecializedAudioIntegration note={note} />
           </div>
         </DialogContent>
       </Dialog>

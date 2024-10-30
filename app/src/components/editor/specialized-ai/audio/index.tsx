@@ -13,17 +13,17 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import useFetchStream from "@/hooks/use-fetch-stream";
-import Image from "next/image";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { cn, insertPdf } from "@/lib/utils";
+import { cn, insertAudio, insertImage } from "@/lib/utils";
 import { CheckCircle2, GitPullRequestArrow } from "lucide-react";
 import { Note, User, Tag } from "@prisma/client";
 import { updateNote } from "@/actions/notes";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { Label } from "@/components/ui/label";
-import { AIThinking } from "../default";
+import Image from "next/image";
 import Markdown from "react-markdown";
+import { AIThinking } from "../default";
 
 interface SpecializedAIProps {
   note: Note & {
@@ -33,14 +33,14 @@ interface SpecializedAIProps {
   settingsOff?: boolean;
 }
 
-const SpecializedPdfIntegration: React.FC<SpecializedAIProps> = ({ note }) => {
-  const [pdfFile, setPdfFile] = useState<{
+const SpecializedAudioIntegration: React.FC<SpecializedAIProps> = ({
+  note,
+}) => {
+  const [audioFile, setAudioFile] = useState<{
     name: string;
     file: File | undefined;
     url: string;
   }>();
-
-  const [submitted, setSubmitted] = useState(false);
 
   const { refresh } = useRouter();
   const { completion, complete, isLoading, reset } = useFetchStream({
@@ -51,7 +51,7 @@ const SpecializedPdfIntegration: React.FC<SpecializedAIProps> = ({ note }) => {
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setPdfFile({
+      setAudioFile({
         name: file.name,
         file: file,
         url: URL.createObjectURL(file),
@@ -59,23 +59,21 @@ const SpecializedPdfIntegration: React.FC<SpecializedAIProps> = ({ note }) => {
     }
   };
 
-  const handleSummarizePdf = async () => {
-    if (pdfFile?.url && pdfFile?.file) {
+  const handleSummarizeAudio = async () => {
+    if (audioFile?.url && audioFile?.file) {
       const formData = new FormData();
-      formData.append("file", pdfFile.file);
+      formData.append("file", audioFile.file);
 
-      await complete(pdfFile.name, {
+      complete(audioFile.name, {
         body: formData,
       });
-
-      setSubmitted(true);
     }
   };
 
   const handleClose = (open: boolean) => {
     if (!open) {
       reset();
-      setPdfFile({
+      setAudioFile({
         name: "",
         file: undefined,
         url: "",
@@ -85,7 +83,7 @@ const SpecializedPdfIntegration: React.FC<SpecializedAIProps> = ({ note }) => {
   };
 
   const handleInsertToNote = async () => {
-    const editedContent = insertPdf(note.content, completion);
+    const editedContent = insertAudio(note.content, completion);
 
     const isNoteUpdated = await updateNote(note.id, {
       content: {
@@ -94,7 +92,7 @@ const SpecializedPdfIntegration: React.FC<SpecializedAIProps> = ({ note }) => {
     });
 
     if (isNoteUpdated) {
-      toast.success("PDF file and summarize added to your note successfully.");
+      toast.success("Audio summarize added to your note successfully.");
       refresh();
       return;
     }
@@ -108,7 +106,7 @@ const SpecializedPdfIntegration: React.FC<SpecializedAIProps> = ({ note }) => {
         <Button className="h-fit bg-foreground w-auto flex flex-col items-start p-4 border border-secondary">
           <div className="w-16 h-16 relative">
             <Image
-              src="/assets/images/logos/pdf.png"
+              src="/assets/images/logos/audio.webp"
               alt=""
               width={0}
               height={0}
@@ -118,25 +116,27 @@ const SpecializedPdfIntegration: React.FC<SpecializedAIProps> = ({ note }) => {
           </div>
 
           <p className="font-medium text-white text-sm text-wrap text-left">
-            PDF Summarizer
+            Audio Summarizer
           </p>
           <span className="text-wrap text-white/30 text-xs text-left">
-            Upload a pdf, summarise the uploaded pdf, use it as you wish and add
-            it to your notes.
+            Upload a audio, summarise the uploaded audio, use it as you wish and
+            add it to your notes.
           </span>
         </Button>
       </DialogTrigger>
       <DialogContent
         className={cn(
-          "flex duration-500 transition-all bg-foreground",
-          submitted && "w-[1024px]"
+          "w-[480px] flex duration-500 transition-all bg-foreground p-2",
+          completion && !isLoading && "w-auto max-h-[720px]"
         )}
       >
         {completion ? (
-          <div className="flex space-x-4">
-            <div style={{ height: "750px" }}>
-              {pdfFile?.url && (
-                <iframe src={pdfFile.url} height={820} width={480} />
+          <div className="flex flex-col space-y-2">
+            <div className="pt-8">
+              {audioFile?.url && (
+                <audio controls className="w-full">
+                  <source src={audioFile.url} type={audioFile.file?.type} />
+                </audio>
               )}
             </div>
             <div className="max-w-[480px]">
@@ -151,7 +151,7 @@ const SpecializedPdfIntegration: React.FC<SpecializedAIProps> = ({ note }) => {
                   Insert
                 </Button>
               </div>
-              <ScrollArea className="h-[750px] rounded-lg">
+              <ScrollArea className="h-[480px] rounded-lg">
                 <p className="text-white bg-blue-500 rounded-lg p-2">
                   <Markdown>{completion}</Markdown>
                 </p>
@@ -162,42 +162,42 @@ const SpecializedPdfIntegration: React.FC<SpecializedAIProps> = ({ note }) => {
         ) : !isLoading ? (
           <DialogHeader className="relative space-y-2 w-full">
             <DialogTitle className="text-3xl font-semibold text-white">
-              Upload Pdf
+              Upload Audio
             </DialogTitle>
             <DialogDescription className="text-white/30 text-sm">
-              Upload a pdf, Gemini AI will summarize ait for you.
+              Upload an audio, Gemini AI will summarize ait for you.
             </DialogDescription>
             <Label
-              htmlFor="pdf"
+              htmlFor="audio"
               className="border-2 border-secondary rounded-lg text-white border-dashed w-full grid place-items-center h-[150px]"
             >
-              Upload a PDF file
+              Upload an Audio
             </Label>
-            {pdfFile?.file && (
+            {audioFile?.file && (
               <span className="text-green-400 font-semibold flex items-center">
                 <span className="w-5 h-5 mr-2 grid place-items-center">
                   <CheckCircle2 className="mr-2" />
                 </span>
                 <span className="mt-1">
                   File:{" "}
-                  {pdfFile?.name.length > 30
-                    ? pdfFile.name.slice(0, 30) + "..."
-                    : pdfFile.name}
+                  {audioFile?.name.length > 30
+                    ? audioFile.name.slice(0, 30) + "..."
+                    : audioFile.name}
                 </span>
               </span>
             )}
             <Input
               type="file"
-              id="pdf"
-              name="pdf"
+              id="audio"
+              name="audio"
               className="hidden"
               onChange={handleFileChange}
-              accept="application/pdf"
+              accept=".mp3, .wav, .aac, .m4a, .wma"
             />
             <Button
               variant="outline"
               className="bg-white w-fit ml-auto"
-              onClick={handleSummarizePdf}
+              onClick={handleSummarizeAudio}
             >
               Submit
             </Button>
@@ -210,4 +210,4 @@ const SpecializedPdfIntegration: React.FC<SpecializedAIProps> = ({ note }) => {
   );
 };
 
-export default SpecializedPdfIntegration;
+export default SpecializedAudioIntegration;
