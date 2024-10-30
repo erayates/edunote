@@ -14,7 +14,7 @@ import {
 import { Input } from "@/components/ui/input";
 import useFetchStream from "@/hooks/use-fetch-stream";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { cn, insertAudio, insertImage } from "@/lib/utils";
+import { cn, insertAudio } from "@/lib/utils";
 import { CheckCircle2, GitPullRequestArrow } from "lucide-react";
 import { Note, User, Tag } from "@prisma/client";
 import { updateNote } from "@/actions/notes";
