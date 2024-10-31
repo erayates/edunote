@@ -176,7 +176,7 @@ const AppBottomBar: React.FC = () => {
 
     if (chatSelection === "gemini") {
       setChat([]);
-      addModelChat("Type something and press ENTER to start with Gemini AI.");
+      addModelChat("Type something to start with Gemini AI.");
     }
 
     if (chatSelection === "single") {
@@ -202,14 +202,14 @@ const AppBottomBar: React.FC = () => {
     if (chatSelection === "public-notes") {
       setChat([]);
       addModelChat(
-        "Type something and press ENTER to start search something within all public notes in the app."
+        "Type anything start chat with GEMINI with the knowledge of all public notes."
       );
     }
 
     if (chatSelection === "my-notes") {
       setChat([]);
       addModelChat(
-        "Type something and press ENTER to start with Gemini AI about all your notes."
+        "Don't you remember what you note in your Science Class? Search now! Type anything to chat with GEMINI."
       );
     }
   }, [chatSelection, currentNote]);
@@ -328,7 +328,7 @@ const AppBottomBar: React.FC = () => {
           <div className="flex items-center ml-28 pr-6">
             <ModeToggle />
 
-            <Tooltip>
+            <Tooltip delayDuration={200}>
               <TooltipTrigger asChild>
                 <Button
                   variant="outline"
@@ -338,11 +338,11 @@ const AppBottomBar: React.FC = () => {
                 </Button>
               </TooltipTrigger>
               <TooltipContent className="bg-black text-white txt-sm font-semibold">
-                <p>⏳ Available Soon... ⏳</p>
+                <p>⏳ Available Soon...</p>
               </TooltipContent>
             </Tooltip>
 
-            <Tooltip>
+            <Tooltip delayDuration={200}>
               <TooltipTrigger asChild>
                 <Button
                   variant="outline"
@@ -352,7 +352,7 @@ const AppBottomBar: React.FC = () => {
                 </Button>
               </TooltipTrigger>
               <TooltipContent className="bg-black text-white txt-sm font-semibold">
-                <p>⏳ Available Soon... ⏳</p>
+                <p>⏳ Available Soon...</p>
               </TooltipContent>
             </Tooltip>
 

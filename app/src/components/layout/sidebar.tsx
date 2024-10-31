@@ -95,7 +95,7 @@ const AppSidebar: React.FC = async () => {
               </p>
             </Link>
           </li>
-          <Tooltip>
+          <Tooltip delayDuration={200}>
             <TooltipTrigger asChild>
               <li className="flex items-center text-white border-2 rounded-xl group hover:bg-[#424549] transition-all duration-300 border-[#424549] mt-3">
                 <Link
@@ -116,12 +116,12 @@ const AppSidebar: React.FC = async () => {
                 </Link>
               </li>
             </TooltipTrigger>
-            <TooltipContent className="bg-foreground text-white txt-sm font-semibold">
-              <p>⏳ Available Soon... ⏳</p>
+            <TooltipContent className="bg-black text-white txt-sm font-semibold">
+              <p>⏳ Available Soon...</p>
             </TooltipContent>
           </Tooltip>
 
-          <Tooltip>
+          <Tooltip delayDuration={200}>
             <TooltipTrigger asChild>
               <li className="flex items-center text-white border-2 rounded-xl group hover:bg-[#424549] transition-all duration-300 border-[#424549] mt-3">
                 <Link
@@ -143,7 +143,7 @@ const AppSidebar: React.FC = async () => {
               </li>
             </TooltipTrigger>
             <TooltipContent className="bg-black text-white txt-sm font-semibold">
-              <p>⏳ Available Soon... ⏳</p>
+              <p>⏳ Available Soon...</p>
             </TooltipContent>
           </Tooltip>
         </ul>
@@ -154,7 +154,7 @@ const AppSidebar: React.FC = async () => {
             APP
           </p>
 
-          <Tooltip>
+          <Tooltip delayDuration={200}>
             <TooltipTrigger asChild>
               <li>
                 <Button
@@ -169,11 +169,11 @@ const AppSidebar: React.FC = async () => {
               </li>
             </TooltipTrigger>
             <TooltipContent className="bg-black text-white txt-sm font-semibold">
-              <p>⏳ Available Soon... ⏳</p>
+              <p>⏳ Available Soon...</p>
             </TooltipContent>
           </Tooltip>
 
-          <Tooltip>
+          <Tooltip delayDuration={200}>
             <TooltipTrigger asChild>
               <li>
                 <Button
@@ -188,7 +188,7 @@ const AppSidebar: React.FC = async () => {
               </li>
             </TooltipTrigger>
             <TooltipContent className="bg-black text-white txt-sm font-semibold">
-              <p>⏳ Available Soon... ⏳</p>
+              <p>⏳ Available Soon...</p>
             </TooltipContent>
           </Tooltip>
         </ul>

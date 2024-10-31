@@ -31,7 +31,7 @@ const AIChatContent: React.FC<AIChatContentProps> = ({
   return (
     <div
       className={cn(
-        "h-0 -translate-y-[4.5rem] border-2 border-secondary mt-4 bg-foreground relative flex  space-y-6 w-full rounded-3xl left-2 transition-all duration-500 ease-in-out py-6 px-6 pr-2",
+        "h-0 -translate-y-[4.5rem] border-2 border-primary mt-4 bg-foreground relative flex  space-y-6 w-full rounded-3xl left-2 transition-all duration-500 ease-in-out py-6 px-6 pr-2",
         open && "h-[86.5vh] translate-y-0"
       )}
     >

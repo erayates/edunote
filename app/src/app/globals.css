@@ -2,12 +2,33 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(221, 10, 10, 0.1);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(236, 15, 15, 0.5);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 127, 127, 0.7);
+}
+*/
+
 body {
   font-family: Arial, Helvetica, sans-serif;
   min-height: 100vh;
   height: 100%;
   width: 100vw;
   overflow-x: hidden;
+  /* overflow-y: auto;
+  scrollbar-gutter: stable; */
 }
 
 @layer utilities {

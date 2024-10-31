@@ -53,14 +53,14 @@ const AIChatSelection: React.FC<AIChatSelectionProps> = ({
   return (
     <div
       className={cn(
-        "w-[240px] top-0 border-2 border-secondary duration-500 h-0 overflow-hidden -translate-y-16 transition-all bg-foreground rounded-2xl absolute right-[780px] opacity-0 -z-10 p-4",
+        "w-[240px] top-0 border-2 border-primary duration-500 h-0 overflow-hidden -translate-y-16 transition-all bg-foreground rounded-2xl absolute right-[780px] opacity-0 -z-10 p-4",
         open && "opacity-100 space-y-2 h-[94vh] translate-y-0"
       )}
     >
       <button
         className={cn(
-          "border border-secondary hover:bg-primary relative p-2 rounded-xl w-full flex items-center justify-center text-white text-xs",
-          chatSelection === "gemini" && "bg-secondary"
+          "border border-primary hover:bg-primary relative p-2 rounded-xl w-full flex items-center justify-center text-white text-xs",
+          chatSelection === "gemini" && "bg-primary"
         )}
         onClick={() => setChatSelection("gemini")}
       >
@@ -76,8 +76,8 @@ const AIChatSelection: React.FC<AIChatSelectionProps> = ({
 
       <button
         className={cn(
-          "border border-secondary hover:bg-primary p-2 rounded-xl w-full flex items-center justify-center text-white text-xs",
-          chatSelection === "public-notes" && "bg-secondary"
+          "border border-primary hover:bg-primary p-2 rounded-xl w-full flex items-center justify-center text-white text-xs",
+          chatSelection === "public-notes" && "bg-primary"
         )}
         onClick={() => {
           setChatSelection("public-notes");
@@ -89,8 +89,8 @@ const AIChatSelection: React.FC<AIChatSelectionProps> = ({
 
       <button
         className={cn(
-          "border border-secondary hover:bg-primary p-2 rounded-xl w-full flex items-center justify-center text-white text-xs",
-          chatSelection === "my-notes" && "bg-secondary"
+          "border border-primary hover:bg-primary p-2 rounded-xl w-full flex items-center justify-center text-white text-xs",
+          chatSelection === "my-notes" && "bg-primary"
         )}
         onClick={() => setChatSelection("my-notes")}
       >
@@ -124,8 +124,8 @@ const AIChatSelection: React.FC<AIChatSelectionProps> = ({
                 <button
                   key={note.id}
                   className={cn(
-                    "border border-secondary hover:bg-primary p-2 rounded-xl w-full flex items-center justify-center text-white text-xs mt-2",
-                    currentNote && currentNote.id === note.id && "bg-secondary"
+                    "border border-primary hover:bg-primary p-2 rounded-xl w-full flex items-center justify-center text-white text-xs mt-2",
+                    currentNote && currentNote.id === note.id && "bg-primary"
                   )}
                   onClick={() => handleSingleNote(note)}
                 >
