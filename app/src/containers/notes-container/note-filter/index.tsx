@@ -3,14 +3,16 @@
 import { DatePicker } from "@/components/ui/date-picker";
 import { Input } from "@/components/ui/input";
 import { useRouter, useSearchParams } from "next/navigation";
-import React, { ChangeEvent, useEffect } from "react";
+import React, { ChangeEvent, Dispatch, SetStateAction, useEffect } from "react";
 import { useDebouncedCallback } from "use-debounce";
 
 import { format } from "date-fns";
 import ComboBox from "@/components/ui/combobox";
 import slug from "slug";
 
-const NoteFilter: React.FC = () => {
+const NoteFilter: React.FC<{
+  setCurrentPage: Dispatch<SetStateAction<number>>;
+}> = ({ setCurrentPage }) => {
   const [date, setDate] = React.useState<Date | undefined>();
   const [selectedTags, setSelectedTags] = React.useState<
     { value: string; id: string; label: string }[]
@@ -19,8 +21,10 @@ const NoteFilter: React.FC = () => {
   const router = useRouter();
 
   useEffect(() => {
-    debounced(selectedTags.map((tag) => slug(tag.label)).join(","), "tags");
+    if (selectedTags.length > 0)
+      debounced(selectedTags.map((tag) => slug(tag.label)).join(","), "tags");
   }, [selectedTags]);
+  
 
   const searchParams = useSearchParams();
 
@@ -39,14 +43,20 @@ const NoteFilter: React.FC = () => {
 
   const debounced = useDebouncedCallback((value: string, type: string) => {
     const params = new URLSearchParams(searchParams);
-    if (value === "" && value) {
+    if (!value) {
       params.delete(type);
+      setCurrentPage(1);
       router.replace(`/notes?${params.toString()}`);
       return;
     }
+
     params.set(type, value);
-    router.replace(`/notes?${params.toString()}`);
-  }, 500);
+
+    console.log(params.toString());
+
+    setCurrentPage(1);
+    router.push(`/notes?${params.toString()}`);
+  }, 300);
 
   return (
     <div className="w-[300px] max-w-[300px] sticky top-4  h-fit bg-foreground border-2 border-secondary rounded-xl p-2">

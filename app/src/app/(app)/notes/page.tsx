@@ -7,7 +7,7 @@ interface SearchParams {
   tags?: string[];
   author?: string;
   createdAt?: string;
-  take?: string;
+  page?: number;
 }
 
 interface NotesPageProps {
@@ -15,37 +15,24 @@ interface NotesPageProps {
 }
 
 export default async function NotesPage({ searchParams }: NotesPageProps) {
-  const { search, tags, author, createdAt, take } = searchParams;
+  const { search, tags, author, createdAt, page = 1 } = searchParams;
 
-  const hasSearchParams = Object.values(searchParams).some(
-    (param) => param !== undefined
-  );
+  const searchResult = await searchNotes({
+    query: search,
+    tags: Array.isArray(tags) ? tags : tags ? [tags] : undefined,
+    author,
+    createdAt: createdAt ? new Date(createdAt) : undefined,
+    page: Number(page), // Ensure it's a number
+    limit: 12, // Match the LIMIT in NotePagination
+  });
 
-  if (hasSearchParams) {
-    const searchResult = await searchNotes({
-      query: search,
-      tags: Array.isArray(tags) ? tags : tags ? [tags] : undefined,
-      author,
-      createdAt: createdAt ? new Date(createdAt) : undefined,
-      take: take ? parseInt(take, 10) : undefined,
-    });
-
-    if (searchResult) {
-      return (
-        <NotesContainer
-          notes={searchResult.notes}
-          totalNotes={searchResult.totalNotes}
-        />
-      );
-    }
-
-    return notFound();
-  }
-
-  const _take = take ? parseInt(take, 10) : undefined;
-  const { notes, totalNotes } = await getAllNotes(_take as number);
-  if (notes) {
-    return <NotesContainer notes={notes} totalNotes={totalNotes} />;
+  if (searchResult) {
+    return (
+      <NotesContainer
+        notes={searchResult.notes}
+        totalNotes={searchResult.totalNotes}
+      />
+    );
   }
 
   return notFound();

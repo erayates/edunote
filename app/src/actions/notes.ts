@@ -151,10 +151,12 @@ export async function searchNotes({
   tags,
   createdAt,
   author,
-  take,
+  page = 1,
+  limit = 10,
 }: SearchActionParams): Promise<SearchNotesResult> {
   const conditions: Prisma.NoteWhereInput[] = [];
 
+  // Search by query
   if (query) {
     conditions.push({
       OR: [
@@ -164,51 +166,66 @@ export async function searchNotes({
     });
   }
 
+  // Search by tags
   if (tags) {
+    // Ensure tags are correctly decoded and transformed to lowercase
     const tagArray = (
       typeof tags === "string"
         ? decodeURIComponent(tags).split(",")
         : tags.map((tag) => decodeURIComponent(tag))
     ).map((tag) => tag.trim().toLowerCase());
 
-    conditions.push({
-      tags: { some: { slug: { in: tagArray } } },
-    });
+    // Check if any tags were provided
+    if (tagArray.length > 0) {
+      conditions.push({
+        tags: { some: { slug: { in: tagArray } } }, // Assuming 'slug' is the correct field for tags
+      });
+    }
   }
 
+  // Search by createdAt date
   if (createdAt) {
-    const sOfDay = fromZonedTime(startOfDay(new Date(createdAt)), "UTC");
-    const eOfDay = fromZonedTime(addDays(sOfDay, 1), "UTC");
-
+    const startDate = fromZonedTime(startOfDay(new Date(createdAt)), "UTC");
+    const endDate = fromZonedTime(addDays(startDate, 1), "UTC");
     conditions.push({
-      createdAt: { gte: sOfDay, lte: eOfDay },
+      createdAt: { gte: startDate, lte: endDate },
     });
   }
 
+  // Search by author
   if (author) {
     conditions.push({
       user: { fullname: { contains: author, mode: "insensitive" } },
     });
   }
 
+  // Combine conditions
   const where: Prisma.NoteWhereInput =
-    conditions.length > 0 ? { AND: conditions, isPublic: true } : {};
+    conditions.length > 0
+      ? { AND: [{ isPublic: true }, ...conditions] }
+      : { isPublic: true };
 
-  const notes = await prisma.note.findMany({
-    where,
-    take: take || 10,
-    orderBy: {
-      createdAt: "desc",
-    },
-    include: {
-      user: true,
-      tags: true,
-    },
-  });
+  try {
+    // Fetch notes with pagination
+    const notes = await prisma.note.findMany({
+      where,
+      take: limit,
+      skip: (page - 1) * limit,
+      orderBy: { createdAt: "desc" },
+      include: {
+        user: true,
+        tags: true,
+      },
+    });
 
-  const totalNotes = await prisma.note.count({ where });
+    // Get total count of notes matching conditions
+    const totalNotes = await prisma.note.count({ where });
 
-  return { notes, totalNotes };
+    return { notes, totalNotes };
+  } catch (error) {
+    console.error("Error fetching notes:", error);
+    throw new Error("An error occurred while fetching notes.");
+  }
 }
 
 export async function getAllUserNotes(userId: string) {

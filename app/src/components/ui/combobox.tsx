@@ -22,7 +22,6 @@ import { ScrollArea } from "./scroll-area";
 import { useDebouncedCallback } from "use-debounce";
 import { createTag, getAllTags, searchTags } from "@/actions/tags";
 import { toast } from "sonner";
-import { randomBytes } from "crypto";
 
 interface Tag {
   value: string;
@@ -36,7 +35,6 @@ interface ComboBoxProps {
     React.SetStateAction<{ value: string; label: string; id: string }[]>
   >;
   type?: string;
-  // defaultSelectedTags?: { value: string; label: string; id: string }[];
 }
 
 const ITEMS_PER_PAGE = 15;
@@ -45,69 +43,40 @@ const MAX_SELECTED_TAGS = 5;
 export default function ComboBox({
   selectedTags,
   setSelectedTags,
-  // defaultSelectedTags,
   type,
 }: ComboBoxProps) {
   const [open, setOpen] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
   const [hasMore, setHasMore] = React.useState(true);
-  const [skippedTag, setSkippedTag] = React.useState(15);
-  const [defaultDisplayedTags, setDefaultDisplayedTags] = React.useState<Tag[]>(
-    []
-  );
-
+  const [skippedTag, setSkippedTag] = React.useState(0);
+  const [displayedTags, setDisplayedTags] = React.useState<Tag[]>([]);
   const [searchResults, setSearchResults] = React.useState<Tag[]>([]);
   const [isSearching, setIsSearching] = React.useState(false);
   const [inputValue, setInputValue] = React.useState("");
-  const scrollContainerRef = React.useRef<HTMLDivElement>(null);
-  const lastScrollPositionRef = React.useRef(0);
 
+  const scrollContainerRef = React.useRef<HTMLDivElement>(null);
   const { ref: loadMoreRef, inView } = useInView({
     threshold: 0.1,
     rootMargin: "100px",
   });
 
   React.useEffect(() => {
-    const fetchAllTags = async () => {
-      const tags = await getAllTags();
-      if (tags) {
-        setDefaultDisplayedTags(tags);
-      }
-    };
-
-    fetchAllTags();
+    // Load initial tags on mount
+    loadMoreTags();
   }, []);
 
-  const displayedTags = isSearching ? searchResults : defaultDisplayedTags;
-
   const loadMoreTags = React.useCallback(async () => {
-    if (!loading && hasMore && !isSearching) {
-      if (scrollContainerRef.current) {
-        lastScrollPositionRef.current = scrollContainerRef.current.scrollTop;
-      }
-
-      setLoading(true);
-      try {
-        const newTags = await getAllTags(skippedTag);
-        if (newTags && newTags.length > 0) {
-          setDefaultDisplayedTags((prev) => [...prev, ...newTags]);
-          setSkippedTag((prev) => prev + ITEMS_PER_PAGE);
-          setHasMore(newTags.length === ITEMS_PER_PAGE);
-
-          requestAnimationFrame(() => {
-            if (scrollContainerRef.current) {
-              scrollContainerRef.current.scrollTop =
-                lastScrollPositionRef.current;
-            }
-          });
-        } else {
-          setHasMore(false);
-        }
-      } catch (error) {
-        console.error("Failed to load more tags:", error);
-      } finally {
-        setLoading(false);
-      }
+    if (loading || !hasMore || isSearching) return;
+    setLoading(true);
+    try {
+      const newTags = await getAllTags(skippedTag);
+      setDisplayedTags((prev) => [...prev, ...newTags]);
+      setSkippedTag((prev) => prev + ITEMS_PER_PAGE);
+      setHasMore(newTags.length === ITEMS_PER_PAGE);
+    } catch (error) {
+      console.error("Failed to load more tags:", error);
+    } finally {
+      setLoading(false);
     }
   }, [loading, hasMore, skippedTag, isSearching]);
 
@@ -133,9 +102,7 @@ export default function ComboBox({
     setIsSearching(true);
     try {
       const results = await searchTags(value);
-      if (results) {
-        setSearchResults(results);
-      }
+      setSearchResults(results || []);
     } catch (error) {
       console.error("Search error:", error);
     } finally {
@@ -148,51 +115,37 @@ export default function ComboBox({
     if (tag) {
       setSelectedTags((prev) => {
         const exists = prev.some((t) => t.value === tag.value);
-        if (exists) {
-          return prev.filter((t) => t.value !== tag.value);
-        }
-
+        if (exists) return prev.filter((t) => t.value !== tag.value);
         if (selectedTags.length >= MAX_SELECTED_TAGS) {
           toast.error(`You can only select up to ${MAX_SELECTED_TAGS} tags.`);
           return [...prev];
         }
-
         return [...prev, tag];
       });
     }
   };
 
-  // Creating new tag
   const handleKeyDown = async (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (type === "search") return;
-
     if (e.key === "Enter" && inputValue.trim()) {
       e.preventDefault();
-
       if (selectedTags.length >= MAX_SELECTED_TAGS) {
         toast.error(`You can only select up to ${MAX_SELECTED_TAGS} tags.`);
         return;
       }
 
       const normalizedValue = inputValue.trim().toLowerCase();
-
       if (selectedTags.some((tag) => tag.value === normalizedValue)) {
         toast.error("This tag is already selected.");
         return;
       }
 
       const createdTag = await createTag(normalizedValue);
-
       if (createdTag) {
         setSelectedTags((prev) => [
           ...prev,
-          {
-            id: createdTag.id,
-            label: createdTag.name,
-            value: createdTag.name,
-          },
+          { id: createdTag.id, label: createdTag.name, value: createdTag.name },
         ]);
-
         toast.success("Tag created successfully.");
       }
 
@@ -202,7 +155,6 @@ export default function ComboBox({
     }
   };
 
-  // Remove already exist tag
   const removeTag = (tagToRemove: string) => {
     setSelectedTags((prev) => prev.filter((tag) => tag.value !== tagToRemove));
   };
@@ -219,7 +171,7 @@ export default function ComboBox({
           <div className="flex flex-wrap gap-1 items-center">
             {selectedTags.map((tag) => (
               <span
-                key={tag.id + randomBytes(5).toString("hex")}
+                key={tag.id}
                 className="bg-secondary text-balance text-secondary-foreground px-2 py-1 rounded-md text-sm flex items-center"
               >
                 {tag.label}
@@ -269,11 +221,11 @@ export default function ComboBox({
                 type="always"
               >
                 <div className="p-1">
-                  {displayedTags.map((tag) => (
+                  {(isSearching ? searchResults : displayedTags).map((tag) => (
                     <CommandItem
-                      key={tag.id + randomBytes(5).toString("hex")}
+                      key={tag.id}
                       value={tag.value}
-                      onSelect={handleSelect}
+                      onSelect={() => handleSelect(tag.value)}
                       className="mt-1 first:mt-0"
                     >
                       <div className="flex items-center">
@@ -285,7 +237,7 @@ export default function ComboBox({
                               : "opacity-50 [&_svg]:invisible"
                           )}
                         >
-                          <CheckIcon className={cn("h-4 w-4 text-white")} />
+                          <CheckIcon className="h-4 w-4 text-white" />
                         </div>
                         <span className="text-white/50">{tag.label}</span>
                       </div>

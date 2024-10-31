@@ -7,10 +7,8 @@ import NoteCard from "./note-card";
 import NoteFilter from "./note-filter";
 import { Prisma } from "@prisma/client";
 import NoteSearch from "./note-search";
-import { useInView } from "react-intersection-observer";
-import { useSearchParams } from "next/navigation";
-import { useRouter } from "next/navigation";
 import NotePagination from "./note-pagination";
+import { useSearchParams } from "next/navigation";
 
 interface NotesContainerProps {
   notes: Prisma.NoteGetPayload<{ include: { user: true; tags: true } }>[];
@@ -21,56 +19,11 @@ const NotesContainer: React.FC<NotesContainerProps> = ({
   notes,
   totalNotes,
 }) => {
-  const [isLoading, setIsLoading] = useState(false);
-  // const [hasMore, setHasMore] = useState();
-  const [take, setTake] = useState(10);
-  const [scrollPosition, setScrollPosition] = useState(0);
-
   const searchParams = useSearchParams();
-  const router = useRouter();
 
-  const { ref, inView } = useInView({
-    threshold: 0.1,
-    rootMargin: "100px",
-  });
-
-  // const loadMore = () => {
-  //   if (isLoading) return;
-
-  //   setScrollPosition(window.scrollY);
-  //   setIsLoading(true);
-
-  //   console.log(notes);
-
-  //   const params = new URLSearchParams(searchParams);
-  //   console.log(params);
-
-  //   params.set("take", (take + 10).toString());
-
-  //   router.push(`/notes?${params.toString()}`, { scroll: false });
-  //   setTake((prev) => prev + 10);
-
-  //   setIsLoading(false);
-  // };
-
-  // Restore scroll position after loading more items
-  React.useEffect(() => {
-    if (scrollPosition > 0) {
-      window.scrollTo({
-        top: scrollPosition,
-        behavior: "instant",
-      });
-    }
-  }, [notes, scrollPosition]);
-
-  // React.useEffect(() => {
-  //   if (inView) {
-  //     loadMore();
-  //     return;
-  //   }
-
-  //   setIsLoading(false);
-  // }, [inView]);
+  const [currentPage, setCurrentPage] = useState(
+    Number(searchParams.get("page")) || 1
+  );
 
   return (
     <div className="space-y-6 w-full">
@@ -100,10 +53,10 @@ const NotesContainer: React.FC<NotesContainerProps> = ({
       </div>
 
       <div className="flex space-x-6">
-        <NoteFilter />
+        <NoteFilter setCurrentPage={setCurrentPage} />
 
         <div className="flex flex-col w-full space-y-6">
-          <NoteSearch />
+          <NoteSearch setCurrentPage={setCurrentPage} />
 
           <div className="grid grid-cols-4 gap-4">
             {notes.map((note) => (
@@ -121,16 +74,11 @@ const NotesContainer: React.FC<NotesContainerProps> = ({
             ))}
           </div>
 
-          <NotePagination notes={notes} />
-
-          <div
-            ref={ref}
-            className="w-full h-10 flex items-center justify-center"
-          >
-            {isLoading && (
-              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
-            )}
-          </div>
+          <NotePagination
+            totalNotes={totalNotes}
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+          />
         </div>
       </div>
     </div>

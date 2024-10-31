@@ -2,9 +2,12 @@
 
 import { Input } from "@/components/ui/input";
 import { useRouter, useSearchParams } from "next/navigation";
+import { Dispatch, SetStateAction } from "react";
 import { useDebouncedCallback } from "use-debounce";
 
-const NoteSearch: React.FC = () => {
+const NoteSearch: React.FC<{
+  setCurrentPage: Dispatch<SetStateAction<number>>;
+}> = ({ setCurrentPage }) => {
   const searchParams = useSearchParams();
 
   const router = useRouter();
@@ -22,6 +25,7 @@ const NoteSearch: React.FC = () => {
       return;
     }
     params.set("search", value);
+    setCurrentPage(1);
     router.replace(`/notes?${params.toString()}`);
   });
 

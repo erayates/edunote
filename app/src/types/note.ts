@@ -18,7 +18,8 @@ export interface SearchActionParams {
   tags?: string[];
   createdAt?: Date;
   author?: string;
-  take?: number;
+  page?: number;
+  limit: number;
 }
 
 export type NoteWithRelations = Prisma.NoteGetPayload<{
