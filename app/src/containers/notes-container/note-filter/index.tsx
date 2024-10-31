@@ -59,12 +59,12 @@ const NoteFilter: React.FC<{
   }, 300);
 
   return (
-    <div className="w-[300px] max-w-[300px] sticky top-4  h-fit bg-foreground border-2 border-secondary rounded-xl p-2">
+    <div className="w-[300px] max-w-[300px] sticky top-4  h-fit bg-foreground border-2 border-primary rounded-xl p-2">
       <p className="text-white/30 uppercase font-semibold text-center text-xl">
         Filters
       </p>
 
-      <div className="rounded-full h-[1px] w-full bg-secondary my-2"></div>
+      <div className="rounded-full h-[1px] w-full bg-primary my-2"></div>
       <div className="space-y-2">
         <div className="space-y-1 w-[280px] max-w-[280px]">
           <p className="text-sm text-white/30 font-medium">Tags</p>
@@ -78,7 +78,7 @@ const NoteFilter: React.FC<{
         <div className="space-y-1">
           <p className="text-sm text-white/30 font-medium">Author</p>
           <Input
-            className="focus-visible:ring-secondary text-white text-xs"
+            className="focus-visible:ring-primary text-white text-xs"
             onChange={onAuthorFilterChange}
           />
         </div>

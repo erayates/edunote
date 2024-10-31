@@ -27,7 +27,7 @@ const NoteCard: React.FC<NoteCardProps> = ({
 }) => {
   return (
     <Link href={`/notes/${slug}`}>
-      <div className="bg-foreground h-[300px] max-h-[300px] overflow-hidden w-full relative border border-secondary rounded-lg">
+      <div className="bg-foreground h-[300px] max-h-[300px] overflow-hidden w-full relative border border-primary rounded-lg">
         <div className="h-[120px] max-h-[120px] relative overflow-hidden w-full rounded-t shadow-card">
           <Image
             src={thumbnailUrl ?? "/assets/images/default-note-thumbnail.jpg"}
