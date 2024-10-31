@@ -30,25 +30,28 @@ const SpecializedAI: React.FC<SpecializedAIProps> = ({ note }) => {
         <DialogTrigger asChild>
           <Button 
               className="
-                bg-aiButtonGradient hover:opacity-50 
-                relative border-4 z-50 border-orange-600 
+                bg-[url('/assets/images/bg-button-ai.png')] 
+                bg-cover bg-center
+                relative z-60
                 rounded-full w-16 h-16
-                transition-transform duration-5000 ease-in-out
-                hover:rotate-[3600deg]
-                transform-gpu
               "
             >
               <Image
-                src="/assets/images/abstract.png"
+                src="/assets/images/button-ai.png"
                 alt="Generative AI"
-                width={64}
-                height={64}
-                className="absolute"
+                width={48}
+                height={48}
+                className="
+                  absolute
+                  transition-transform duration-3000 ease-in-out
+                  hover:rotate-[2400deg]
+                  transform-gpu                  
+                "
               />
           </Button>
         </DialogTrigger>
-        <DialogContent className="sm:max-w-[425px] md:max-w-[820px] p-0 border-2 border-secondary bg-foreground flex">
-          <DialogHeader className="h-[425px] bg-aiButtonGradient w-[320px] relative flex justify-end items-end rounded-sm p-4">
+        <DialogContent className="sm:max-w-[425px] md:max-w-[820px] p-0 bg-foreground flex rounded-3xl p-1 border-2 border-primary">
+          <DialogHeader className="h-[425px] bg-aiButtonGradient w-[320px] relative flex justify-end items-end p-6 rounded-l-3xl -mt-[6px] -mb-[6px] -ml-2">
             <h3 className="text-white font-extrabold uppercase text-6xl text-left">
               Special AI Mod
             </h3>

@@ -104,7 +104,7 @@ const SpecializedAudioIntegration: React.FC<SpecializedAIProps> = ({
   return (
     <Dialog onOpenChange={(open) => handleClose(open)}>
       <DialogTrigger asChild>
-        <Button className="h-fit bg-foreground w-auto flex flex-col items-start p-4 border border-secondary">
+        <Button className="h-fit bg-foreground w-auto flex flex-col items-start p-4 border border-primary">
           <div className="w-16 h-16 relative">
             <Image
               src="/assets/images/logos/audio.webp"
@@ -120,7 +120,7 @@ const SpecializedAudioIntegration: React.FC<SpecializedAIProps> = ({
             Audio Summarizer
           </p>
           <span className="text-wrap text-white/30 text-xs text-left">
-            Upload a audio, summarise the uploaded audio, use it as you wish and
+            Summarize the uploaded audio and
             add it to your notes.
           </span>
         </Button>
@@ -141,7 +141,7 @@ const SpecializedAudioIntegration: React.FC<SpecializedAIProps> = ({
               )}
             </div>
             <div className="max-w-[480px]">
-              <div className="flex items-center justify-between mt-4 mb-2 border-2 border-secondary p-2 rounded-lg ">
+              <div className="flex items-center justify-between mt-4 mb-2 border-2 border-primary p-2 rounded-lg ">
                 <p className="text-white font-medium text-xl">Summary</p>
                 <Button
                   variant="outline"
@@ -170,7 +170,7 @@ const SpecializedAudioIntegration: React.FC<SpecializedAIProps> = ({
             </DialogDescription>
             <Label
               htmlFor="audio"
-              className="border-2 border-secondary rounded-lg text-white border-dashed w-full grid place-items-center h-[150px]"
+              className="border-2 border-primary rounded-lg text-white border-dashed w-full grid place-items-center h-[150px]"
             >
               Upload an Audio
             </Label>

@@ -128,6 +128,21 @@ async def atlas_vector_search_ask(user_id: str, note_id: str, query: str, limit:
 
 @app.post("/search/elastic-ask/")
 async def elasticsearch_ask(body: SearchINNotes):
+    """
+    Perform a search in Elasticsearch based on user input and notes.
+
+    Args:
+        body (SearchINNotes): Contains the search command, user ID, and visibility preference.
+            - command: str
+            - user_id: str
+            - public_search: bool = False            
+
+    Returns:
+        dict: A JSON object containing the response to the user's query along with the note slugs used.
+
+    Raises:
+        JSONDecodeError: If the response from the AI model cannot be parsed as JSON.
+    """
     query = body.command
     user_id = body.user_id
     public_search = body.public_search
@@ -174,7 +189,7 @@ async def elasticsearch_ask(body: SearchINNotes):
 @app.post("/search/elastic-simple/")
 async def elasticsearch_simple(query: str):
     """
-    Search in Elasticsearch using a simple query string.
+    Execute a simple search query in Elasticsearch.
 
     Args:
         query (str): The search query string.
@@ -184,7 +199,7 @@ async def elasticsearch_simple(query: str):
 
     Raises:
         HTTPException: If there's an error with the Elasticsearch client.
-    """    
+    """  
     global client
     try:
         response = client.search(q=query)
@@ -195,7 +210,7 @@ async def elasticsearch_simple(query: str):
 @app.post("/search/elastic-all/")
 async def elasticsearch_all(body: Request):
     """
-    Search in Elasticsearch using a detailed body request.
+    Conduct a detailed search in Elasticsearch using a provided body request.
 
     Args:
         body (Request): The search query body (in JSON format).
@@ -216,30 +231,34 @@ async def elasticsearch_all(body: Request):
 @app.post("/file/upload/")
 async def file_upload(body: FileUploadBody = Depends(), files: List[UploadFile] = File(...)):
     """
-    Upload files to the server.
+    Upload files to the server along with their metadata.
 
     Args:
-        body (FileUploadBody): Metadata for file upload.
-        files (List[UploadFile]): List of files to upload.
+        body (FileUploadBody): Metadata for the file upload.
+            - user_id: str
+            - update_if_exists: bool = True
+        files (List[UploadFile]): List of files to be uploaded.
 
     Returns:
-        dict: File upload results.
+        dict: Results of the file upload process.
     """
     return Process.file_upload(body ,files)
 
 @app.post("/file/download/")
 async def file_download(body: FileDownloadBody = Depends()):
     """
-    Download a file from the storage bucket.
+    Download a specified file from the storage bucket.
 
     Args:
-        body (FileDownloadBody): Contains the user ID and file name.
+        body (FileDownloadBody): Contains the user ID and the file name.
+            - user_id: str
+            - file_name: str
 
     Returns:
-        StreamingResponse: The file data as a stream.
+        StreamingResponse: A stream of the file data.
 
     Raises:
-        HTTPException: If the file is not found or download fails.
+        HTTPException: If the specified file is not found or the download fails.
     """
     user_id = body.user_id
     file_name = body.file_name    
@@ -267,17 +286,16 @@ async def file_download(body: FileDownloadBody = Depends()):
 @app.post("/file/extract/")
 async def file_text_extraction(file: UploadFile = File(...)):
     """
-    Extract text from an uploaded file (audio, image, PDF) and user-provided parameters.
+    Extract text from an uploaded file, supporting various formats (audio, image, PDF).
 
     Args:
-        file (UploadFile): The file to extract text from.
-        body (FileExtract): Additional information (e.g., user ID).
+        file (UploadFile): The file from which text will be extracted.
 
     Returns:
-        StreamingResponse: The extracted text.
+        StreamingResponse: The extracted text as a stream.
 
     Raises:
-        HTTPException: If the file type is not supported.
+        HTTPException: If the uploaded file type is not supported.
     """
     global model
 
@@ -297,13 +315,15 @@ async def file_text_extraction(file: UploadFile = File(...)):
 @app.post("/file/check/")
 async def file_text_extraction(body: FileDownloadBody = Depends()):
     """
-    Check if a file exists in the storage bucket.
+    Verify the existence of a file in the storage bucket.
 
     Args:
         body (FileDownloadBody): Contains the user ID and file name.
+            - user_id: str
+            - file_name: str
 
     Returns:
-        dict: Status of the file in the bucket.
+        dict: The status of the file's existence in the bucket.
     """
     user_id = body.user_id
     file_name = body.file_name    
@@ -316,18 +336,20 @@ async def file_text_extraction(body: FileDownloadBody = Depends()):
 
 @app.post("/caption/extract/")
 async def file_text_extraction(body: TranscriptLoad):
+    """
+    Extract captions from a specified YouTube video.
+
+    Args:
+        body (TranscriptLoad): Contains the YouTube video ID and a flag for transcript extraction.
+            - youtube_video_id: str
+            - only_transcript: bool = False
+
+    Returns:
+        StreamingResponse: A stream of the extracted captions or transcript.
+    """
     youtube_video_id = body.youtube_video_id
     only_transcript = body.only_transcript
     global model
-    """
-    Extract captions from a YouTube video.
-
-    Args:
-        youtube_video_id (str): The YouTube video ID.
-
-    Returns:
-        dict: Extracted captions from the video.
-    """
     return StreamingResponse(Loaders.caption_loader(youtube_video_id=youtube_video_id, model=model, only_transcript=only_transcript), media_type="text/plain")
 
 @app.get("/chat/history/")
@@ -347,28 +369,34 @@ async def get_chat_history(user_id: str, note_id: str = 'gemini'):
 @app.get("/chat/clear/")
 async def clear_chat_history(user_id: str, note_id: str = 'gemini'):
     """
-    Clear the chat history for a user and note ID.
+    Clear the chat history associated with a specific user and note ID.
 
     Args:
-        user_id (str): The user ID.
-        note_id (str): The note ID, default is 'gemini'.
+        user_id (str): The unique identifier for the user.
+        note_id (str): The identifier for the note context; defaults to 'gemini'.
 
     Returns:
-        dict: Result of clearing chat history.
+        dict: Result indicating the success or failure of the chat history clearance.
     """
     return ChatHistory.clear_chat_history(user_id=user_id, note_id=note_id)
 
 @app.post("/gemini/", response_class=PlainTextResponse)
 async def gemini_process(body: MainBody):
     """
-    Process Gemini content generation request.
+    Process a request for content generation using the Gemini AI model.
 
     Args:
-        body (MainBody): Contains the prompt and user metadata.
+        body (MainBody): Contains the prompt and associated user metadata.
+            - user_id: str
+            - option: str = 'user'
+            - note_id: str = 'gemini'
+            - command: Optional[str] = None
+            - prompt: Optional[str] = None
 
     Returns:
-        StreamingResponse: Generated text response from Gemini.
+        StreamingResponse: The generated text response from the Gemini AI model.
     """
+
     return StreamingResponse(stream_text(body.option, body.prompt, body.command, body.user_id, body.note_id), media_type="text/plain")
 
 async def stream_text(option: str, text: str, user_query: str, user_id: str, note_id: str):
@@ -411,6 +439,15 @@ async def stream_text(option: str, text: str, user_query: str, user_id: str, not
 
 @app.get("/update-api-key/")
 async def update_api_key(api_key: str):
+    """
+    Update the API key used for interacting with the Gemini AI service.
+
+    Args:
+        api_key (str): The new API key to be configured.
+
+    Returns:
+        dict: A status message indicating the success or failure of the API key update.
+    """
     try:
         genai.configure(api_key=api_key)
         return {'status': 1}
@@ -459,7 +496,8 @@ async def root():
                     "method": "POST",
                     "description": "Extract captions from a specified YouTube video.",
                     "parameters": {
-                        "youtube_video_id": "The ID of the YouTube video from which to extract captions. (required)"
+                        "youtube_video_id": "The ID of the YouTube video from which to extract captions. (required)",
+                        "only_transcript": "Flag to indicate if only the transcript should be extracted. (optional)"
                     }
                 },
                 "/file/check/": {
@@ -491,7 +529,8 @@ async def root():
                     "description": "Perform a filtered search in Elasticsearch based on user notes and queries.",
                     "parameters": {
                         "query": "The specific search query. (required)",
-                        "user_id": "User ID to filter the search results. (required)"
+                        "user_id": "User ID to filter the search results. (required)",
+                        "public_search": "Flag to indicate if public notes should be included. (optional)"
                     }
                 }
             },
@@ -500,11 +539,11 @@ async def root():
                     "method": "POST",
                     "description": "Interact with the Gemini AI for content generation based on user prompts.",
                     "parameters": {
-                        "option": ["user (Default)", "template", "ask", "ask_note", "explain", "summarize", "note", "improve", "shorter", "longer", "continue", "fix", "zap",],
-                        "prompt": "The input text to be processed.",
+                        "option": "The type of content generation to perform.",
+                        "prompt": "The input text to be processed. (required)",
                         "command": "Optional command for further processing.",
-                        "user_id": "User ID for tracking interactions.",
-                        "note_id": "Default 'gemini'. Note ID for context.",
+                        "user_id": "User ID for tracking interactions. (required)",
+                        "note_id": "Default is 'gemini'. Note ID for context.",
                         "user_query": "Specific query related to the prompt."
                     }
                 }
@@ -514,7 +553,8 @@ async def root():
                     "method": "GET",
                     "description": "Retrieve the chat history for a specified user.",
                     "parameters": {
-                        "user_id": "User ID for which to retrieve chat history. (required)"
+                        "user_id": "User ID for which to retrieve chat history. (required)",
+                        "note_id": "Note ID to specify the context of the chat. (optional)"
                     }
                 },
                 "/chat/clear/": {
