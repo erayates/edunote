@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { Button } from "../../ui/button";
 import { Note, User, Tag } from "@prisma/client";
+
 import {
   Dialog,
   DialogContent,
@@ -25,16 +26,7 @@ const SpecializedAI: React.FC<SpecializedAIProps> = ({ note }) => {
     <div className="fixed bottom-0 ml-8 mb-8 z-50">
       <Dialog>
         <DialogTrigger asChild>
-          <Button 
-            className="
-              bg-aiButtonGradient hover:opacity-50 
-              relative border-4 z-50 border-orange-600 
-              rounded-full w-16 h-16
-              transition-transform duration-5000 ease-in-out
-              hover:rotate-[3600deg]
-              transform-gpu
-            "
-          >
+          <Button className="bg-aiButtonGradient hover:opacity-50 animate-spin relative border-4 z-50 border-cyan-400 rounded-full w-16 h-16">
             <Image
               src="/assets/images/abstract.png"
               alt="Generative AI"
@@ -44,11 +36,12 @@ const SpecializedAI: React.FC<SpecializedAIProps> = ({ note }) => {
             />
           </Button>
         </DialogTrigger>
-        <DialogContent className="sm:max-w-[425px] md:max-w-[820px] p-0 bg-foreground flex rounded-3xl p-1 border-2 border-primary">
-          <DialogHeader className="h-[425px] bg-aiButtonGradient w-[320px] relative flex justify-end items-end p-6 rounded-l-3xl -mt-[6px] -mb-[6px] -ml-2">
+        <DialogContent className="sm:max-w-[425px] md:max-w-[820px] p-0 border-2 border-secondary bg-foreground flex">
+          <DialogHeader className="h-[425px] bg-aiButtonGradient w-[320px] relative flex justify-end items-end rounded-sm p-4">
             <h3 className="text-white font-extrabold uppercase text-6xl text-left">
               Special AI Mod
             </h3>
+
             <p className="text-white/30 font-medium">
               Make your notes even more powerful using specialized AI
               integrations.
@@ -56,7 +49,9 @@ const SpecializedAI: React.FC<SpecializedAIProps> = ({ note }) => {
           </DialogHeader>
           <div className="py-4 pl-4 pr-12 grid grid-cols-2 gap-4">
             <SpecializedYoutubeIntegration note={note} />
+
             <SpecializedPdfIntegration note={note} />
+
             <Button className="h-fit bg-foreground w-auto flex flex-col items-start p-4 border border-secondary">
               <Image
                 src="/assets/images/logos/image.webp"
@@ -65,6 +60,7 @@ const SpecializedAI: React.FC<SpecializedAIProps> = ({ note }) => {
                 height={64}
                 sizes="100vw"
               />
+
               <p className="font-medium text-white text-sm text-wrap text-left">
                 Image Explainer
               </p>
