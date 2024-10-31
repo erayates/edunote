@@ -150,39 +150,30 @@ Insert gif or link to demo
 | Parameter | Type     | Description                       |
 | :-------- | :------- | :-------------------------------- |
 | `user_id`      | `string` | **Required**. User ID for tracking the file. |
-| `file_name`      | `string` | **Required**. Name of the file to check for existence. |
+| `file_name`      | `string` | **Required**. Name of the file to check if exists. |
 
-#### Get
+#### Download File
 
 ```http
-  GET /api/items/${id}
+  POST /file/download/
 ```
 
 | Parameter | Type     | Description                       |
 | :-------- | :------- | :-------------------------------- |
-| `id`      | `string` | **Required**. Id of item to fetch |
+| `user_id`      | `string` | **Required**. User ID for tracking the file. |
+| `file_name`      | `string` | **Required**. Name of the file to be downloaded. |
 
-#### Get
+#### Upload Files
 
 ```http
-  GET /api/items/${id}
+  POST /file/upload/
 ```
 
 | Parameter | Type     | Description                       |
 | :-------- | :------- | :-------------------------------- |
-| `id`      | `string` | **Required**. Id of item to fetch |
-
-#### Get item
-
-```http
-  GET /api/items/${id}
-```
-
-| Parameter | Type     | Description                       |
-| :-------- | :------- | :-------------------------------- |
-| `id`      | `string` | **Required**. Id of item to fetch |
-
-
+| `user_id`      | `string` | **Required**. User ID for tracking the file. |
+| `if_exists`      | `boolean` | **Optional**. Defaults to 'False'. Flag to indicate if the file should be replaced if it already exists. |
+| `files`      | `List<UploadFile>` | **Required**. List of files to be uploaded. |
 
 ## Documentation
 
