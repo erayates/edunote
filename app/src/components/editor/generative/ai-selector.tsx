@@ -47,7 +47,7 @@ export function AISelector({ onOpenChange }: AISelectorProps) {
       )}
 
       {isLoading && (
-        <div className="flex h-12 w-full items-center px-4 text-sm font-medium text-muted-foreground text-purple-500">
+        <div className="flex h-12 w-full items-center px-4 text-sm font-medium text-muted-foreground text-red-500">
           <Magic className="mr-2 h-4 w-4 shrink-0  " />
           AI is thinking
           <div className="ml-2 mt-1">
@@ -73,7 +73,7 @@ export function AISelector({ onOpenChange }: AISelectorProps) {
 
             <Button
               size="icon"
-              className="absolute right-2 top-1/2 h-6 w-6 -translate-y-1/2 rounded-full bg-purple-500 hover:bg-purple-900"
+              className="absolute right-2 top-1/2 h-6 w-6 -translate-y-1/2 rounded-full bg-red-500 hover:bg-red-600"
               onClick={() => {
                 if (completion)
                   return complete(completion, {
