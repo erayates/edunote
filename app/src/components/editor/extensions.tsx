@@ -128,7 +128,7 @@ const youtube = Youtube.configure({
   HTMLAttributes: {
     class: cx("rounded-lg border border-muted"),
   },
-  width: 320,
+  width: 480,
   height: 480,
   inline: true,
 });

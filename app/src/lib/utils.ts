@@ -21,7 +21,7 @@ export function insertYoutube(
         attrs: {
           src: videoUrl,
           start: 0,
-          width: 320,
+          width: 480,
           height: 480,
         },
       },
