@@ -106,7 +106,7 @@ const SpecializedPdfIntegration: React.FC<SpecializedAIProps> = ({ note }) => {
   return (
     <Dialog onOpenChange={(open) => handleClose(open)}>
       <DialogTrigger asChild>
-        <Button className="h-fit bg-foreground w-auto flex flex-col items-start p-4 border border-secondary">
+        <Button className="h-fit bg-foreground w-auto flex flex-col items-start p-4 border border-primary">
           <div className="w-16 h-16 relative">
             <Image
               src="/assets/images/logos/pdf.png"

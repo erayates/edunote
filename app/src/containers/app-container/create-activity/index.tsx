@@ -39,7 +39,7 @@ export function CreateActivity() {
         <PlusCircle className="text-white/30" />
       </button>
 
-      <Tooltip>
+      <Tooltip delayDuration={200}>
         <TooltipTrigger asChild>
           <button className="flex w-full bg-foreground flex-col py-5 items-start justify-between rounded-md border px-4 sm:flex-row sm:items-center">
             <p className="text-sm font-medium leading-none">
@@ -49,11 +49,11 @@ export function CreateActivity() {
           </button>
         </TooltipTrigger>
         <TooltipContent className="bg-black text-white txt-sm font-semibold">
-          <p>⏳ Available Soon... ⏳</p>
+          <p>⏳ Available Soon...</p>
         </TooltipContent>
       </Tooltip>
 
-      <Tooltip>
+      <Tooltip delayDuration={200}>
         <TooltipTrigger asChild>
           <button className="flex w-full bg-foreground flex-col py-5 items-start justify-between rounded-md border px-4 sm:flex-row sm:items-center">
             <p className="text-sm font-medium leading-none">
@@ -63,7 +63,7 @@ export function CreateActivity() {
           </button>
         </TooltipTrigger>
         <TooltipContent className="bg-black text-white txt-sm font-semibold">
-          <p>⏳ Available Soon... ⏳</p>
+          <p>⏳ Available Soon...</p>
         </TooltipContent>
       </Tooltip>
     </div>

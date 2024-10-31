@@ -98,7 +98,7 @@ const ChatAICommands = ({ onSelect }: ChatAICommandsProps) => {
             className="flex gap-2 px-4 cursor-pointer"
             key={option.value}
           >
-            <option.icon className="h-4 w-4 text-purple-500" />
+            <option.icon className="h-4 w-4 text-red-500" />
             {option.label}
           </DropdownMenuItem>
         ))}

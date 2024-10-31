@@ -10,6 +10,9 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      transitionDuration: {
+        '5000': '5000ms'
+      },
       colors: {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
@@ -65,7 +68,7 @@ const config: Config = {
     },
 
     backgroundImage: {
-      aiButtonGradient: "linear-gradient(160deg, #0093E9 0%, #80D0C7 100%)",
+      aiButtonGradient: "linear-gradient(160deg, #FF5733 0%, #F8302F 100%)",
       noteThumbnailGradient:
         "linear-gradient(180deg, transparent 0%, hsl(217, 9.1%, 17.3%) 100%)",
     },

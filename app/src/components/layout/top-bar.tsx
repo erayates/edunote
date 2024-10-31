@@ -33,6 +33,7 @@ const initialChat: Chat[] = [
 
 const AppBottomBar: React.FC = () => {
   const [open, setOpen] = useState(false);
+  const [keysPressed, setKeysPressed] = useState(new Set<string>());
   const [prompt, setPrompt] = useState("");
 
   const [chat, setChat] = useState<Chat[]>(initialChat);
@@ -72,12 +73,42 @@ const AppBottomBar: React.FC = () => {
     }
   };
 
-  // Toggle chat with Blockquote key
+  // Toggle chat with Ctrl + Backquote key sequence
   const handleOpenWithKey = (e: KeyboardEvent) => {
-    if (e.code === "Backquote") {
+    console.log(`Key down: ${e.code}`); // Log the key pressed
+
+    // Add the pressed key to the set
+    keysPressed.add(e.code);
+    setKeysPressed(new Set(keysPressed)); // Update the state
+    console.log(`Current keys pressed: ${Array.from(keysPressed).join(', ')}`); // Log currently pressed keys
+
+    // Check if the key sequence is complete
+    if ((keysPressed.has("ControlLeft") && e.code === "Backquote") || e.code === "F2") {
+      console.log("Toggling chat state"); // Log when toggling the chat state
       setOpen((prev) => !prev);
     }
   };
+
+  const handleKeyUp = (e: KeyboardEvent) => {
+    console.log(`Key up: ${e.code}`); // Log the key released
+
+    // Remove the key from the set when released
+    keysPressed.delete(e.code);
+    setKeysPressed(new Set(keysPressed)); // Update the state
+    console.log(`Current keys pressed after release: ${Array.from(keysPressed).join(', ')}`); // Log keys after release
+  };
+
+  useEffect(() => {
+    // Attach event listeners
+    window.addEventListener("keydown", handleOpenWithKey);
+    window.addEventListener("keyup", handleKeyUp);
+
+    // Cleanup event listeners on component unmount
+    return () => {
+      window.removeEventListener("keydown", handleOpenWithKey);
+      window.removeEventListener("keyup", handleKeyUp);
+    };
+  }, []);
 
   // Handle user select a command
   const onUserSelectCommand = (option: string) => {
@@ -145,7 +176,7 @@ const AppBottomBar: React.FC = () => {
 
     if (chatSelection === "gemini") {
       setChat([]);
-      addModelChat("Type something and press ENTER to start with Gemini AI.");
+      addModelChat("Type something to start with Gemini AI.");
     }
 
     if (chatSelection === "single") {
@@ -171,14 +202,14 @@ const AppBottomBar: React.FC = () => {
     if (chatSelection === "public-notes") {
       setChat([]);
       addModelChat(
-        "Type something and press ENTER to start search something within all public notes in the app."
+        "Type anything start chat with GEMINI with the knowledge of all public notes."
       );
     }
 
     if (chatSelection === "my-notes") {
       setChat([]);
       addModelChat(
-        "Type something and press ENTER to start with Gemini AI about all your notes."
+        "Don't you remember what you note in your Science Class? Search now! Type anything to chat with GEMINI."
       );
     }
   }, [chatSelection, currentNote]);
@@ -274,9 +305,9 @@ const AppBottomBar: React.FC = () => {
         ref={chatRef}
         className="fixed flex flex-col right-12 top-8 rounded-3xl space-x-4 max-w-[60%]"
       >
-        <div className="flex items-center py-2 rounded-3xl bg-foreground relative pl-4 -right-6 z-10  border-2 border-secondary">
+        <div className="flex items-center py-2 rounded-3xl bg-foreground relative pl-4 -right-6 z-10  border-2 border-primary">
           <Input
-            className="w-[480px] border-none text-sm placeholder:text-secondary placeholder:font-medium text-white bg-transparent focus-visible:ring-0"
+            className="w-[480px] border-none text-sm placeholder:text-primary placeholder:font-medium text-white bg-transparent focus-visible:ring-0"
             placeholder={`Press "Blockquote (")" or on focus to chat with Gemini AI about your note...`}
             onKeyUp={handleInputEnter}
             onChange={handleInputChange}
@@ -297,31 +328,31 @@ const AppBottomBar: React.FC = () => {
           <div className="flex items-center ml-28 pr-6">
             <ModeToggle />
 
-            <Tooltip>
+            <Tooltip delayDuration={200}>
               <TooltipTrigger asChild>
                 <Button
                   variant="outline"
-                  className="w-10 h-10 text-xs text-secondary rounded-full bg-foreground border-none px-2 hover:text-white duration-300 transition-all "
+                  className="w-10 h-10 text-xs text-primary rounded-full bg-foreground border-none px-2 hover:text-white duration-300 transition-all "
                 >
                   <Bell size={24} />
                 </Button>
               </TooltipTrigger>
               <TooltipContent className="bg-black text-white txt-sm font-semibold">
-                <p>⏳ Available Soon... ⏳</p>
+                <p>⏳ Available Soon...</p>
               </TooltipContent>
             </Tooltip>
 
-            <Tooltip>
+            <Tooltip delayDuration={200}>
               <TooltipTrigger asChild>
                 <Button
                   variant="outline"
-                  className="w-10 h-10 text-xs text-secondary rounded-full bg-foreground border-none px-2 hover:text-white duration-300 transition-all "
+                  className="w-10 h-10 text-xs text-primary rounded-full bg-foreground border-none px-2 hover:text-white duration-300 transition-all "
                 >
                   <MessageCircle size={24} />
                 </Button>
               </TooltipTrigger>
               <TooltipContent className="bg-black text-white txt-sm font-semibold">
-                <p>⏳ Available Soon... ⏳</p>
+                <p>⏳ Available Soon...</p>
               </TooltipContent>
             </Tooltip>
 
