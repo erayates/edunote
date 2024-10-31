@@ -57,7 +57,7 @@ const SpecializedAI: React.FC<SpecializedAIProps> = ({ note }) => {
           <div className="py-4 pl-4 pr-12 grid grid-cols-2 gap-4">
             <SpecializedYoutubeIntegration note={note} />
             <SpecializedPdfIntegration note={note} />
-            <Button className="h-fit bg-foreground w-auto flex flex-col items-start p-4 border border-primary">
+            <Button className="h-fit bg-foreground w-auto flex flex-col items-start p-4 border border-secondary">
               <Image
                 src="/assets/images/logos/image.webp"
                 alt=""
@@ -65,7 +65,7 @@ const SpecializedAI: React.FC<SpecializedAIProps> = ({ note }) => {
                 height={64}
                 sizes="100vw"
               />
-              <p className="font-medium text-white text-sm text-wrap text-left border-primary">
+              <p className="font-medium text-white text-sm text-wrap text-left">
                 Image Explainer
               </p>
               <span className="text-wrap text-white/30 text-xs text-left">
