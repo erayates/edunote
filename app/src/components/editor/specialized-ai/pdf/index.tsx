@@ -20,7 +20,6 @@ import { CheckCircle2, GitPullRequestArrow } from "lucide-react";
 import { Note, User, Tag } from "@prisma/client";
 import { updateNote } from "@/actions/notes";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
 import { Label } from "@/components/ui/label";
 import { AIThinking } from "../default";
 import Markdown from "react-markdown";
@@ -41,9 +40,10 @@ const SpecializedPdfIntegration: React.FC<SpecializedAIProps> = ({ note }) => {
     url: string;
   }>();
 
+  const slug = note.slug;
+
   const [submitted, setSubmitted] = useState(false);
 
-  const { refresh } = useRouter();
   const { completion, complete, isLoading, reset } = useFetchStream({
     api: `${GEMINI_API_FILE_EXTRACT}`,
     headers: { "Content-Type": "multipart/form-data" },
@@ -81,7 +81,6 @@ const SpecializedPdfIntegration: React.FC<SpecializedAIProps> = ({ note }) => {
         file: undefined,
         url: "",
       });
-      //   refresh();
     }
   };
 
@@ -96,7 +95,7 @@ const SpecializedPdfIntegration: React.FC<SpecializedAIProps> = ({ note }) => {
 
     if (isNoteUpdated) {
       toast.success("PDF file and summarize added to your note successfully.");
-      refresh();
+      window.location.replace("/notes/" + slug);
       return;
     }
 
@@ -122,26 +121,26 @@ const SpecializedPdfIntegration: React.FC<SpecializedAIProps> = ({ note }) => {
             PDF Summarizer
           </p>
           <span className="text-wrap text-white/30 text-xs text-left">
-            Summarize the uploaded pdf, use it as you wish and add
-            it to your notes.
+            Summarize the uploaded pdf, use it as you wish and add it to your
+            notes.
           </span>
         </Button>
       </DialogTrigger>
       <DialogContent
         className={cn(
-          "flex duration-500 transition-all bg-foreground",
-          submitted && "w-[1024px]"
+          "flex duration-500 transition-all bg-foreground min-w-[480px] border-2 border-secondary",
+          submitted && "w-[1024px] max-w-max"
         )}
       >
         {completion ? (
           <div className="flex space-x-4">
-            <div style={{ height: "750px" }}>
+            <div style={{ height: "660px" }}>
               {pdfFile?.url && (
-                <iframe src={pdfFile.url} height={820} width={480} />
+                <iframe src={pdfFile.url} height={660} width={480} />
               )}
             </div>
             <div className="max-w-[480px]">
-              <div className="flex items-center justify-between mt-4 mb-2 border-2 border-primary p-2 rounded-lg ">
+              <div className="flex items-center justify-between mb-2 border-2 border-primary p-2 rounded-lg ">
                 <p className="text-white font-medium text-xl">Summary</p>
                 <Button
                   variant="outline"
@@ -152,7 +151,7 @@ const SpecializedPdfIntegration: React.FC<SpecializedAIProps> = ({ note }) => {
                   Insert
                 </Button>
               </div>
-              <ScrollArea className="h-[750px] rounded-lg">
+              <ScrollArea className="h-[600px] rounded-lg">
                 <p className="text-white bg-blue-500 rounded-lg p-2">
                   <Markdown>{completion}</Markdown>
                 </p>

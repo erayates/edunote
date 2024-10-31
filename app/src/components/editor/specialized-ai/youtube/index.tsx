@@ -24,7 +24,6 @@ import { GitPullRequestArrow } from "lucide-react";
 import { Note, User, Tag } from "@prisma/client";
 import { updateNote } from "@/actions/notes";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
 import Markdown from "react-markdown";
 import { AIThinking } from "../default";
 
@@ -41,7 +40,8 @@ const SpecializedYoutubeIntegration: React.FC<SpecializedAIProps> = ({
 }) => {
   const [videoUrl, setVideoUrl] = useState("");
 
-  const { refresh } = useRouter();
+  const slug = note.slug;
+
   const { completion, complete, isLoading, reset } = useFetchStream({
     api: `${GEMINI_API_YOUTUBE_URL}`,
   });
@@ -59,7 +59,6 @@ const SpecializedYoutubeIntegration: React.FC<SpecializedAIProps> = ({
     if (!open) {
       reset();
       setVideoUrl("");
-      refresh();
     }
   };
 
@@ -76,7 +75,7 @@ const SpecializedYoutubeIntegration: React.FC<SpecializedAIProps> = ({
       toast.success(
         "Youtube video and summarize added to your note successfully."
       );
-      refresh();
+      window.location.replace("/notes/" + slug);
       return;
     }
 
@@ -105,7 +104,7 @@ const SpecializedYoutubeIntegration: React.FC<SpecializedAIProps> = ({
       </DialogTrigger>
       <DialogContent
         className={cn(
-          "flex duration-500 transition-all bg-foreground max-h-[720px]"
+          "flex duration-500 transition-all bg-foreground border-2 border-secondary max-h-[720px]"
         )}
       >
         {completion ? (
@@ -136,11 +135,11 @@ const SpecializedYoutubeIntegration: React.FC<SpecializedAIProps> = ({
         ) : !isLoading ? (
           <DialogHeader className="relative space-y-2">
             <DialogTitle className="text-3xl font-semibold text-white">
-              Get Caption
+              Insert Video URL
             </DialogTitle>
             <DialogDescription className="text-white/30 text-sm">
               Enter a valid YouTube video URL that you would like to get
-              caption.
+              summarize.
             </DialogDescription>
             <Input
               placeholder="E.g. https://www.youtube.com/watch?v=FGCmobEC9ck"

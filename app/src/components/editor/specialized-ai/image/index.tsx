@@ -20,7 +20,6 @@ import { CheckCircle2, GitPullRequestArrow } from "lucide-react";
 import { Note, User, Tag } from "@prisma/client";
 import { updateNote } from "@/actions/notes";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
 import { Label } from "@/components/ui/label";
 import Markdown from "react-markdown";
 import { AIThinking } from "../default";
@@ -41,7 +40,8 @@ const SpecializedImageFile: React.FC<SpecializedAIProps> = ({ note }) => {
     url: string;
   }>();
 
-  const { refresh } = useRouter();
+  const slug = note.slug;
+
   const { completion, complete, isLoading, reset } = useFetchStream({
     api: `${GEMINI_API_FILE_EXTRACT}`,
     headers: { "Content-Type": "multipart/form-data" },
@@ -77,7 +77,6 @@ const SpecializedImageFile: React.FC<SpecializedAIProps> = ({ note }) => {
         file: undefined,
         url: "",
       });
-      //   refresh();
     }
   };
 
@@ -92,7 +91,7 @@ const SpecializedImageFile: React.FC<SpecializedAIProps> = ({ note }) => {
 
     if (isNoteUpdated) {
       toast.success("Image summarize added to your note successfully.");
-      refresh();
+      window.location.replace("/notes/" + slug);
       return;
     }
 
@@ -124,8 +123,8 @@ const SpecializedImageFile: React.FC<SpecializedAIProps> = ({ note }) => {
       </DialogTrigger>
       <DialogContent
         className={cn(
-          "w-[480px] flex duration-500 transition-all bg-foreground p-2",
-          completion && !isLoading && "w-auto max-h-[720px]"
+          "min-w-[480px] flex duration-500 transition-all bg-foreground p-6 border-2 border-secondary",
+          completion && !isLoading && "w-auto "
         )}
       >
         {completion ? (
@@ -142,7 +141,7 @@ const SpecializedImageFile: React.FC<SpecializedAIProps> = ({ note }) => {
               )}
             </div>
             <div className="max-w-[480px]">
-              <div className="flex items-center justify-between mt-4 mb-2 border-2 border-primary p-2 rounded-lg ">
+              <div className="flex items-center  justify-between mt-2 mb-2 border-2 border-primary p-2 rounded-lg ">
                 <p className="text-white font-medium text-xl">Summary</p>
                 <Button
                   variant="outline"
@@ -153,8 +152,8 @@ const SpecializedImageFile: React.FC<SpecializedAIProps> = ({ note }) => {
                   Insert
                 </Button>
               </div>
-              <ScrollArea className="max-h-[480px] rounded-lg">
-                <p className="text-white bg-blue-500 rounded-lg p-2">
+              <ScrollArea className="h-[300px] overflow-y-auto overflow-x-clip rounded-lg">
+                <p className="text-white  bg-blue-500 rounded-lg p-2">
                   <Markdown>{completion}</Markdown>
                 </p>
                 <ScrollBar orientation="vertical" />

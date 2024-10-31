@@ -75,27 +75,23 @@ const AppBottomBar: React.FC = () => {
 
   // Toggle chat with Ctrl + Backquote key sequence
   const handleOpenWithKey = (e: KeyboardEvent) => {
-    console.log(`Key down: ${e.code}`); // Log the key pressed
-
     // Add the pressed key to the set
     keysPressed.add(e.code);
     setKeysPressed(new Set(keysPressed)); // Update the state
-    console.log(`Current keys pressed: ${Array.from(keysPressed).join(', ')}`); // Log currently pressed keys
 
     // Check if the key sequence is complete
-    if ((keysPressed.has("ControlLeft") && e.code === "Backquote") || e.code === "F2") {
-      console.log("Toggling chat state"); // Log when toggling the chat state
+    if (
+      (keysPressed.has("ControlLeft") && e.code === "Backquote") ||
+      e.code === "F2"
+    ) {
       setOpen((prev) => !prev);
     }
   };
 
   const handleKeyUp = (e: KeyboardEvent) => {
-    console.log(`Key up: ${e.code}`); // Log the key released
-
     // Remove the key from the set when released
     keysPressed.delete(e.code);
     setKeysPressed(new Set(keysPressed)); // Update the state
-    console.log(`Current keys pressed after release: ${Array.from(keysPressed).join(', ')}`); // Log keys after release
   };
 
   useEffect(() => {

@@ -48,7 +48,7 @@ model Note {
   title       String
   content     String
   description String
-  thumbnail   String? 
+  thumbnail   String?
   slug        String
   isPublic    Boolean @default(false) @map("is_public")
   shareLink   String? @map("share_link")
@@ -59,9 +59,6 @@ model Note {
 
   groups   Group[]  @relation("GroupNotes", fields: [groupIds], references: [id])
   groupIds String[] @map("group_ids") @db.ObjectId
-
-  // keywords   Keyword[] @relation("NoteKeywords", fields: [keywordIds], references: [id])
-  // keywordIds String[]  @map("keyword_ids") @db.ObjectId
 
   tags   Tag[]    @relation("NoteTags", fields: [tagIds], references: [id])
   tagIds String[] @map("tag_ids") @db.ObjectId
@@ -75,6 +72,23 @@ model Note {
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
+  // Comprehensive Indexing Strategy
+  // 1. Single-field Indexes
+  @@index([title], name: "title_search_index")
+  @@index([description], name: "description_search_index")
+  @@index([userId], name: "user_notes_index")
+  @@index([isPublic], name: "public_notes_index")
+  @@index([createdAt], name: "created_at_index")
+  // 2. Compound Indexes for Complex Queries
+  @@index([userId, isPublic], name: "user_public_index")
+  @@index([isPublic, createdAt], name: "public_created_at_index")
+  @@index([userId, createdAt], name: "user_created_at_index")
+  // 3. Relation-based Indexes
+  @@index([tagIds], name: "tags_index")
+  @@index([groupIds], name: "groups_index")
+  @@index([favoritedByIds], name: "favorites_index")
+  // 4. Multifield Search Optimization
+  @@index([isPublic, title, description], name: "public_full_text_search_index")
   @@map("notes")
 }
 
@@ -119,6 +133,7 @@ model Tag {
 
   // Metadata
   useCount Int @default(0) @map("use_count")
+
   @@map("tags")
 }
 

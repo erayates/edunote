@@ -51,11 +51,8 @@ const NoteFilter: React.FC<{
     }
 
     params.set(type, value);
-
-    console.log(params.toString());
-
     setCurrentPage(1);
-    router.push(`/notes?${params.toString()}`);
+    router.replace(`/notes?${params.toString()}`);
   }, 300);
 
   return (

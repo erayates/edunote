@@ -43,6 +43,8 @@ const SpecializedAudioIntegration: React.FC<SpecializedAIProps> = ({
     url: string;
   }>();
 
+  const slug = note.slug;
+
   const { refresh } = useRouter();
   const { completion, complete, isLoading, reset } = useFetchStream({
     api: `${GEMINI_API_FILE_EXTRACT}`,
@@ -79,7 +81,6 @@ const SpecializedAudioIntegration: React.FC<SpecializedAIProps> = ({
         file: undefined,
         url: "",
       });
-      //   refresh();
     }
   };
 
@@ -94,7 +95,7 @@ const SpecializedAudioIntegration: React.FC<SpecializedAIProps> = ({
 
     if (isNoteUpdated) {
       toast.success("Audio summarize added to your note successfully.");
-      refresh();
+      window.location.replace("/notes/" + slug);
       return;
     }
 
@@ -120,14 +121,13 @@ const SpecializedAudioIntegration: React.FC<SpecializedAIProps> = ({
             Audio Summarizer
           </p>
           <span className="text-wrap text-white/30 text-xs text-left">
-            Summarize the uploaded audio and
-            add it to your notes.
+            Summarize the uploaded audio and add it to your notes.
           </span>
         </Button>
       </DialogTrigger>
       <DialogContent
         className={cn(
-          "w-[480px] flex duration-500 transition-all bg-foreground p-2",
+          "min-w-[480px] flex duration-500 transition-all bg-foreground p-6 border-2 border-secondary",
           completion && !isLoading && "w-auto max-h-[720px]"
         )}
       >
