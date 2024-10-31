@@ -34,7 +34,8 @@ Add badges from somewhere like: [shields.io](https://shields.io/) -->
 
 ## API Reference
 
-<summary><samp> Light bonfire </samp></summary>
+<details>
+<summary> <b> <samp> See API Reference </samp></b></summary>
 <samp>
 <br>
 
@@ -176,7 +177,7 @@ Add badges from somewhere like: [shields.io](https://shields.io/) -->
 | `files`      | `List<UploadFile>` | **Required**. List of files to be uploaded. |
 
 </samp>
-
+</details>
 
 ## License
 
