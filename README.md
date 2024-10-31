@@ -3,13 +3,9 @@
 
 ![Static Badge](https://img.shields.io/badge/Vercel-black?logo=vercel&link=https%3A%2F%2Fvercel.com%2F)
 ![Static Badge](https://img.shields.io/badge/Edunote-black?logo=vercel&labelColor=black&link=https%3A%2F%2Fbtk-hackathon-24-beta.vercel.app%2F)
-
 ![Static Badge](https://img.shields.io/badge/FastAPI-white?logo=fastapi&link=https%3A%2F%2Ffastapi.tiangolo.com%2F)
-
 ![Static Badge](https://img.shields.io/badge/Next.JS-black?logo=nextdotjs&link=https%3A%2F%2Fnextjs.org%2F)
-
 ![NPM Version](https://img.shields.io/npm/v/tailwindcss?logo=tailwindcss&label=tailwindcss&link=https%3A%2F%2Ftailwindcss.com%2F)
-
 ![GitHub repo size](https://img.shields.io/github/repo-size/erayates/btk-hackathon-24)
 ![Docker Image Version](https://img.shields.io/docker/v/elymsyr/btk-file-02?arch=amd64&logo=docker&label=Docker&link=https%3A%2F%2Fhub.docker.com%2Frepositories%2Felymsyr)
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/t/erayates/btk-hackathon-24)
