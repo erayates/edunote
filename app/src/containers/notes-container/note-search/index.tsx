@@ -18,7 +18,6 @@ const NoteSearch: React.FC = () => {
     const params = new URLSearchParams(searchParams);
     if (value === "" && value) {
       params.delete("search");
-      console.log(params.getAll);
       router.replace(`/notes?${params.toString()}`);
       return;
     }

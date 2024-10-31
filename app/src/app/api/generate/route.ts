@@ -93,8 +93,5 @@ export async function POST(req: Request): Promise<Response> {
     prompt: fullPrompt,
   });
 
-
-  console.log(result.toDataStreamResponse())
-
   return result.toDataStreamResponse();
 }

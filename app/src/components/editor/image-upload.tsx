@@ -17,7 +17,6 @@ export const onUpload = (file: File) => {
         // Successfully uploaded image
         if (res.status === 200) {
           const { url } = (await res.json()) as { url: string };
-          console.log(url);
           // preload the image
           const image = new Image();
           image.src = url;

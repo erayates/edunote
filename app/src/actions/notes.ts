@@ -8,6 +8,11 @@ import { addDays, startOfDay } from "date-fns";
 import { fromZonedTime } from "date-fns-tz";
 import slug from "slug";
 
+interface SearchNotesResult {
+  notes: NoteWithRelations[];
+  totalNotes: number;
+}
+
 export async function createNote(userId: string) {
   // Direct note creation without user check
   const note = await prisma.note.create({
@@ -88,30 +93,24 @@ export async function fetchNoteWithSharelink(shareLink: string) {
   }
 }
 
-export async function getAllNotes(
-  take: number
-): Promise<
-  Prisma.NoteGetPayload<{ include: { user: true; tags: true } }>[] | false
-> {
-  try {
-    const notes = await prisma.note.findMany({
-      include: {
-        user: true,
-        tags: true,
-      },
-      take: take || 10,
-      orderBy: {
-        createdAt: "desc",
-      },
-      where: {
-        isPublic: true,
-      },
-    });
+export async function getAllNotes(take: number): Promise<SearchNotesResult> {
+  const notes = await prisma.note.findMany({
+    include: {
+      user: true,
+      tags: true,
+    },
+    take: take || 10,
+    orderBy: {
+      createdAt: "desc",
+    },
+    where: {
+      isPublic: true,
+    },
+  });
 
-    return notes;
-  } catch {
-    return false;
-  }
+  const totalNotes = await prisma.note.count();
+
+  return { notes, totalNotes };
 }
 
 export async function deleteNote(noteId: string) {
@@ -153,7 +152,7 @@ export async function searchNotes({
   createdAt,
   author,
   take,
-}: SearchActionParams): Promise<NoteWithRelations[]> {
+}: SearchActionParams): Promise<SearchNotesResult> {
   const conditions: Prisma.NoteWhereInput[] = [];
 
   if (query) {
@@ -195,7 +194,7 @@ export async function searchNotes({
   const where: Prisma.NoteWhereInput =
     conditions.length > 0 ? { AND: conditions, isPublic: true } : {};
 
-  return prisma.note.findMany({
+  const notes = await prisma.note.findMany({
     where,
     take: take || 10,
     orderBy: {
@@ -206,6 +205,10 @@ export async function searchNotes({
       tags: true,
     },
   });
+
+  const totalNotes = await prisma.note.count({ where });
+
+  return { notes, totalNotes };
 }
 
 export async function getAllUserNotes(userId: string) {

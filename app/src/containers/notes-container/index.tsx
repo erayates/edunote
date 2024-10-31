@@ -10,12 +10,17 @@ import NoteSearch from "./note-search";
 import { useInView } from "react-intersection-observer";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
+import NotePagination from "./note-pagination";
 
 interface NotesContainerProps {
   notes: Prisma.NoteGetPayload<{ include: { user: true; tags: true } }>[];
+  totalNotes: number;
 }
 
-const NotesContainer: React.FC<NotesContainerProps> = ({ notes }) => {
+const NotesContainer: React.FC<NotesContainerProps> = ({
+  notes,
+  totalNotes,
+}) => {
   const [isLoading, setIsLoading] = useState(false);
   // const [hasMore, setHasMore] = useState();
   const [take, setTake] = useState(10);
@@ -29,20 +34,24 @@ const NotesContainer: React.FC<NotesContainerProps> = ({ notes }) => {
     rootMargin: "100px",
   });
 
-  const loadMore = () => {
-    if (isLoading) return;
+  // const loadMore = () => {
+  //   if (isLoading) return;
 
-    setScrollPosition(window.scrollY);
-    setIsLoading(true);
+  //   setScrollPosition(window.scrollY);
+  //   setIsLoading(true);
 
-    const params = new URLSearchParams(searchParams);
-    params.set("take", (take + 10).toString());
+  //   console.log(notes);
 
-    router.push(`/notes?${params.toString()}`, { scroll: false });
-    setTake((prev) => prev + 10);
+  //   const params = new URLSearchParams(searchParams);
+  //   console.log(params);
 
-    setIsLoading(false);
-  };
+  //   params.set("take", (take + 10).toString());
+
+  //   router.push(`/notes?${params.toString()}`, { scroll: false });
+  //   setTake((prev) => prev + 10);
+
+  //   setIsLoading(false);
+  // };
 
   // Restore scroll position after loading more items
   React.useEffect(() => {
@@ -54,14 +63,14 @@ const NotesContainer: React.FC<NotesContainerProps> = ({ notes }) => {
     }
   }, [notes, scrollPosition]);
 
-  React.useEffect(() => {
-    if (inView) {
-      loadMore();
-      return;
-    }
+  // React.useEffect(() => {
+  //   if (inView) {
+  //     loadMore();
+  //     return;
+  //   }
 
-    setIsLoading(false);
-  }, [inView]);
+  //   setIsLoading(false);
+  // }, [inView]);
 
   return (
     <div className="space-y-6 w-full">
@@ -111,6 +120,8 @@ const NotesContainer: React.FC<NotesContainerProps> = ({ notes }) => {
               />
             ))}
           </div>
+
+          <NotePagination notes={notes} />
 
           <div
             ref={ref}

@@ -14,6 +14,6 @@ export const checkImageDeleted = async (images: string[]) => {
       if (!noteImageURLs.includes(imageBlobURL)) del(imageBlobURL);
     });
   } catch {
-    console.log("Error: Image couldnt deleted.");
+    return false;
   }
 };
