@@ -1,11 +1,7 @@
 
 ![Logo](app/public/assets/images/edunote-logo-light.png)
 
-
-# Project Title
-
 This project aims to create a web application that enables users to take notes from various sources such as YouTube, PDFs, and audio recordings, using AI to generate notes automatically. Additionally, users can search for notes within their collection and a public database of notes.
-
 
 <!-- ## Badges
 
@@ -18,7 +14,7 @@ Add badges from somewhere like: [shields.io](https://shields.io/) -->
 
 ## Demo
 
-Insert gif or link to demo
+*Available soon...*
 
 
 ## Features
@@ -37,6 +33,10 @@ Insert gif or link to demo
 
 
 ## API Reference
+
+<summary><samp> Light bonfire </samp></summary>
+<samp>
+<br>
 
 ### Gemini Operation
 
@@ -175,39 +175,35 @@ Insert gif or link to demo
 | `if_exists`      | `boolean` | **Optional**. Defaults to 'False'. Flag to indicate if the file should be replaced if it already exists. |
 | `files`      | `List<UploadFile>` | **Required**. List of files to be uploaded. |
 
-## Documentation
-
-[Documentation](https://linktodocumentation)
+</samp>
 
 
 ## License
 
-[MIT](https://choosealicense.com/licenses/mit/)
+[Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International](LICENSE)
 
-
-## Tech Stack
+<!-- ## Tech Stack
 
 **Client:** React, Redux, TailwindCSS
 
-**Server:** Node, Express
+**Server:** Node, Express -->
 
-
-## 🔗 Links
+<!-- ## Links
 [![portfolio](https://img.shields.io/badge/my_portfolio-000?style=for-the-badge&logo=ko-fi&logoColor=white)](https://katherineoelsner.com/)
 [![linkedin](https://img.shields.io/badge/linkedin-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/)
-[![twitter](https://img.shields.io/badge/twitter-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white)](https://twitter.com/)
+[![twitter](https://img.shields.io/badge/twitter-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white)](https://twitter.com/) -->
 
 
 ## Support
 
-For support, email fake@fake.com or join our Slack channel.
+For support, email to [eray.ates@outlook.com](mailto:eray.ates@outlook.com) or [orhun868@gmail.com](mailto:orhun868@gmail.com).
 
 
 ## Contributing
 
 Please contact to contribute.
 
-See `contributing.md` for ways to get started.
+See [`CONTRIBUTING.md`](.github/CONTRIBUTING.md) for ways to get started.
 
-Please adhere to this project's `code of conduct`.
+Please adhere to this project's [`CODE_OF_CONDUCT.md`](.github/CODE_OF_CONDUCT.md).
 
