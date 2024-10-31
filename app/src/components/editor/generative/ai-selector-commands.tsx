@@ -92,11 +92,11 @@ const AISelectorCommands = ({ onSelect }: AISelectorCommandsProps) => {
                   onSelect(text, value);
                 }
               }}
-              className="flex gap-2 px-4 cursor-pointer"
+              className="flex gap-2 px-4 cursor-pointer rounded-xl"
               key={option.value}
               value={option.value}
             >
-              <option.icon className="h-4 w-4 text-purple-500" />
+              <option.icon className="h-4 w-4 text-red-500" />
               {option.label}
             </CommandItem>
           ))}
@@ -114,9 +114,9 @@ const AISelectorCommands = ({ onSelect }: AISelectorCommandsProps) => {
               }
             }}
             value="continue"
-            className="gap-2 px-4 cursor-pointer text-white/30"
+            className="gap-2 px-4 cursor-pointer text-white/30 rounded-xl"
           >
-            <StepForward className="h-4 w-4 text-purple-500" />
+            <StepForward className="h-4 w-4 text-red-500 " />
             Continue writing
           </CommandItem>
         </CommandList>
