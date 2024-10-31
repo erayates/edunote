@@ -38,7 +38,7 @@ const AppSidebar: React.FC = async () => {
           />
         </Link>
 
-        <div className="w-full h-[1px] border border-secondary my-6"></div>
+        <div className="w-full h-[1px] border border-primary my-6"></div>
 
         <ul>
           <p className="flex items-center text-white/30 text-sm font-semibold mb-3">

@@ -75,7 +75,7 @@ const NotesContainer: React.FC<NotesContainerProps> = ({
   return (
     <div className="space-y-6 w-full">
       <div className="flex space-x-6 w-full">
-        <div className="bg-foreground border-2 border-secondary relative w-[180px] h-[160px] rounded-full">
+        <div className="bg-foreground border-2 border-primary relative w-[180px] h-[160px] rounded-full">
           <Image
             src="/assets/images/note-icon.webp"
             alt="Note Icon"
@@ -86,13 +86,13 @@ const NotesContainer: React.FC<NotesContainerProps> = ({
           />
         </div>
 
-        <div className="bg-foreground border-2 border-secondary rounded-lg p-4 relative w-full">
+        <div className="bg-foreground border-2 border-primary rounded-lg p-4 relative w-full">
           <p className="text-6xl text-white font-bold">
             UNLOCK YOUR
             <br /> KNOWLEDGE
           </p>
           <BookKey className="absolute right-4 top-4" size={32} color="white" />
-          <p className="absolute bottom-4 right-4 text-secondary font-semibold text-right">
+          <p className="absolute bottom-4 right-4 text-primary font-semibold text-right">
             Explore all public notes <br /> from the world & unlock your
             knowledge!
           </p>

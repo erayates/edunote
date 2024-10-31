@@ -190,7 +190,7 @@ const EditorSettings: React.FC<EditorSettingsProps> = ({ note }) => {
           <DialogTitle className="text-white">Note Settings</DialogTitle>
           <DialogDescription>Manage your note settings.</DialogDescription>
         </DialogHeader>
-        <div className="w-full h-[1px] bg-secondary"></div>
+        <div className="w-full h-[1px] bg-primary"></div>
         {/* Set thumbnail */}
         <div>
           <h3 className="text-sm text-white font-semibold flex items-center">
@@ -241,7 +241,7 @@ const EditorSettings: React.FC<EditorSettingsProps> = ({ note }) => {
           <div className="flex space-x-2 mt-2">
             <Input
               readOnly
-              className="text-white/50 border-secondary focus-visible:ring-0 text-white"
+              className="text-white/50 border-primary focus-visible:ring-0 text-white"
               value={shareLink}
             />
             <Button className="text-white" onClick={handleCopyShareLink}>
