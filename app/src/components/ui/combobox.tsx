@@ -214,17 +214,17 @@ export default function ComboBox({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-full justify-between h-auto min-h-[2.5rem] border-secondary align-top"
+          className="w-full justify-between h-auto min-h-[2.5rem] border-primary align-top"
         >
           <div className="flex flex-wrap gap-1 items-center">
             {selectedTags.map((tag) => (
               <span
                 key={tag.id + randomBytes(5).toString("hex")}
-                className="bg-secondary text-balance text-secondary-foreground px-2 py-1 rounded-md text-sm flex items-center"
+                className="bg-primary text-balance text-primary-foreground px-2 py-1 rounded-md text-sm flex items-center"
               >
                 {tag.label}
                 <div
-                  className="ml-1 text-secondary-foreground/50 hover:text-secondary-foreground"
+                  className="ml-1 text-primary-foreground/50 hover:text-primary-foreground"
                   onClick={(e) => {
                     e.stopPropagation();
                     removeTag(tag.value);

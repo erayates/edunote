@@ -64,7 +64,7 @@ export function MoreNote({ notes }: { notes: Note[] }) {
 
             {filteredNotes.map((_note) => (
               <Link href={`/notes/${_note.slug}`} key={_note.id}>
-                <div className="flex border w-full max-h-[64px] h-[64px] border-secondary rounded-xl space-x-2 items-center">
+                <div className="flex border w-full max-h-[64px] h-[64px] border-primary rounded-xl space-x-2 items-center">
                   <div className="w-16 h-full min-w-16 min-h-16 overflow-hidden relative rounded-l-2xl">
                     <Image
                       width={0}

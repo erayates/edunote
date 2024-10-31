@@ -66,7 +66,7 @@ const EditorHeader: React.FC<EditorHeaderProps> = ({ note, settingsOff }) => {
 
       {settingsOff && (
         <div className="flex justify-between mt-6 z-30 relative">
-          <div className="flex w-fit mb-4 space-x-2 items-center p-2 bg-foreground border-2 border-secondary rounded-lg">
+          <div className="flex w-fit mb-4 space-x-2 items-center p-2 bg-foreground border-2 border-primary rounded-lg">
             <Avatar className="border-2 border-gray-700 ">
               <AvatarImage src={note.user.avatar as string} />
               <AvatarFallback className="w-full grid place-items-center bg-background text-white/30 text-md">

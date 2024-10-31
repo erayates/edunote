@@ -114,7 +114,7 @@ const SpecializedYoutubeIntegration: React.FC<SpecializedAIProps> = ({
               <ReactPlayer url={videoUrl} width={460} height={190} />
             </div>
             <div className="w-full">
-              <div className="flex items-center justify-between mt-4 mb-2 border-2 border-secondary p-2 rounded-lg ">
+              <div className="flex items-center justify-between mt-4 mb-2 border-2 border-primary p-2 rounded-lg ">
                 <p className="text-white font-medium text-xl">Summary</p>
                 <Button
                   variant="outline"
@@ -144,7 +144,7 @@ const SpecializedYoutubeIntegration: React.FC<SpecializedAIProps> = ({
             </DialogDescription>
             <Input
               placeholder="E.g. https://www.youtube.com/watch?v=FGCmobEC9ck"
-              className="border-secondary placeholder:text-secondary text-white focus-visible:ring-white/30"
+              className="border-primary placeholder:text-primary text-white focus-visible:ring-white/30"
               value={videoUrl}
               onChange={(e: ChangeEvent<HTMLInputElement>) =>
                 setVideoUrl(e.target.value)
