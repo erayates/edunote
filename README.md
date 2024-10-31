@@ -4,33 +4,44 @@
 ![Static Badge](https://img.shields.io/badge/EDUNOTE-black?logo=e&link=https%3A%2F%2Fbtk-hackathon-24-beta.vercel.app%2F)
 ![Static Badge](https://img.shields.io/badge/erenorhun-black?logo=github&link=https%3A%2F%2Fgithub.com%2Felymsyr%2F)
 ![Static Badge](https://img.shields.io/badge/erayates-black?logo=github&link=https%3A%2F%2Fgithub.com%2Ferayates%2F)![Static Badge](https://img.shields.io/badge/utkukayaa-black?logo=github&link=https%3A%2F%2Fgithub.com%2FUtkuKayaa%2F)
-![Static Badge](https://img.shields.io/badge/utkukayaa-black?logo=github&link=https%3A%2F%2Fgithub.com%2FUtkuKayaa%2F)
+
 ![Static Badge](https://img.shields.io/badge/Vercel-black?logo=vercel&link=https%3A%2F%2Fvercel.com%2F)
 ![Static Badge](https://img.shields.io/badge/Next.JS-black?logo=nextdotjs&link=https%3A%2F%2Fnextjs.org%2F)
 ![NPM Version](https://img.shields.io/npm/v/tailwindcss?logo=tailwindcss&label=tailwindcss&link=https%3A%2F%2Ftailwindcss.com%2F)
 ![Static Badge](https://img.shields.io/badge/FastAPI-white?logo=fastapi&link=https%3A%2F%2Ffastapi.tiangolo.com%2F)
 ![Docker Image Version](https://img.shields.io/docker/v/elymsyr/btk-file-02?arch=amd64&logo=docker&label=Docker&link=https%3A%2F%2Fhub.docker.com%2Frepositories%2Felymsyr)
+
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/t/erayates/btk-hackathon-24)
 ![GitHub Created At](https://img.shields.io/github/created-at/erayates/btk-hackathon-24)
 ![GitHub repo size](https://img.shields.io/github/repo-size/erayates/btk-hackathon-24)
 ![GitHub License](https://img.shields.io/github/license/erayates/btk-hackathon-24)
 
-This project aims to create a web application that enables users to take notes from various sources such as YouTube, PDFs, and audio recordings, using AI to generate notes automatically. Additionally, users can search for notes within their collection and a public database of notes.
+Edunote allows people to improve their knowledge by accessing a network of notes. Users can effortlessly search through both public and private notes using Gemini, which functions like a librarian or teacher, guiding you to the information you seek.
+
+Upload your documents, recordings, and videos to create notes with Gemini’s assistance. Accessing your notes and using AIs power is quick and easy, whether through the chat bar or directly within the notes themselves. 
+
+Share your notes in public to join the note network. Create tags to reach more people. A little tip here, find your tag of your university and department. *Reach people using in-app message features and expand your network. Share posts and notes in public or private groups. Create your private group to keep it private.*
 
 ## Demo
 
 *Available soon...*
 
-
+<!-- 
 ## Features
 
-- **Note-taking from multiple sources:** Text, PDFs, Word documents, audio recordings, images.
-- **AI-powered note creation:** Converting audio or video to text, summarizing text, extracting keywords, topic classification.
-- **Collaboration:** Share your notes in public and reach others.
-- **Personalization:** Improved user experience with learning-based features with Gemini to create notes in personalized styles.
-- **Smart search:** Search for public notes or specific information in your notes. Full-text search, semantic search, filtering, suggested searches.
-- **Integrations:** Integration with other applications (Google Drive, Evernote, Zoom, etc.).
+- **Note-taking from multiple sources:** Use your `texts`, `PDFs`, `audio recordings` and `images` with Gemini to create enchanced notes.
+- **AI-powered note creation:** Change your notes in place. Choose a part, a word or else to chat with Gemini. Use default prompts for faster enhancements. 
+- **Collaboration with Tags:** Share your notes in public and create tags to reach others.
+- **Smart search:** Search and chat public notes or your notes. Talk with Gemini to search even if you do not know what to search! -->
 
+## Planned Features
+
+- **Groups:** Share posts and notes in public or private groups. Create your group to chat in private.
+- **Messages:** Reach others by sending a message in place. Chat with others and to expand your network.
+- **Personalized Note Creation:** Improved user experience with learning-based features with Gemini to create notes in personalized styles.
+- **Integrations:** Integration with other applications (Google Drive, Evernote, Zoom, etc.).
+- **Light/Dark Theme**
+- **Mindmap Styled Note Network**
 
 ## Screenshots
 
@@ -188,12 +199,6 @@ This project aims to create a web application that enables users to take notes f
 
 [Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International](LICENSE)
 
-<!-- ## Tech Stack
-
-**Client:** React, Redux, TailwindCSS
-
-**Server:** Node, Express -->
-
 ## Support
 
 For support, email to [eray.ates@outlook.com](mailto:eray.ates@outlook.com) or [orhun868@gmail.com](mailto:orhun868@gmail.com).
@@ -207,3 +212,8 @@ See [`CONTRIBUTING.md`](.github/CONTRIBUTING.md) for ways to get started.
 
 Please adhere to this project's [`CODE_OF_CONDUCT.md`](.github/CODE_OF_CONDUCT.md).
 
+## Acknowledgements
+
+ - [Test dataset: Articles.csv](Functions/Data/Articles.csv) [See Data on Kaggle](https://www.kaggle.com/datasets/asad1m9a9h6mood/news-articles)
+ - [Test dataset: test.csv](Functions/Data/Articles.csv) [See Data on Kaggle](https://www.kaggle.com/datasets/arashnic/urban-sound)
+ - [Tag dataset: world-universities.csv](Functions/Data/Articles.csv) [See Data on Kaggle](https://www.kaggle.com/datasets/thedevastator/all-universities-in-the-world)
