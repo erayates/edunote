@@ -11,7 +11,7 @@ const config: Config = {
   theme: {
     extend: {
       transitionDuration: {
-        '5000': '5000ms'
+        '3000': '3000ms'
       },
       colors: {
         background: "hsl(var(--background))",
