@@ -32,7 +32,7 @@ const NoteSearch: React.FC<{
   return (
     <Input
       placeholder="Start searching..."
-      className="bg-foreground text-sm border-2 border-secondary p-4 rounded-xl h-[48px] focus-visible:ring-secondary text-white placeholder:text-secondary"
+      className="bg-foreground text-sm border-2 border-primary p-4 rounded-xl h-[48px] focus-visible:ring-primary text-white placeholder:text-primary"
       onChange={handleSearch}
     />
   );
