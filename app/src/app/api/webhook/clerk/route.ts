@@ -56,7 +56,6 @@ async function handler(req: NextRequest) {
     const { id, email_addresses, username, first_name, last_name, image_url } =
       evt.data;
 
-
     try {
       const user = await prisma.user.create({
         data: {
@@ -103,6 +102,27 @@ async function handler(req: NextRequest) {
     } catch (error) {
       console.error("Error updating user:", error);
       return NextResponse.json("Error updating user", { status: 500 });
+    }
+  }
+
+  if (eventType === "user.deleted") {
+    const { id } = evt.data;
+
+    try {
+      await prisma.user.delete({
+        where: { id },
+      });
+
+      await prisma.note.deleteMany({
+        where: {
+          userId: id,
+        },
+      });
+
+      return NextResponse.json("User deleted", { status: 200 });
+    } catch (error) {
+      console.error("Error deleting user:", error);
+      return NextResponse.json("Error deleting user", { status: 500 });
     }
   }
 
