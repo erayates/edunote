@@ -43,6 +43,12 @@ const NotesContainer: React.FC<NotesContainerProps> = ({
       <div className="flex space-x-6">
         <div className="flex flex-col w-full space-y-6">
           <div className="grid grid-cols-3 gap-6">
+            {notes.length === 0 && (
+              <p className="text-white/30 col-span-full bg-foreground border-2 border-primary rounded-lg p-6 text-center text-lg font-semibold mb-3">
+                There is no notes.
+              </p>
+            )}
+
             {notes.map((note) => (
               <NoteCard
                 key={String(note.id)}

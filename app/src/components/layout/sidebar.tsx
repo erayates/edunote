@@ -49,6 +49,12 @@ const AppSidebar: React.FC = async () => {
             </p>
             <NewNote></NewNote>
           </div>
+          {_notes && _notes.length === 0 && (
+            <p className="text-white/30 text-center text-sm font-semibold mb-3">
+              There is no notes.
+            </p>
+          )}
+
           {_notes &&
             _notes
               .slice(0, _notes.length > 4 ? 4 : _notes.length)

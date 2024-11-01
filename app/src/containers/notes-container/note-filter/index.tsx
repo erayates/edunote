@@ -3,7 +3,7 @@
 import { DatePicker } from "@/components/ui/date-picker";
 import { Input } from "@/components/ui/input";
 import { useRouter, useSearchParams } from "next/navigation";
-import React, { ChangeEvent, Dispatch, SetStateAction, useEffect } from "react";
+import React, { ChangeEvent, Dispatch, SetStateAction, useEffect, useRef } from "react";
 import { useDebouncedCallback } from "use-debounce";
 
 import { format } from "date-fns";
@@ -18,6 +18,9 @@ const NoteFilter: React.FC<{
   >([]);
 
   const router = useRouter();
+
+  const authorRef = useRef<HTMLInputElement>(null);
+  
 
   useEffect(() => {
     const params = new URLSearchParams(searchParams);
@@ -34,6 +37,19 @@ const NoteFilter: React.FC<{
       return;
     }
   }, [selectedTags]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams);
+    const author = params.get("author");
+    if (author && authorRef.current) {
+      authorRef.current.value = author;
+    }
+
+    const createdAt = params.get("createdAt");
+    if (createdAt) {
+      setDate(new Date(createdAt));
+    }
+  }, []);
 
   const searchParams = useSearchParams();
 
@@ -85,6 +101,8 @@ const NoteFilter: React.FC<{
           <p className="text-sm text-white/30 font-medium">Author</p>
           <Input
             className="focus-visible:ring-primary text-white text-xs"
+            name="author"
+            ref={authorRef}
             onChange={onAuthorFilterChange}
           />
         </div>

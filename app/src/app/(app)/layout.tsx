@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import "../globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import { ThemeProvider } from "@/components/theme-provider";
-
 import { Poppins } from "next/font/google";
 import AppSidebar from "@/components/layout/sidebar";
 import AppBottomBar from "@/components/layout/top-bar";
