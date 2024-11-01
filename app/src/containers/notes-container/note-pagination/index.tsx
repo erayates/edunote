@@ -10,8 +10,8 @@ import {
 import { useRouter, useSearchParams } from "next/navigation";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 
-const LIMIT = 12;
-const MAX_PAGES_SHOWN = 10;
+const LIMIT = 9;
+const MAX_PAGES_SHOWN = 6;
 
 export default function NotePagination({
   totalNotes,
@@ -99,7 +99,7 @@ export default function NotePagination({
             }}
             className={`
                 ${isPreviousDisabled ? "pointer-events-none opacity-50" : ""}
-                bg-sky-400 hover:bg-sky-600 text-white rounded-full
+                  mb-6
               `}
           />
         </PaginationItem>
@@ -138,10 +138,9 @@ export default function NotePagination({
                 className={`
                     ${
                       page === currentPage
-                        ? "bg-sky-600 text-white"
-                        : "bg-sky-400 hover:bg-sky-600 text-white"
+                        ? "mb-6 underline"
+                        : "mb-6 text-white"
                     } 
-                    rounded-full
                   `}
               >
                 {page}
@@ -160,7 +159,7 @@ export default function NotePagination({
             }}
             className={`
                 ${isNextDisabled ? "pointer-events-none opacity-50" : ""}
-                bg-sky-400 hover:bg-sky-600 text-white rounded-full
+                bg-background hover:bg-primary text-white mb-6
               `}
           />
         </PaginationItem>
