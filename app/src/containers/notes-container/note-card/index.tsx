@@ -69,7 +69,7 @@ const NoteCard: React.FC<NoteCardProps> = ({
           </div>
 
           <div className="h-[24px] flex items-center absolute p-4 bottom-0 left-0 w-full justify-ends">
-            <div className="flex m-[6px] p-[2px] rounded-2xl pr-2 items-center absolute bottom-0 left-0 w-fit justify-ends">
+            <div className="flex m-[6px] p-[2px] rounded-2xl pb-2 pr-2 items-center absolute bottom-0 left-0 w-fit justify-ends">
               <Avatar className="mx-2 w-[24px] h-[24px]">
                 <AvatarImage src={avatarUrl} alt="@shadcn"/>
                 <AvatarFallback className="bg-white">U</AvatarFallback>

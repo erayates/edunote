@@ -70,7 +70,7 @@ const PaginationPrevious = ({
   <PaginationLink
     aria-label="Go to previous page"
     size="xs"
-    className={cn("pl-2.5", className)}
+    className={cn("", className)}
     {...props}
   >
     <ChevronLeftIcon className="h-4 w-4" />
@@ -83,7 +83,7 @@ const PaginationNext = ({
   className,
   ...props
 }: React.ComponentProps<typeof PaginationLink>) => (
-  <div className={cn("mr-5", className)}>
+  <div className={cn(className, "mr-4")}>
     <PaginationLink
       aria-label="Go to next page"
       size="xs"
@@ -102,7 +102,7 @@ const PaginationEllipsis = ({
 }: React.ComponentProps<"span">) => (
   <span
     aria-hidden
-    className={cn("flex h-9 w-9 items-center justify-center", className)}
+    className={cn("flex h-9 w-9 text-white/60 mb-2 items-center justify-center", className)}
     {...props}
   >
     <DotsHorizontalIcon className="h-4 w-4" />
