@@ -19,7 +19,6 @@ import { CheckCircle2, GitPullRequestArrow } from "lucide-react";
 import { Note, User, Tag } from "@prisma/client";
 import { updateNote } from "@/actions/notes";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
 import { Label } from "@/components/ui/label";
 import Image from "next/image";
 import Markdown from "react-markdown";
@@ -45,7 +44,6 @@ const SpecializedAudioIntegration: React.FC<SpecializedAIProps> = ({
 
   const slug = note.slug;
 
-  const { refresh } = useRouter();
   const { completion, complete, isLoading, reset } = useFetchStream({
     api: `${GEMINI_API_FILE_EXTRACT}`,
     headers: { "Content-Type": "multipart/form-data" },
@@ -142,7 +140,9 @@ const SpecializedAudioIntegration: React.FC<SpecializedAIProps> = ({
             </div>
             <div className="max-w-[480px]">
               <div className="flex items-center justify-between mt-4 mb-2 border-2 border-primary p-2 rounded-lg ">
-                <p className="text-white font-medium text-xl">Summary</p>
+                <DialogTitle className="text-white font-medium text-xl">
+                  Summary
+                </DialogTitle>
                 <Button
                   variant="outline"
                   className="bg-white"
@@ -153,9 +153,9 @@ const SpecializedAudioIntegration: React.FC<SpecializedAIProps> = ({
                 </Button>
               </div>
               <ScrollArea className="h-[480px] rounded-lg">
-                <p className="text-white bg-blue-500 rounded-lg p-2">
+                <div className="text-white bg-blue-500 rounded-lg p-2">
                   <Markdown>{completion}</Markdown>
-                </p>
+                </div>
                 <ScrollBar orientation="vertical" />
               </ScrollArea>
             </div>

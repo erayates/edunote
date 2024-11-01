@@ -114,7 +114,7 @@ const SpecializedYoutubeIntegration: React.FC<SpecializedAIProps> = ({
             </div>
             <div className="w-full">
               <div className="flex items-center justify-between mt-4 mb-2 border-2 border-primary p-2 rounded-lg ">
-                <p className="text-white font-medium text-xl">Summary</p>
+                <DialogTitle className="text-white font-medium text-xl">Summary</DialogTitle>
                 <Button
                   variant="outline"
                   className="bg-white"
@@ -125,9 +125,9 @@ const SpecializedYoutubeIntegration: React.FC<SpecializedAIProps> = ({
                 </Button>
               </div>
               <ScrollArea className="h-[400px] rounded-lg">
-                <p className="text-white bg-blue-500 rounded-lg p-2">
+                <div className="text-white bg-blue-500 rounded-lg p-2">
                   <Markdown>{completion}</Markdown>
-                </p>
+                </div>
                 <ScrollBar orientation="vertical" />
               </ScrollArea>
             </div>

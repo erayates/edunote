@@ -11,7 +11,7 @@ const config: Config = {
   theme: {
     extend: {
       transitionDuration: {
-        '3000': '3000ms'
+        "3000": "3000ms",
       },
       colors: {
         background: "hsl(var(--background))",
@@ -68,7 +68,8 @@ const config: Config = {
       boxShadow: {
         card: "inset 0px -32px 63px -20px rgba(0,0,0,0.75)",
         sm: "0 1px 2px 0 rgb(0 0 0 / 0.05)",
-        DEFAULT: "0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)",
+        DEFAULT:
+          "0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)",
         md: "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
         lg: "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
         xl: "0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)",
@@ -76,13 +77,16 @@ const config: Config = {
         inner: "inset 0 2px 4px 0 rgb(0 0 0 / 0.05)",
         none: "0 0 #0000",
         "3xl": "rgba(0, 0, 0, 0.35) 0px 5px 15px",
-        "4xl": "rgba(0, 0, 0, 0.5) 0px 10px 25px"
+        "4xl": "rgba(0, 0, 0, 0.5) 0px 10px 25px",
       },
     },
     backgroundImage: {
       aiButtonGradient: "linear-gradient(160deg, #FF5733 0%, #F8302F 100%)",
       noteThumbnailGradient:
         "linear-gradient(180deg, transparent 0%, hsl(217, 9.1%, 17.3%) 100%)",
+    },
+    animation: {
+      "spin-slow": "spin 10s linear infinite",
     },
   },
   plugins: [require("tailwindcss-animate"), require("@tailwindcss/typography")],

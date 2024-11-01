@@ -141,7 +141,7 @@ const SpecializedPdfIntegration: React.FC<SpecializedAIProps> = ({ note }) => {
             </div>
             <div className="max-w-[480px]">
               <div className="flex items-center justify-between mb-2 border-2 border-primary p-2 rounded-lg ">
-                <p className="text-white font-medium text-xl">Summary</p>
+                <DialogTitle className="text-white font-medium text-xl">Summary</DialogTitle>
                 <Button
                   variant="outline"
                   className="bg-white"
@@ -152,9 +152,9 @@ const SpecializedPdfIntegration: React.FC<SpecializedAIProps> = ({ note }) => {
                 </Button>
               </div>
               <ScrollArea className="h-[600px] rounded-lg">
-                <p className="text-white bg-blue-500 rounded-lg p-2">
+                <div className="text-white bg-blue-500 rounded-lg p-2">
                   <Markdown>{completion}</Markdown>
-                </p>
+                </div>
                 <ScrollBar orientation="vertical" />
               </ScrollArea>
             </div>
