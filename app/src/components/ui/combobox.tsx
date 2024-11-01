@@ -175,7 +175,7 @@ export default function ComboBox({
             {selectedTags.map((tag) => (
               <span
                 key={tag.id + randomBytes(5).toString("hex")}
-                className="bg-primary text-balance text-primary-foreground px-2 py-1 rounded-md text-sm flex items-center"
+                className="bg-primary text-balance text-white text-primary-foreground px-2 py-1 rounded-md text-sm flex items-center"
               >
                 {tag.label}
                 <div

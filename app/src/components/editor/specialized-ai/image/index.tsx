@@ -129,14 +129,15 @@ const SpecializedImageFile: React.FC<SpecializedAIProps> = ({ note }) => {
       >
         {completion ? (
           <div className="flex flex-col space-y-2">
-            <div>
+            <div className="h-[480px] w-[480px] max-h-[480px] max-w-[480px] relative">
               {imageFile?.url && (
-                <img
+                <Image
                   src={imageFile.url}
-                  height={480}
-                  width={480}
+                  height={0}
+                  width={0}
                   alt=""
-                  className="rounded-lg"
+                  sizes="100vw"
+                  className="w-full h-auto rounded-lg object-cover"
                 />
               )}
             </div>

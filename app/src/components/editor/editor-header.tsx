@@ -1,6 +1,6 @@
 "use client";
 
-import { Note, Tag, User } from "@prisma/client";
+import { Note, Tag as TagType, User } from "@prisma/client";
 import EditorSettings from "./editor-settings";
 import React, { ChangeEvent } from "react";
 
@@ -13,11 +13,15 @@ import { useRouter } from "next/navigation";
 
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { formatDistance } from "date-fns";
+import Tag from "../ui/tag";
+import Link from "next/link";
+import { APP_BASE_URL } from "@/lib/constants";
+import { Eye } from "lucide-react";
 
 interface EditorHeaderProps {
   note: Note & {
     user: User;
-    tags: Tag[];
+    tags: TagType[];
   };
   settingsOff: boolean;
 }
@@ -56,43 +60,55 @@ const EditorHeader: React.FC<EditorHeaderProps> = ({ note, settingsOff }) => {
     1000
   );
 
+  const noteURL = `${APP_BASE_URL}/notes/${note.slug}?share_link=${note.shareLink}`;
+
   return (
     <React.Fragment>
       {!settingsOff && (
-        <div className="w-full flex justify-end mb-4 pt-16">
+        <div className="w-full flex justify-end mb-4 space-x-2 pt-16">
+          <Link href={noteURL} target="_blank" className="relative z-50">
+            <Eye className="text-white/30 hover:text-white" />
+          </Link>
           <EditorSettings note={note} />
         </div>
       )}
 
       {settingsOff && (
-        <div className="flex justify-between mt-6 z-30 relative">
-          <div className="flex w-fit mb-4 space-x-2 items-center p-2 bg-foreground border-2 border-primary rounded-lg">
-            <Avatar className="border-2 border-gray-700 ">
-              <AvatarImage src={note.user.avatar as string} />
-              <AvatarFallback className="w-full grid place-items-center bg-background text-white/30 text-md">
-                U
-              </AvatarFallback>
-            </Avatar>
-            <p className="text-sm text-muted-foreground flex flex-col ">
-              {note.user.fullname}
-              <span className="text-xs text-muted-foreground/60">
-                @{note.user.username}
-              </span>
-            </p>
+        <div className="flex flex-col items-end">
+          <div className="z-50 space-x-2 relative flex flex-wrap">
+            {note.tags.map((tag) => (
+              <Tag key={tag.id} tag={tag.name} />
+            ))}
           </div>
-
-          <div className="text-right flex space-x-6">
-            <div>
-              <p className="text-md text-white">Published</p>
-              <p className="text-sm text-muted-foreground/60">
-                {formatDistance(new Date(note.createdAt), new Date())}
+          <div className="flex w-full justify-between mt-6 z-30 relative">
+            <div className="flex w-fit mb-4 space-x-2 items-center p-2 bg-foreground border-2 border-primary rounded-lg">
+              <Avatar className="border-2 border-gray-700 ">
+                <AvatarImage src={note.user.avatar as string} />
+                <AvatarFallback className="w-full grid place-items-center bg-background text-white/30 text-md">
+                  U
+                </AvatarFallback>
+              </Avatar>
+              <p className="text-sm text-muted-foreground flex flex-col ">
+                {note.user.fullname}
+                <span className="text-xs text-muted-foreground/60">
+                  @{note.user.username}
+                </span>
               </p>
             </div>
-            <div>
-              <p className="text-md text-white">Updated</p>
-              <p className="text-sm text-muted-foreground/60">
-                {formatDistance(new Date(note.updatedAt), new Date())}
-              </p>
+
+            <div className="text-right flex space-x-6">
+              <div>
+                <p className="text-md text-white">Published</p>
+                <p className="text-sm text-muted-foreground/60">
+                  {formatDistance(new Date(note.createdAt), new Date())}
+                </p>
+              </div>
+              <div>
+                <p className="text-md text-white">Updated</p>
+                <p className="text-sm text-muted-foreground/60">
+                  {formatDistance(new Date(note.updatedAt), new Date())}
+                </p>
+              </div>
             </div>
           </div>
         </div>

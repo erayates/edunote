@@ -28,26 +28,26 @@ const SpecializedAI: React.FC<SpecializedAIProps> = ({ note }) => {
     <div className="fixed bottom-0 ml-8 mb-8 z-50">
       <Dialog>
         <DialogTrigger asChild>
-          <Button 
-              className="
+          <Button
+            className="
                 bg-[url('/assets/images/bg-button-ai.png')] 
                 bg-cover bg-center
                 relative z-60
                 rounded-full w-16 h-16
               "
-            >
-              <Image
-                src="/assets/images/button-ai.png"
-                alt="Generative AI"
-                width={48}
-                height={48}
-                className="
+          >
+            <Image
+              src="/assets/images/button-ai.png"
+              alt="Generative AI"
+              width={48}
+              height={48}
+              className="
                   absolute
                   transition-transform duration-3000 ease-in-out
                   hover:rotate-[2400deg]
                   transform-gpu                  
                 "
-              />
+            />
           </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[425px] md:max-w-[820px]  bg-foreground flex rounded-3xl p-1 border-2 border-primary">
