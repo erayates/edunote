@@ -28,37 +28,26 @@ const NotesContainer: React.FC<NotesContainerProps> = ({
   return (
     <div className="space-y-6 w-full">
       <div className="flex space-x-6 w-full">
-        <div className="bg-foreground border-2 border-primary relative w-[180px] h-[160px] rounded-full">
-          <Image
-            src="/assets/images/note-icon.webp"
-            alt="Note Icon"
-            width={250}
-            height={75}
-            sizes="100vw"
-            className="absolute left-0 top-0 scale-110"
-          />
-        </div>
-
-        <div className="bg-foreground border-2 border-primary rounded-lg p-4 relative w-full">
-          <p className="text-6xl text-white font-bold">
-            UNLOCK YOUR
-            <br /> KNOWLEDGE
+      <NoteFilter setCurrentPage={setCurrentPage} />
+        <div className=" relative w-full">
+          <p className="text-7xl text-white font-bold bg-foreground border-2 border-primary rounded-lg p-6 relative w-full">
+            NOTE
+            <br /> NETWORK
           </p>
           <BookKey className="absolute right-4 top-4" size={32} color="white" />
-          <p className="absolute bottom-4 right-4 text-primary font-semibold text-right">
-            Explore all public notes <br /> from the world & unlock your
-            knowledge!
-          </p>
+          <div className="relative w-full pt-4 ">
+          <NoteSearch setCurrentPage={setCurrentPage} />
+        </div> 
         </div>
       </div>
 
       <div className="flex space-x-6">
-        <NoteFilter setCurrentPage={setCurrentPage} />
+        
 
         <div className="flex flex-col w-full space-y-6">
-          <NoteSearch setCurrentPage={setCurrentPage} />
+          
 
-          <div className="grid grid-cols-4 gap-4">
+          <div className="grid grid-cols-3 gap-6">
             {notes.map((note) => (
               <NoteCard
                 key={String(note.id)}

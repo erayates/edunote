@@ -11,6 +11,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "../ui/button";
+import { NewNote } from "../ui/new-note";
 import { MoreNote } from "./more-note";
 import { getAllUserNotes } from "@/actions/notes";
 import { currentUser } from "@clerk/nextjs/server";
@@ -41,14 +42,16 @@ const AppSidebar: React.FC = async () => {
         <div className="w-full h-[1px] border border-primary my-6"></div>
 
         <ul>
-          <p className="flex items-center text-white/30 text-sm font-semibold mb-3">
-            <NotepadText size={16} className="mr-2" />
-            NOTES
-          </p>
-
+          <div className="h-fit w-full flex justify-between items-center">
+            <p className="flex items-center text-white/30 text-sm font-semibold mb-3">
+              <NotepadText size={16} className="mr-2" />
+              NOTES
+            </p>
+            <NewNote></NewNote>
+          </div>
           {_notes &&
             _notes
-              .slice(0, _notes.length > 3 ? 3 : _notes.length)
+              .slice(0, _notes.length > 4 ? 4 : _notes.length)
               .map((_note) => (
                 <li
                   key={String(_note.id)}
@@ -61,7 +64,7 @@ const AppSidebar: React.FC = async () => {
                     <NotepadText size={16} className="mr-2" />{" "}
                     {_note.title.slice(
                       0,
-                      _note.title.length > 16 ? 16 : _note.title.length
+                      _note.title.length > 19 ? 19 : _note.title.length
                     )}
                     ...
                   </Link>
@@ -70,7 +73,6 @@ const AppSidebar: React.FC = async () => {
 
           {_notes && _notes.length > 3 && <MoreNote notes={_notes} />}
         </ul>
-
         <ul className="mt-8">
           <p className="flex items-center text-sm font-semibold text-white/30 mb-3">
             <Earth size={16} className="mr-2" />
@@ -90,7 +92,7 @@ const AppSidebar: React.FC = async () => {
                   Notes
                 </span>
                 <span className="text-white/30 group-hover:text-white leading-none text-xs inline-block">
-                  Explore any notes from world.
+                  Explore all notes from world.
                 </span>
               </p>
             </Link>

@@ -127,7 +127,7 @@ const SpecializedAudioIntegration: React.FC<SpecializedAIProps> = ({
       </DialogTrigger>
       <DialogContent
         className={cn(
-          "min-w-[480px] flex duration-500 transition-all bg-foreground p-6 border-2 border-secondary",
+          "min-w-[480px] flex duration-500 transition-all bg-foreground p-6 border-2 border-primary",
           completion && !isLoading && "w-auto max-h-[720px]"
         )}
       >

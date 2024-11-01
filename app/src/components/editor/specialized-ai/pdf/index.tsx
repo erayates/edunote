@@ -128,7 +128,7 @@ const SpecializedPdfIntegration: React.FC<SpecializedAIProps> = ({ note }) => {
       </DialogTrigger>
       <DialogContent
         className={cn(
-          "flex duration-500 transition-all bg-foreground min-w-[480px] border-2 border-secondary",
+          "flex duration-500 transition-all bg-foreground min-w-[480px] border-2 border-primary",
           submitted && "w-[1024px] max-w-max"
         )}
       >
