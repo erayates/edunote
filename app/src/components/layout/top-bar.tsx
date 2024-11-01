@@ -304,7 +304,7 @@ const AppBottomBar: React.FC = () => {
         <div className="flex items-center py-2 rounded-3xl bg-foreground relative pl-4 -right-6 z-10  border-2 border-primary">
           <Input
             className="w-[480px] border-none text-sm placeholder:text-primary placeholder:font-medium text-white bg-transparent focus-visible:ring-0"
-            placeholder={`Press "Blockquote (")" or on focus to chat with Gemini AI about your note...`}
+            placeholder={`Press "CTRL + Blockquote (")", "F2" or on focus to chat with Gemini AI about your note...`}
             onKeyUp={handleInputEnter}
             onChange={handleInputChange}
             value={prompt}

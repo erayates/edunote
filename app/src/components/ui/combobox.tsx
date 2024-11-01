@@ -22,7 +22,6 @@ import { ScrollArea } from "./scroll-area";
 import { useDebouncedCallback } from "use-debounce";
 import { createTag, getAllTags, searchTags } from "@/actions/tags";
 import { toast } from "sonner";
-import { randomBytes } from "crypto";
 
 interface Tag {
   value: string;
@@ -169,15 +168,15 @@ export default function ComboBox({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-full justify-between h-auto min-h-[2.5rem] border-primary align-top"
+          className="w-full justify-between h-auto min-h-[2.5rem] pr-0 border-primary align-top"
         >
-          <div className="flex flex-wrap gap-1 items-center">
+          <div className="flex flex-wrap w-full gap-1 items-center">
             {selectedTags.map((tag) => (
               <span
-                key={tag.id + randomBytes(5).toString("hex")}
-                className="bg-primary text-balance text-white text-primary-foreground px-2 py-1 rounded-md text-sm flex items-center"
+                key={tag.id}
+                className="bg-primary text-balance text-white text-primary-foreground px-2 py-1 rounded-md text-[10px] flex items-center"
               >
-                {tag.label}
+                {tag.label.length > 6 ? tag.label.slice(0,6) + "..." : tag.label}
                 <div
                   className="ml-1 text-primary-foreground/50 hover:text-primary-foreground"
                   onClick={(e) => {
@@ -185,7 +184,7 @@ export default function ComboBox({
                     removeTag(tag.value);
                   }}
                 >
-                  <Cross2Icon className="h-3 w-3" />
+                  <Cross2Icon className="h-3 w-3 text-white" />
                 </div>
               </span>
             ))}

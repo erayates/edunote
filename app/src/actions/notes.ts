@@ -156,6 +156,8 @@ export async function searchNotes({
 }: SearchActionParams): Promise<SearchNotesResult> {
   const conditions: Prisma.NoteWhereInput[] = [];
 
+  console.log(tags);
+
   // Search by query
   if (query) {
     conditions.push({
@@ -168,17 +170,17 @@ export async function searchNotes({
 
   // Search by tags
   if (tags) {
-    // Ensure tags are correctly decoded and transformed to lowercase
-    const tagArray = (
-      typeof tags === "string"
-        ? decodeURIComponent(tags).split(",")
-        : tags.map((tag) => decodeURIComponent(tag))
-    ).map((tag) => tag.trim().toLowerCase());
+    const tagIdArray = tags
+      .split(",")
+      .map((tag) => tag.trim().toLowerCase()) // Trim whitespace and convert to lowercase
+      .filter((tag) => tag); // Filter out any empty tags
 
     // Check if any tags were provided
-    if (tagArray.length > 0) {
+    if (tagIdArray.length > 0) {
       conditions.push({
-        tags: { some: { slug: { in: tagArray } } }, // Assuming 'slug' is the correct field for tags
+        tagIds: {
+          hasEvery: tagIdArray,
+        },
       });
     }
   }

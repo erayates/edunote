@@ -8,7 +8,6 @@ import { useDebouncedCallback } from "use-debounce";
 
 import { format } from "date-fns";
 import ComboBox from "@/components/ui/combobox";
-import slug from "slug";
 
 const NoteFilter: React.FC<{
   setCurrentPage: Dispatch<SetStateAction<number>>;
@@ -21,10 +20,20 @@ const NoteFilter: React.FC<{
   const router = useRouter();
 
   useEffect(() => {
-    if (selectedTags.length > 0)
-      debounced(selectedTags.map((tag) => slug(tag.label)).join(","), "tags");
+    const params = new URLSearchParams(searchParams);
+
+    if (selectedTags.length > 0) {
+      debounced(selectedTags.map((tag) => tag.id).join(","), "tags");
+      return;
+    }
+
+    if (selectedTags.length === 0) {
+      params.delete("tags");
+      setCurrentPage(1);
+      router.replace(`/notes?${params.toString()}`);
+      return;
+    }
   }, [selectedTags]);
-  
 
   const searchParams = useSearchParams();
 
@@ -56,14 +65,14 @@ const NoteFilter: React.FC<{
   }, 300);
 
   return (
-    <div className="w-[300px] max-w-[300px] sticky top-4  h-fit bg-foreground border-2 border-primary rounded-xl p-2">
+    <div className="w-[500px] max-w-[500px] sticky top-4  h-fit bg-foreground border-2 border-primary rounded-xl p-2">
       <p className="text-white/30 uppercase font-semibold text-center text-xl">
         Filters
       </p>
 
       <div className="rounded-full h-[1px] w-full bg-primary my-2"></div>
       <div className="space-y-2">
-        <div className="space-y-1 w-[280px] max-w-[280px]">
+        <div className="space-y-1 w-full">
           <p className="text-sm text-white/30 font-medium">Tags</p>
           <ComboBox
             selectedTags={selectedTags}

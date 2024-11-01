@@ -1,12 +1,6 @@
 "use client";
 
 import { createNote } from "@/actions/notes";
-import { Button } from "@/components/ui/button";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { useUser } from "@clerk/nextjs";
 import { PlusCircle } from "lucide-react";
 import { useRouter } from "next/navigation";

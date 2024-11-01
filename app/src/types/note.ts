@@ -15,7 +15,7 @@ export interface Note {
 
 export interface SearchActionParams {
   query?: string;
-  tags?: string[];
+  tags?: string;
   createdAt?: Date;
   author?: string;
   page?: number;
