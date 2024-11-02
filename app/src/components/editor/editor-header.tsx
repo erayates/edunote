@@ -12,6 +12,7 @@ import slug from "slug";
 import { useRouter } from "next/navigation";
 
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { Like } from "../ui/like";
 import { formatDistance } from "date-fns";
 import Tag from "../ui/tag";
 import Link from "next/link";
@@ -95,7 +96,7 @@ const EditorHeader: React.FC<EditorHeaderProps> = ({ note, settingsOff }) => {
                 </span>
               </p>
             </div>
-
+            <Like></Like>
             <div className="text-right flex space-x-6">
               <div>
                 <p className="text-md text-white">Published</p>
