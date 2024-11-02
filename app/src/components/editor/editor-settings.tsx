@@ -39,6 +39,7 @@ import ComboBox from "../ui/combobox";
 import { Label } from "../ui/label";
 import Image from "next/image";
 import { onUpload } from "./image-upload";
+import { searchSingleTag } from "@/actions/tags";
 
 interface EditorSettingsProps {
   note: Note & {
@@ -65,17 +66,6 @@ const EditorSettings: React.FC<EditorSettingsProps> = ({ note }) => {
     const noteURL = `${APP_BASE_URL}/notes/${note.slug}?share_link=${note.shareLink}`;
     if (note) setShareLink(noteURL);
   }, [note]);
-
-  useEffect(() => {
-    if (note.tags && note.tags.length > 0) {
-      const noteTags: { value: string; label: string; id: string }[] = [];
-      note.tags.map((tag) => {
-        noteTags.push({ id: tag.id, label: tag.name, value: tag.name });
-      });
-
-      setSelectedTags(noteTags);
-    }
-  }, []);
 
   // Copy share link func.
   const handleCopyShareLink = () => {
@@ -127,11 +117,13 @@ const EditorSettings: React.FC<EditorSettingsProps> = ({ note }) => {
   // Handle func. to save tags
   const handleSaveTagsToNote = async () => {
     const tags = selectedTags;
-    
+
+    console.log(tags);
+
     const isUpdated = await updateNote(note.id, {
       tagIds: {
-        set: tags.map(tag => tag.id)
-      }
+        set: tags.map((tag) => tag.id),
+      },
     });
 
     if (isUpdated) {
@@ -178,8 +170,26 @@ const EditorSettings: React.FC<EditorSettingsProps> = ({ note }) => {
     }
   };
 
+  const handleDialogToggle = (open: boolean) => {
+    if (!open) {
+      setSelectedTags([]);
+      return;
+    }
+
+    if (note.tagIds && note.tagIds.length > 0) {
+      note.tagIds.forEach(async (tagId) => {
+        const tag = await searchSingleTag(tagId);
+        if (!tag) return;
+        setSelectedTags((prev) => [
+          ...prev,
+          { id: tag.id, label: tag.name, value: tag.name },
+        ]);
+      });
+    }
+  };
+
   return (
-    <Dialog>
+    <Dialog onOpenChange={handleDialogToggle}>
       <DialogTrigger className="text-white/30 hover:text-white z-30">
         <Settings />
       </DialogTrigger>
