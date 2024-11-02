@@ -11,6 +11,14 @@ import time
 import sys
 import re
 from bs4 import BeautifulSoup
+from faker import Faker
+
+fake = Faker()
+
+def random_paragraph(min_sentences=1, max_sentences=15):
+    # Generate a random number of sentences for the paragraph
+    num_sentences = fake.random_int(min=min_sentences, max=max_sentences)
+    return fake.paragraph(nb_sentences=num_sentences)
 
 def generate_id(length=24):
     # Generate a random 24-character hex string
@@ -39,7 +47,7 @@ def load_note():
     users = KEY.USERS.find()
     tags = KEY.TAGS.find()
     user_ids = [str(user['_id']) for user in users]
-    tag_ids = [ObjectId(str(tag['_id'])) for tag in tags]
+    tag_ids = [str(tag['_id']) for tag in tags]
     return user_ids, tag_ids
 
 def create_article_dataset():
@@ -163,11 +171,11 @@ def generate_realistic_notes(notes: list[dict], users: list[str], tags: list[str
         sys.stdout.flush()
         
         random_tags = []
-        for _ in range(random.randint(0, 5)):
+        for _ in range(random.randint(2, 5)):
             random_tags.append(ObjectId(random.choice(tags)))
 
         random_favorited = []
-        for _ in range(random.randint(0, 5)):
+        for _ in range(random.randint(1, 5)):
             random_favorited.append(random.choice(users))
 
         id = ObjectId(generate_id())
@@ -177,7 +185,7 @@ def generate_realistic_notes(notes: list[dict], users: list[str], tags: list[str
             "_id": id,
             "title": str(note['title']),
             "content": str(note['content']),
-            "description": str(note['description']),
+            "description": f"{str(note['description'])} {random_paragraph()}",
             "is_public": bool(random.getrandbits(1)),
             "share_link": generate_id(length=20),
             "user_id": random.choice(users),
