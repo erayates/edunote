@@ -34,15 +34,15 @@ const EditorHeader: React.FC<EditorHeaderProps> = ({ note, settingsOff }) => {
 
   const { refresh, replace } = useRouter();
 
-  const [isFavoritedState, setIsFavoritedState] = useState<boolean>();
+  const [isFavorited, setIsFavorited] = useState<boolean>(false);
   const [isUpdating, setIsUpdating] = useState(false);
 
   useEffect(() => {
-    const _isFavorited = note.favoritedByIds.some((userId) => userId === user?.id)
-    setIsFavoritedState(_isFavorited)
-  }, [isFavoritedState]);
-
-  
+    if (user && note.favoritedByIds) {
+      const _isFavorited = note.favoritedByIds.includes(user.id);
+      setIsFavorited(_isFavorited);
+    }
+  }, [user, note.favoritedByIds]);
 
   const toggleFavorite = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -51,7 +51,7 @@ const EditorHeader: React.FC<EditorHeaderProps> = ({ note, settingsOff }) => {
     if (isUpdating) return;
 
     setIsUpdating(true);
-    setIsFavoritedState(!isFavoritedState);
+    setIsFavorited(!isFavorited);
 
     try {
       const result = await toggleNoteFavorite(user?.id as string, note.id);
@@ -62,21 +62,19 @@ const EditorHeader: React.FC<EditorHeaderProps> = ({ note, settingsOff }) => {
             ? "Note added to favorites"
             : "Note removed from favorites"
         );
-
-        setIsFavoritedState(result.isFavorited ? true: false)
         refresh();
       } else {
-        setIsFavoritedState(isFavoritedState);
+        setIsFavorited(isFavorited);
         toast.error(result.error || "Failed to update favorite status");
       }
     } catch {
-      setIsFavoritedState(isFavoritedState);
+      setIsFavorited(isFavorited);
       toast.error("Failed to update favorite status");
     } finally {
       setIsUpdating(false);
     }
   };
-  
+
   const debouncedUpdates = useDebouncedCallback(
     async (e: ChangeEvent<HTMLInputElement>) => {
       const isTitle = e.target.name === "title";
@@ -144,7 +142,7 @@ const EditorHeader: React.FC<EditorHeaderProps> = ({ note, settingsOff }) => {
               </p>
             </div>
             <div className="text-right flex space-x-6">
-              {isFavoritedState ? (
+              {isFavorited ? (
                 <Button
                   variant="ghost"
                   className="absolute right-2 bottom-2 p-2"

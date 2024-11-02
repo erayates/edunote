@@ -57,7 +57,6 @@ const AIChatContent: React.FC<AIChatContentProps> = ({
                   There is no chat history. <br />
                   Start chat right now!
                 </span>
-                <span className="text-[32px]">🪄</span>
               </div>
             ) : (
               chat.map((chatItem: Chat, _idx: number) =>

@@ -10,6 +10,7 @@ export async function toggleNoteFavorite(userId: string, noteId: string) {
         id: true,
         userId: true,
         favoritedByIds: true,
+        updatedAt: true,
       },
     });
 
@@ -48,6 +49,8 @@ export async function toggleNoteFavorite(userId: string, noteId: string) {
           favoritedByIds: isAlreadyFavorited
             ? { set: note.favoritedByIds.filter((id) => id !== userId) }
             : { push: userId },
+
+          updatedAt: note.updatedAt,
         },
       }),
     ]);
