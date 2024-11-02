@@ -16,9 +16,9 @@ export async function toggleNoteFavorite(userId: string, noteId: string) {
     if (!note) return { success: false, error: "Note not found" };
 
     if (note.userId === userId) {
-      return { 
-        success: false, 
-        error: "You cannot favorite your own note" 
+      return {
+        success: false,
+        error: "You cannot favorite your own note",
       };
     }
 
@@ -33,7 +33,7 @@ export async function toggleNoteFavorite(userId: string, noteId: string) {
 
     const isAlreadyFavorited = note.favoritedByIds.includes(userId);
 
-    const result = await prisma.$transaction([
+    await prisma.$transaction([
       prisma.user.update({
         where: { id: userId },
         data: {

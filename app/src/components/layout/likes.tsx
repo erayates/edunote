@@ -1,6 +1,5 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import {
   Sheet,
   SheetContent,
@@ -11,7 +10,6 @@ import {
 } from "@/components/ui/sheet";
 import Image from "next/image";
 import { Input } from "../ui/input";
-import { Like } from "../ui/like";
 import { Note } from "@prisma/client";
 import Link from "next/link";
 import { ChangeEvent, useEffect, useState } from "react";

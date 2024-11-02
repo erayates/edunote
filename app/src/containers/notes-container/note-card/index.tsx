@@ -76,7 +76,7 @@ const NoteCard: React.FC<NoteCardProps> = ({
         setIsFavoritedState(isFavoritedState);
         toast.error(result.error || "Failed to update favorite status");
       }
-    } catch (error) {
+    } catch {
       setIsFavoritedState(isFavoritedState);
       toast.error("Failed to update favorite status");
     } finally {
