@@ -8,6 +8,7 @@ import NoteSearch from "./note-search";
 import NotePagination from "./note-pagination";
 import { useSearchParams } from "next/navigation";
 import { NoteWithRelations } from "@/types/note";
+import { useUser } from "@clerk/nextjs";
 
 interface NotesContainerProps {
   notes: NoteWithRelations[];
@@ -23,6 +24,8 @@ const NotesContainer: React.FC<NotesContainerProps> = ({
   const [currentPage, setCurrentPage] = useState(
     Number(searchParams.get("page")) || 1
   );
+
+  const { user } = useUser();
 
   return (
     <div className="space-y-6 w-full">
@@ -51,7 +54,11 @@ const NotesContainer: React.FC<NotesContainerProps> = ({
 
             {notes.map((note) => (
               <NoteCard
+                isFavorited={note.favoritedByIds.some(
+                  (userId) => userId === user?.id
+                )}
                 key={String(note.id)}
+                noteId={note.id}
                 thumbnailUrl={note.thumbnail as string}
                 avatarUrl={note.user.avatar as string}
                 title={note.title}
@@ -60,6 +67,7 @@ const NotesContainer: React.FC<NotesContainerProps> = ({
                 author={note.user.fullname}
                 slug={note.slug}
                 tags={note.tags.map((tag) => tag.name)}
+                noteUserId={note.userId}
               />
             ))}
           </div>
