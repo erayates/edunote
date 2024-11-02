@@ -60,21 +60,50 @@ Share your notes in public to join the note network. Create tags to reach more p
 </details>
 
 <details>
+<summary> <b> <samp>Note Network</samp></b></summary>
 <samp>
 
-### Special Ai
+<img src="Docs\ss\alls.png">
+
+</samp>
+</details>
+
+<details>
+<summary> <b> <samp>AI Chat</samp></b></summary>
+<samp>
+
+<img src="Docs\ss\chat.png">
+
+#### Gemini
+<img src="Docs\ss\gemini.png">
+
+#### Chat in Public Notes
+<img src="Docs\ss\publics.png">
+
+#### Chat in Your Notes
+<img src="Docs\ss\privates.png">
+<img src="Docs\ss\single.png">
+<img src="Docs\ss\singleoptions.png">
+
+</samp>
+</details>
+
+<details>
+<summary> <b> <samp>Special Ai</samp></b></summary>
+<samp>
+<img src="Docs\ss\ai.png">
 
 #### Youtube
-<img src="btk-hackathon-24\Docs\ss\ai-yt.png">
+<img src="Docs\ss\ai-yt.png">
 
 #### PDF
-<img src="btk-hackathon-24\Docs\ss\ai-pdf.png">
+<img src="Docs\ss\ai-pdf.png">
 
 #### Audio
-<img src="btk-hackathon-24\Docs\ss\ai-audio.png">
+<img src="Docs\ss\ai-audio.png">
 
 #### Image
-<img src="btk-hackathon-24\Docs\ss\ai-image.png">
+<img src="Docs\ss\ai-image.png">
 
 </samp>
 </details>
@@ -241,7 +270,7 @@ Share your notes in public to join the note network. Create tags to reach more p
 
 ## Support
 
-For support, email to [eray.ates@outlook.com](mailto:eray.ates@outlook.com),[orhun868@gmail.com](mailto:orhun868@gmail.com) or  [utkuk508@gmail.com](mailto:utkuk508@gmail.com).
+For support, email to [eray.ates@outlook.com](mailto:eray.ates@outlook.com) or [orhun868@gmail.com](mailto:orhun868@gmail.com).
 
 
 ## Contributing
