@@ -28,7 +28,7 @@ def remove_non_english_chars(text):
     # This pattern matches any character that is not a basic Latin character (ASCII)
     return re.sub(r'[^\x00-\x7F]+', '', text)
 
-def thumbnail_list(total = 120):
+def thumbnail_list(total = 500):
     urls = []
     for index in range(total):
         percent = (index / total)
@@ -216,6 +216,9 @@ notes = create_test_dataset() + create_article_dataset()
 notes = generate_realistic_notes(notes, users, tags)
 
 print(len(notes))
+
+with open("Functions/Data/new_dummy_notes.json", 'w') as json_file:
+    json.dump(notes, json_file, indent=4)
 
 # Connect to MongoDB
 collection = KEY.NOTES
