@@ -23,7 +23,7 @@ export interface SearchActionParams {
 }
 
 export type NoteWithRelations = Prisma.NoteGetPayload<{
-  include: { user: true; tags: true };
+  include: { user: true; tags: { select: { id: true; name: true; slug: true } } };
 }>;
 
 export interface NotesResponse {

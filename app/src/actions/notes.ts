@@ -77,18 +77,38 @@ export async function setNoteVisibility(noteId: string, is_public: boolean) {
 
 export async function fetchNoteWithSharelink(shareLink: string) {
   try {
+    // First get the note with user
     const note = await prisma.note.findFirst({
       where: {
         shareLink,
       },
       include: {
         user: true,
-        tags: true,
       },
     });
 
-    return note;
-  } catch {
+    if (!note) {
+      return false;
+    }
+
+    // Then fetch the tags for the note
+    const tags = await prisma.tag.findMany({
+      where: {
+        id: {
+          in: note.tagIds || []
+        }
+      }
+    });
+
+    // Combine note with tags
+    const noteWithTags = {
+      ...note,
+      tags
+    };
+
+    return noteWithTags;
+  } catch (error) {
+    console.error('Error fetching note:', error);
     return false;
   }
 }
@@ -129,7 +149,7 @@ export async function deleteNote(noteId: string) {
 
 export async function updateNote(
   noteId: string,
-  data: Partial<Prisma.NoteUpdateInput>
+  data: Partial<Prisma.NoteUncheckedUpdateInput>
 ) {
   try {
     await prisma.note.update({
@@ -155,16 +175,10 @@ export async function searchNotes({
   limit = 10,
 }: SearchActionParams): Promise<SearchNotesResult> {
   const conditions: Prisma.NoteWhereInput[] = [];
-
-  console.log(tags);
-
   // Search by query
   if (query) {
     conditions.push({
-      OR: [
-        { title: { contains: query, mode: "insensitive" } },
-        { description: { contains: query, mode: "insensitive" } },
-      ],
+      OR: [{ title: { contains: query, mode: "insensitive" } }],
     });
   }
 
@@ -208,7 +222,7 @@ export async function searchNotes({
       : { isPublic: true };
 
   try {
-    // Fetch notes with pagination
+    // First get the notes
     const notes = await prisma.note.findMany({
       where,
       take: limit,
@@ -216,14 +230,28 @@ export async function searchNotes({
       orderBy: { createdAt: "desc" },
       include: {
         user: true,
-        tags: true,
       },
     });
 
-    // Get total count of notes matching conditions
-    const totalNotes = await prisma.note.count({ where });
+    // Then fetch tags for each note
+    const notesWithTags = await Promise.all(
+      notes.map(async (note) => {
+        const tags = await prisma.tag.findMany({
+          where: {
+            id: {
+              in: note.tagIds || []  // Use the tagIds array to fetch related tags
+            }
+          }
+        });
+        return {
+          ...note,
+          tags
+        };
+      })
+    );
 
-    return { notes, totalNotes };
+    const totalNotes = await prisma.note.count({ where });
+    return { notes: notesWithTags, totalNotes };
   } catch (error) {
     console.error("Error fetching notes:", error);
     throw new Error("An error occurred while fetching notes.");

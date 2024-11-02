@@ -8,9 +8,10 @@ import { Prisma } from "@prisma/client";
 import NoteSearch from "./note-search";
 import NotePagination from "./note-pagination";
 import { useSearchParams } from "next/navigation";
+import { NoteWithRelations } from "@/types/note";
 
 interface NotesContainerProps {
-  notes: Prisma.NoteGetPayload<{ include: { user: true; tags: true } }>[];
+  notes: NoteWithRelations[];
   totalNotes: number;
 }
 

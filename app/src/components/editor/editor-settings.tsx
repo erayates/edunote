@@ -127,13 +127,11 @@ const EditorSettings: React.FC<EditorSettingsProps> = ({ note }) => {
   // Handle func. to save tags
   const handleSaveTagsToNote = async () => {
     const tags = selectedTags;
-
+    
     const isUpdated = await updateNote(note.id, {
-      tags: {
-        set: tags.map((tag) => ({
-          id: tag.id,
-        })),
-      },
+      tagIds: {
+        set: tags.map(tag => tag.id)
+      }
     });
 
     if (isUpdated) {
