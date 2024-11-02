@@ -283,12 +283,10 @@ const EditorSettings: React.FC<EditorSettingsProps> = ({ note }) => {
             <p className="text-xs text-white/30 mb-2 w-full">
               {`Match your notes with tags in the app or add new tags`}
             </p>
-            <div className="flex items-center justify-between w-full">
-              <ComboBox
-                selectedTags={selectedTags}
-                setSelectedTags={setSelectedTags}
-              />
-            </div>
+            <ComboBox
+              selectedTags={selectedTags}
+              setSelectedTags={setSelectedTags}
+            />
             <Button
               className="mt-2 text-foreground bg-white w-fit hover:bg-white/70"
               size="sm"

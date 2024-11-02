@@ -113,7 +113,10 @@ export default function ComboBox({
   }, 300);
 
   const handleSelect = (currentValue: string) => {
-    const tag = displayedTags.find((t) => t.value === currentValue);
+    const tag = (isSearching ? searchResults : displayedTags).find(
+      (t) => t.value === currentValue
+    );
+    
     if (tag) {
       setSelectedTags((prev) => {
         const exists = prev.some((t) => t.value === tag.value);
@@ -159,6 +162,14 @@ export default function ComboBox({
 
   const removeTag = (tagToRemove: string) => {
     setSelectedTags((prev) => prev.filter((tag) => tag.value !== tagToRemove));
+  };
+
+  const getUniqueTags = (tags: Tag[]) => {
+    const uniqueMap = new Map<string, Tag>();
+    tags.forEach(tag => {
+      uniqueMap.set(tag.id, tag);
+    });
+    return Array.from(uniqueMap.values());
   };
 
   return (
@@ -223,7 +234,7 @@ export default function ComboBox({
                 type="always"
               >
                 <div className="p-1">
-                  {(isSearching ? searchResults : displayedTags).map((tag) => (
+                  {getUniqueTags(isSearching ? searchResults : displayedTags).map((tag) => (
                     <CommandItem
                       key={tag.id}
                       value={tag.value}
