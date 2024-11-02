@@ -241,7 +241,7 @@ Share your notes in public to join the note network. Create tags to reach more p
 
 ## Support
 
-For support, email to [eray.ates@outlook.com](mailto:eray.ates@outlook.com) or [orhun868@gmail.com](mailto:orhun868@gmail.com).
+For support, email to [eray.ates@outlook.com](mailto:eray.ates@outlook.com),[orhun868@gmail.com](mailto:orhun868@gmail.com) or  [utkuk508@gmail.com](mailto:utkuk508@gmail.com).
 
 
 ## Contributing
