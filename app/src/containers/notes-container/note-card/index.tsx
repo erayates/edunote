@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import { toggleNoteFavorite } from "@/actions/user-notes";
 import { useUser } from "@clerk/nextjs";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 interface NoteCardProps {
   description: string;
@@ -40,6 +41,9 @@ const NoteCard: React.FC<NoteCardProps> = ({
   noteUserId,
 }) => {
   const { user } = useUser();
+
+  const { refresh } = useRouter();
+
   const [isFavoritedState, setIsFavoritedState] =
     useState<boolean>(isFavorited);
   const [isUpdating, setIsUpdating] = useState(false);
@@ -66,6 +70,8 @@ const NoteCard: React.FC<NoteCardProps> = ({
             ? "Note added to favorites"
             : "Note removed from favorites"
         );
+
+        refresh();
       } else {
         setIsFavoritedState(isFavoritedState);
         toast.error(result.error || "Failed to update favorite status");
