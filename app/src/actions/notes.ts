@@ -274,3 +274,24 @@ export async function getAllUserNotes(userId: string) {
     return false;
   }
 }
+
+export async function getFavoritedNotes(userId: string) {
+  try {
+    const favoritedNotes = await prisma.note.findMany({
+      where: {
+        favoritedBy: {
+          some: {
+            id: userId,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    return favoritedNotes;
+  } catch {
+    return false;
+  }
+}
