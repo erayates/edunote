@@ -28,7 +28,7 @@ def remove_non_english_chars(text):
     # This pattern matches any character that is not a basic Latin character (ASCII)
     return re.sub(r'[^\x00-\x7F]+', '', text)
 
-def thumbnail_list(total = 500):
+def thumbnail_list(total = 1000):
     urls = []
     for index in range(total):
         percent = (index / total)
@@ -41,6 +41,8 @@ def thumbnail_list(total = 500):
         response = requests.get("https://picsum.photos/1080/1080")
         urls.append(response.url)
     print()
+    with open('Functions/Data/thumbnail_list.json', 'w') as file:
+        json.dump(urls, file)
     return urls
 
 def load_note():
@@ -160,7 +162,13 @@ def content_convert(content: list):
 def generate_realistic_notes(notes: list[dict], users: list[str], tags: list[str]):
     collected_note = []
     total = len(notes)
-    thumbnails = thumbnail_list()
+    try:
+        with open('Functions/Data/thumbnail_list.json', 'r') as file:
+            thumbnails = json.load(file)
+    except: 
+        try: 
+            thumbnails = thumbnail_list()
+        except: return None
     for index, note in enumerate(notes):
         percent = (index / total)
         filled_length = int(40 * percent)
@@ -217,8 +225,8 @@ notes = generate_realistic_notes(notes, users, tags)
 
 print(len(notes))
 
-with open("Functions/Data/new_dummy_notes.json", 'w') as json_file:
-    json.dump(notes, json_file, indent=4)
+# with open("Functions/Data/new_dummy_notes.json", 'w') as json_file:
+#     json.dump(notes, json_file, indent=4)
 
 # Connect to MongoDB
 collection = KEY.NOTES
