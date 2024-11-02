@@ -3,20 +3,23 @@
 import { Note, Tag as TagType, User } from "@prisma/client";
 import EditorSettings from "./editor-settings";
 import React, { ChangeEvent } from "react";
-
 import { Input } from "../ui/input";
 import { useDebouncedCallback } from "use-debounce";
 import { toast } from "sonner";
 import { updateNote } from "@/actions/notes";
 import slug from "slug";
 import { useRouter } from "next/navigation";
-
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { formatDistance } from "date-fns";
 import Tag from "../ui/tag";
 import Link from "next/link";
 import { APP_BASE_URL } from "@/lib/constants";
 import { Eye } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Heart } from "lucide-react";
+import { toggleNoteFavorite } from "@/actions/user-notes";
+import { useUser } from "@clerk/nextjs";
+import { useState, useEffect } from "react";
 
 interface EditorHeaderProps {
   note: Note & {
@@ -27,8 +30,53 @@ interface EditorHeaderProps {
 }
 
 const EditorHeader: React.FC<EditorHeaderProps> = ({ note, settingsOff }) => {
-  const { replace, refresh } = useRouter();
+  const { user } = useUser();
 
+  const { refresh, replace } = useRouter();
+
+  const [isFavoritedState, setIsFavoritedState] = useState<boolean>();
+  const [isUpdating, setIsUpdating] = useState(false);
+
+  useEffect(() => {
+    const _isFavorited = note.favoritedByIds.some((userId) => userId === user?.id)
+    setIsFavoritedState(_isFavorited)
+  }, [isFavoritedState]);
+
+  
+
+  const toggleFavorite = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (isUpdating) return;
+
+    setIsUpdating(true);
+    setIsFavoritedState(!isFavoritedState);
+
+    try {
+      const result = await toggleNoteFavorite(user?.id as string, note.id);
+
+      if (result.success) {
+        toast.success(
+          result.isFavorited
+            ? "Note added to favorites"
+            : "Note removed from favorites"
+        );
+
+        setIsFavoritedState(result.isFavorited ? true: false)
+        refresh();
+      } else {
+        setIsFavoritedState(isFavoritedState);
+        toast.error(result.error || "Failed to update favorite status");
+      }
+    } catch {
+      setIsFavoritedState(isFavoritedState);
+      toast.error("Failed to update favorite status");
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+  
   const debouncedUpdates = useDebouncedCallback(
     async (e: ChangeEvent<HTMLInputElement>) => {
       const isTitle = e.target.name === "title";
@@ -96,6 +144,35 @@ const EditorHeader: React.FC<EditorHeaderProps> = ({ note, settingsOff }) => {
               </p>
             </div>
             <div className="text-right flex space-x-6">
+              {isFavoritedState ? (
+                <Button
+                  variant="ghost"
+                  className="absolute right-2 bottom-2 p-2"
+                  onClick={toggleFavorite}
+                  disabled={isUpdating}
+                >
+                  <Heart
+                    className={`w-6 h-6 transition-all duration-200 stroke-red-700 fill-red-700 ${
+                      isUpdating ? "opacity-50" : ""
+                    }`}
+                  />
+                </Button>
+              ) : (
+                note.userId !== user?.id && (
+                  <Button
+                    variant="ghost"
+                    className="absolute right-2 bottom-2 p-2"
+                    onClick={toggleFavorite}
+                    disabled={isUpdating}
+                  >
+                    <Heart
+                      className={`w-6 h-6 text-white/70 transition-all duration-200 ${
+                        isUpdating ? "opacity-50" : ""
+                      }`}
+                    />
+                  </Button>
+                )
+              )}
               <div>
                 <p className="text-md text-white">Published</p>
                 <p className="text-sm text-muted-foreground/60">
