@@ -265,7 +265,7 @@ export async function getAllUserNotes(userId: string) {
         userId,
       },
       orderBy: {
-        createdAt: "desc",
+        updatedAt: "desc",
       },
     });
 

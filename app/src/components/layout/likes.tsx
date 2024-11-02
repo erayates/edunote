@@ -55,7 +55,7 @@ export function Likes({ notes }: { notes: Note[] }) {
         <SheetHeader>
           <SheetTitle className="text-white">Notes</SheetTitle>
           <SheetDescription>
-            Access your own notes here. Click on the relevant note to go to it.
+            Access your favorited notes here. Click on the relevant note to go to it.
           </SheetDescription>
         </SheetHeader>
 

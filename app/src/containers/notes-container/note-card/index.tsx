@@ -143,8 +143,7 @@ const NoteCard: React.FC<NoteCardProps> = ({
 
         {isFavoritedState ? (
           <Button
-            variant="ghost"
-            className="absolute right-2 bottom-2 p-2"
+            className="bg-foreground hover:bg-foreground absolute right-2 bottom-2 p-2"
             onClick={toggleFavorite}
             disabled={isUpdating}
           >
@@ -157,8 +156,7 @@ const NoteCard: React.FC<NoteCardProps> = ({
         ) : (
           noteUserId !== user?.id && (
             <Button
-              variant="ghost"
-              className="absolute right-2 bottom-2 p-2"
+              className="bg-foreground hover:bg-foreground absolute right-2 bottom-2 p-2"
               onClick={toggleFavorite}
               disabled={isUpdating}
             >

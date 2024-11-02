@@ -23,7 +23,7 @@ export function DeleteNote() {
           </DialogDescription>
         </DialogHeader>
 
-        <DialogFooter className="sm:justify-start">
+        <DialogFooter className="sm:justify-start py-4 px-6">
           <DialogClose asChild>
             <Button type="button" variant="outline">
               No, cancel.

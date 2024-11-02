@@ -120,37 +120,48 @@ const EditorHeader: React.FC<EditorHeaderProps> = ({ note, settingsOff }) => {
       )}
 
       {settingsOff && (
-        <div className="flex flex-col items-end">
+        <div className="flex flex-col items-center">
           <div className="z-50 space-x-2 relative flex flex-wrap">
             {note.tags.map((tag) => (
               <Tag key={tag.id} tag={tag.name} />
             ))}
           </div>
-          <div className="flex w-full justify-between mt-6 z-30 relative">
-            <div className="flex w-fit mb-4 space-x-2 items-center p-2 bg-foreground border-2 border-primary rounded-lg">
+          <div className="flex w-full justify-between items-center mb-2 mt-8 z-30 relative">
+            <div className="flex w-fit space-x-2 items-center bg-transparent">
               <Avatar className="border-2 border-gray-700 ">
                 <AvatarImage src={note.user.avatar as string} />
                 <AvatarFallback className="w-full grid place-items-center bg-background text-white/30 text-md">
                   U
                 </AvatarFallback>
               </Avatar>
-              <p className="text-sm text-muted-foreground flex flex-col ">
+              <p className="text-sm text-muted-foreground">
                 {note.user.fullname}
-                <span className="text-xs text-muted-foreground/60">
+                {/* <span className="text-xs text-muted-foreground/60">
                   @{note.user.username}
-                </span>
+                </span> */}
               </p>
             </div>
-            <div className="text-right flex space-x-6">
+            <div className="flex w-fit h-fit gap-4">
+              <div className="flex w-fit h-fit items-end gap-2">
+                <p className="text-md text-white/90 h-fit">Published</p>
+                <p className="text-sm text-muted-foreground/60 h-fit m-[1px]">
+                  {formatDistance(new Date(note.createdAt), new Date())}
+                </p>
+              </div>
+              <div className="flex w-fit h-fit items-end gap-2">
+                <p className="text-md text-white/90 h-fit">Updated</p>
+                <p className="text-sm text-muted-foreground/60 h-fit m-[1px]">
+                  {formatDistance(new Date(note.updatedAt), new Date())}
+                </p>
+              </div>
               {isFavorited ? (
                 <Button
-                  variant="ghost"
-                  className="absolute right-2 bottom-2 p-2"
+                  className="mt-[2px] p-0 w-fit h-fit shadow-none hover:bg-transparent bg-transparent"
                   onClick={toggleFavorite}
                   disabled={isUpdating}
                 >
                   <Heart
-                    className={`w-6 h-6 transition-all duration-200 stroke-red-700 fill-red-700 ${
+                    className={`w-24 h-24 transition-all duration-200 stroke-red-700 fill-red-700 ${
                       isUpdating ? "opacity-50" : ""
                     }`}
                   />
@@ -158,31 +169,18 @@ const EditorHeader: React.FC<EditorHeaderProps> = ({ note, settingsOff }) => {
               ) : (
                 note.userId !== user?.id && (
                   <Button
-                    variant="ghost"
-                    className="absolute right-2 bottom-2 p-2"
+                    className="mt-[2px] p-0 w-fit h-fit shadow-none hover:bg-transparent bg-transparent active:fill-red-900"
                     onClick={toggleFavorite}
                     disabled={isUpdating}
                   >
                     <Heart
-                      className={`w-6 h-6 text-white/70 transition-all duration-200 ${
+                      className={`w-24 h-24 text-white/70 transition-all duration-200 ${
                         isUpdating ? "opacity-50" : ""
                       }`}
                     />
                   </Button>
                 )
               )}
-              <div>
-                <p className="text-md text-white">Published</p>
-                <p className="text-sm text-muted-foreground/60">
-                  {formatDistance(new Date(note.createdAt), new Date())}
-                </p>
-              </div>
-              <div>
-                <p className="text-md text-white">Updated</p>
-                <p className="text-sm text-muted-foreground/60">
-                  {formatDistance(new Date(note.updatedAt), new Date())}
-                </p>
-              </div>
             </div>
           </div>
         </div>
@@ -190,7 +188,7 @@ const EditorHeader: React.FC<EditorHeaderProps> = ({ note, settingsOff }) => {
 
       <div className="w-full space-y-4">
         <Input
-          className="w-full text-4xl font-semibold text-white placeholder:text-primary border-t-0 border-l-0 border-r-0 border-b-2 pb-4 h-auto rounded-none border-primary rounded-b-2xl shadow-none focus-visible:ring-0"
+          className="pl-0 w-full text-4xl font-semibold text-white placeholder:text-primary border-t-0 border-l-0 border-r-0 border-b-1 pb-4 h-auto rounded-none border-primary shadow-none focus-visible:ring-0"
           placeholder="Enter a title"
           name="title"
           readOnly={settingsOff}
@@ -199,7 +197,7 @@ const EditorHeader: React.FC<EditorHeaderProps> = ({ note, settingsOff }) => {
         />
 
         <Input
-          className="w-full text-xl font-medium text-white placeholder:text-primary border-t-0 border-l-0 border-r-0 border-b-2 pb-4 h-auto rounded-none border-primary rounded-b-xl shadow-none focus-visible:ring-0"
+          className="pl-0 w-full text-xl font-medium text-white placeholder:text-primary border-t-0 border-l-0 border-r-0 border-b-1 pb-4 h-auto rounded-none border-primary shadow-none focus-visible:ring-0"
           placeholder="Enter a description"
           name="description"
           readOnly={settingsOff}

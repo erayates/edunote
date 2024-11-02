@@ -20,7 +20,7 @@ const buttonVariants = cva(
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
         pagination_ghost: "mb-6 mt-1 p-6 hover:underline text-white/80 hover:text-white/90",
-        pagination_active: "mb-6 mt-1 p-6 text-white/40"
+        pagination_active: "mb-6 mt-1 p-6 text-white/40",
       },
       size: {
         default: "h-9 px-4 py-2",
