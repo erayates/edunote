@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { Button } from "../../ui/button";
 import { Note, User, Tag } from "@prisma/client";
+import { getRandomImageSet } from "@/lib/helpers";
 
 import {
   Dialog,
@@ -14,7 +15,7 @@ import SpecializedYoutubeIntegration from "./youtube";
 import SpecializedPdfIntegration from "./pdf";
 import SpecializedImageFile from "./image";
 import SpecializedAudioIntegration from "./audio";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface SpecializedAIProps {
   note: Note & {
@@ -25,19 +26,24 @@ interface SpecializedAIProps {
 }
 
 const SpecializedAI: React.FC<SpecializedAIProps> = ({ note }) => {
+  const [imageSet, setImageSet] = useState({ background: '', eye: '' });
   const specializedAIRef = useRef<HTMLImageElement>(null);
   useEffect(() => {
+    const selectedImageSet = getRandomImageSet();
+    setImageSet(selectedImageSet);
+
     const cursorEyeMove = (e: MouseEvent) => {
       if (specializedAIRef && specializedAIRef.current) {
-        let x =
-          specializedAIRef.current.getBoundingClientRect().left +
-          specializedAIRef.current.clientWidth / 2;
-        let y =
-          specializedAIRef.current.getBoundingClientRect().top +
-          specializedAIRef.current.clientHeight / 2;
-        let radian = Math.atan2(e.pageX - x, e.pageY - y);
-        let rotate = radian * (180 / Math.PI) * - 1 + 270;
-        specializedAIRef.current.style.transform = `rotate(${rotate}deg)`; 
+        const rect = specializedAIRef.current.getBoundingClientRect();
+        const x = rect.left + rect.width / 2;
+        const y = rect.top + rect.height / 2;
+
+        const distanceX = (e.pageX - x) / 320;
+        const distanceY = (e.pageY - y) / 320;
+        const yOffset = -4;
+        const adjustedDistanceY = distanceY + yOffset;
+
+        specializedAIRef.current.style.transform = `translate(${distanceX}px, ${adjustedDistanceY}px)`;
       }
     };
 
@@ -69,15 +75,22 @@ const SpecializedAI: React.FC<SpecializedAIProps> = ({ note }) => {
                 </textPath>
               </text>
             </svg>
-            <Button className="bg-[url('/assets/images/mordor-bg.webp')] bg-cover bg-center relative z-10 rounded-full w-16 h-16 border-4 border-stone-900 shadow-inner">
-              <Image
-                src="/assets/images/eye-of-sauron.png"
-                alt="Generative AI"
+            <Button
+              className={`relative z-10 rounded-full w-16 h-16 border-4 border-stone-900 shadow-inner bg-cover bg-center`}
+              style={{ backgroundImage: `url(${imageSet.background})` }} // Set the background image dynamically
+            >
+              <div
                 ref={specializedAIRef}
-                width={36}
-                height={36}
-                className="absolute"
-              />
+                className="absolute inset-0 flex justify-center items-center"
+              >
+                <Image
+                  src={imageSet.eye}  // Set the eye image dynamically
+                  alt="Generative AI"
+                  width={40}
+                  height={40}
+                  className={imageSet.eye === "/assets/images/button-ai.png" ? "hover:animate-spin-slow" : ""}
+                />
+              </div>
             </Button>
           </div>
         </DialogTrigger>
