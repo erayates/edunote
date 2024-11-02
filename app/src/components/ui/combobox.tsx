@@ -139,7 +139,7 @@ export default function ComboBox({
         return;
       }
 
-      const normalizedValue = inputValue.trim().toLowerCase();
+      const normalizedValue = inputValue.trim();
       if (selectedTags.some((tag) => tag.value === normalizedValue)) {
         toast.error("This tag is already selected.");
         return;

@@ -169,7 +169,7 @@ const EdunoteEditor: React.FC<EdunoteEditorProps> = ({ note, settingsOff }) => {
               debouncedUpdates(editor);
               setSaveStatus("Unsaved");
             }}
-            slotAfter={<ImageResizer />}
+            slotAfter={!settingsOff && <ImageResizer />}
           >
             <EditorCommand className="z-50 h-auto max-h-[330px] bg-foreground overflow-y-auto rounded-md border border-muted px-1 py-2 shadow-md transition-all">
               <EditorCommandEmpty className="px-2 text-muted-foreground">

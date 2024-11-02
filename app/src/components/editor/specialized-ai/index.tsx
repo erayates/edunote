@@ -14,6 +14,7 @@ import SpecializedYoutubeIntegration from "./youtube";
 import SpecializedPdfIntegration from "./pdf";
 import SpecializedImageFile from "./image";
 import SpecializedAudioIntegration from "./audio";
+import { useEffect, useRef } from "react";
 
 interface SpecializedAIProps {
   note: Note & {
@@ -24,6 +25,26 @@ interface SpecializedAIProps {
 }
 
 const SpecializedAI: React.FC<SpecializedAIProps> = ({ note }) => {
+  const specializedAIRef = useRef<HTMLImageElement>(null);
+  useEffect(() => {
+    const cursorEyeMove = (e: MouseEvent) => {
+      if (specializedAIRef && specializedAIRef.current) {
+        let x =
+          specializedAIRef.current.getBoundingClientRect().left +
+          specializedAIRef.current.clientWidth / 2;
+        let y =
+          specializedAIRef.current.getBoundingClientRect().top +
+          specializedAIRef.current.clientHeight / 2;
+        let radian = Math.atan2(e.pageX - x, e.pageY - y);
+        let rotate = radian * (180 / Math.PI) * - 1 + 270;
+        specializedAIRef.current.style.transform = `rotate(${rotate}deg)`; 
+      }
+    };
+
+    document.addEventListener("mousemove", cursorEyeMove);
+    return () => document.removeEventListener("mousemove", cursorEyeMove);
+  }, []);
+
   return (
     <div className="fixed bottom-0 ml-8 mb-8 z-50">
       <Dialog>
@@ -39,20 +60,23 @@ const SpecializedAI: React.FC<SpecializedAIProps> = ({ note }) => {
                   d="M 50, 50 m -37, 0 a 37,37 0 1,1 74,0 a 37,37 0 1,1 -74,0"
                 />
               </defs>
-              <text fill="white" fontSize="6">
+              <text fill="white" fontSize="6" fontStyle="italic">
                 <textPath href="#circle" className="font-bold">
                   {/* SPECIALIZED AI MOD • CLICK ON IT! • SPECIALIZED AI MOD • CLICK
-                  ON IT! • Ufak bir şaka üzülme*/}One Ring to rule them all, One Ring to find them, One Ring to bring them all and in the darkness bind them...
+                  ON IT! • Ufak bir şaka üzülme*/}
+                  One Ring to rule them all, One Ring to find them, One Ring to
+                  bring them all and in the darkness bind them...
                 </textPath>
               </text>
             </svg>
-            <Button className="bg-[url('/assets/images/bg-button-ai.png')] bg-cover bg-center relative z-10 rounded-full w-16 h-16 border-2 border-sky-200">
+            <Button className="bg-[url('/assets/images/mordor-bg.webp')] bg-cover bg-center relative z-10 rounded-full w-16 h-16 border-4 border-stone-900 shadow-inner">
               <Image
-                src="/assets/images/button-ai.png"
+                src="/assets/images/eye-of-sauron.png"
                 alt="Generative AI"
-                width={48}
-                height={48}
-                className="absolute inset-0 m-auto transition-transform duration-3000 ease-in-out hover:rotate-[2400deg] transform-gpu"
+                ref={specializedAIRef}
+                width={36}
+                height={36}
+                className="absolute"
               />
             </Button>
           </div>

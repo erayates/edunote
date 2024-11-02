@@ -142,21 +142,21 @@ const EditorHeader: React.FC<EditorHeaderProps> = ({ note, settingsOff }) => {
               </p>
             </div>
             <div className="flex w-fit h-fit gap-4">
-              <div className="flex w-fit h-fit items-end gap-2">
+              <div className="flex flex-col w-fit h-fit items-end">
                 <p className="text-md text-white/90 h-fit">Published</p>
-                <p className="text-sm text-muted-foreground/60 h-fit m-[1px]">
+                <p className="text-sm text-muted-foreground/60 h-fit">
                   {formatDistance(new Date(note.createdAt), new Date())}
                 </p>
               </div>
-              <div className="flex w-fit h-fit items-end gap-2">
+              <div className="flex flex-col w-fit h-fit items-end">
                 <p className="text-md text-white/90 h-fit">Updated</p>
-                <p className="text-sm text-muted-foreground/60 h-fit m-[1px]">
+                <p className="text-sm text-muted-foreground/60 h-fit">
                   {formatDistance(new Date(note.updatedAt), new Date())}
                 </p>
               </div>
               {isFavorited ? (
                 <Button
-                  className="mt-[2px] p-0 w-fit h-fit shadow-none hover:bg-transparent bg-transparent"
+                  className="mt-[2px] p-0 w-fit grid place-items-center shadow-none hover:bg-transparent bg-transparent"
                   onClick={toggleFavorite}
                   disabled={isUpdating}
                 >
@@ -169,7 +169,7 @@ const EditorHeader: React.FC<EditorHeaderProps> = ({ note, settingsOff }) => {
               ) : (
                 note.userId !== user?.id && (
                   <Button
-                    className="mt-[2px] p-0 w-fit h-fit shadow-none hover:bg-transparent bg-transparent active:fill-red-900"
+                    className="mt-[2px] p-0 w-fit grid place-items-center shadow-none hover:bg-transparent bg-transparent active:fill-red-900"
                     onClick={toggleFavorite}
                     disabled={isUpdating}
                   >
