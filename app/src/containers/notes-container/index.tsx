@@ -4,7 +4,6 @@ import { BookKey } from "lucide-react";
 import React, { useState } from "react";
 import NoteCard from "./note-card";
 import NoteFilter from "./note-filter";
-import { Prisma } from "@prisma/client";
 import NoteSearch from "./note-search";
 import NotePagination from "./note-pagination";
 import { useSearchParams } from "next/navigation";
