@@ -26,13 +26,37 @@ Share your notes in public to join the note network. Create tags to reach more p
 
 *Available soon...*
 
-<!-- 
+
 ## Features
 
-- **Note-taking from multiple sources:** Use your `texts`, `PDFs`, `audio recordings` and `images` with Gemini to create enchanced notes.
-- **AI-powered note creation:** Change your notes in place. Choose a part, a word or else to chat with Gemini. Use default prompts for faster enhancements. 
-- **Collaboration with Tags:** Share your notes in public and create tags to reach others.
-- **Smart search:** Search and chat public notes or your notes. Talk with Gemini to search even if you do not know what to search! -->
+<details>
+<summary> <b> <samp>Edunote Landin Page</samp></b></summary>
+<samp>
+
+<img src="Docs/ss/full.png">
+
+#### More Notes
+<img src="Docs/ss/morestab.png">
+<img src="Docs/ss/likestab.png">
+
+</samp>
+</details>
+
+<details>
+<summary> <b> <samp>AI Powered Notes</samp></b></summary>
+<samp>
+
+#### Use AI in Your Notes
+<img src="Docs/ss/noteoptions.png">
+<img src="Docs/ss/noteoptionsinside.png">
+<img src="Docs/ss/noteoptionsexample.png">
+<img src="Docs/ss/notevideoexample.png">
+
+#### Note Settings
+<img src="Docs/ss/notesettings.png">
+
+</samp>
+</details>
 
 ## Planned Features
 
@@ -42,11 +66,6 @@ Share your notes in public to join the note network. Create tags to reach more p
 - **Integrations:** Integration with other applications (Google Drive, Evernote, Zoom, etc.).
 - **Light/Dark Theme**
 - **Mindmap Styled Note Network**
-
-## Screenshots
-
-![App Screenshot](Docs/readme_ss_1.png)
-
 
 ## API Reference
 
