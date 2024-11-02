@@ -121,7 +121,7 @@ export async function getAllNotes(take: number): Promise<SearchNotesResult> {
     },
     take: take || 10,
     orderBy: {
-      createdAt: "desc",
+      updatedAt: "desc",
     },
     where: {
       isPublic: true,

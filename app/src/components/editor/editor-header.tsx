@@ -128,7 +128,8 @@ const EditorHeader: React.FC<EditorHeaderProps> = ({ note, settingsOff }) => {
           </div>
           <div className="flex w-full justify-between items-center mb-2 mt-8 z-30 relative">
             <div className="flex w-fit space-x-2 items-center bg-transparent">
-              <Avatar className="border-2 border-gray-700 ">
+              <Avatar className="mb-[1px]">
+              {/* border-2 border-gray-700 */}
                 <AvatarImage src={note.user.avatar as string} />
                 <AvatarFallback className="w-full grid place-items-center bg-background text-white/30 text-md">
                   U
@@ -156,7 +157,7 @@ const EditorHeader: React.FC<EditorHeaderProps> = ({ note, settingsOff }) => {
               </div>
               {isFavorited ? (
                 <Button
-                  className="mt-[2px] p-0 w-fit h-fit shadow-none hover:bg-transparent bg-transparent"
+                  className="mt-[4px] p-0 w-fit h-fit shadow-none hover:bg-transparent bg-transparent"
                   onClick={toggleFavorite}
                   disabled={isUpdating}
                 >
@@ -169,7 +170,7 @@ const EditorHeader: React.FC<EditorHeaderProps> = ({ note, settingsOff }) => {
               ) : (
                 note.userId !== user?.id && (
                   <Button
-                    className="mt-[2px] p-0 w-fit h-fit shadow-none hover:bg-transparent bg-transparent active:fill-red-900"
+                    className="mt-[4px] p-0 w-fit h-fit shadow-none hover:bg-transparent bg-transparent active:fill-red-900"
                     onClick={toggleFavorite}
                     disabled={isUpdating}
                   >
@@ -186,7 +187,7 @@ const EditorHeader: React.FC<EditorHeaderProps> = ({ note, settingsOff }) => {
         </div>
       )}
 
-      <div className="w-full space-y-4">
+      <div className="z-12 w-full space-y-4">
         <Input
           className="pl-0 w-full text-4xl font-semibold text-white placeholder:text-primary border-t-0 border-l-0 border-r-0 border-b-1 pb-4 h-auto rounded-none border-primary shadow-none focus-visible:ring-0"
           placeholder="Enter a title"
