@@ -39,10 +39,10 @@ const SpecializedAI: React.FC<SpecializedAIProps> = ({ note }) => {
                   d="M 50, 50 m -37, 0 a 37,37 0 1,1 74,0 a 37,37 0 1,1 -74,0"
                 />
               </defs>
-              <text fill="white" fontSize="14">
+              <text fill="white" fontSize="10">
                 <textPath href="#circle" className="font-bold">
-                  SPECIALIZED AI MOD • CLICK ON IT! • SPECIALIZED AI MOD • CLICK
-                  ON IT! •
+                  {/* SPECIALIZED AI MOD • CLICK ON IT! • SPECIALIZED AI MOD • CLICK
+                  ON IT! • */}One Ring to rule them all, One Ring to find them, One Ring to bring them all and in the darkness bind them...
                 </textPath>
               </text>
             </svg>

@@ -96,7 +96,6 @@ const EditorHeader: React.FC<EditorHeaderProps> = ({ note, settingsOff }) => {
                 </span>
               </p>
             </div>
-            <Like></Like>
             <div className="text-right flex space-x-6">
               <div>
                 <p className="text-md text-white">Published</p>

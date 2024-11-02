@@ -12,16 +12,19 @@ import Image from "next/image";
 import Link from "next/link";
 import { Button } from "../ui/button";
 import { NewNote } from "../ui/new-note";
+import { Likes } from "./likes";
 import { MoreNote } from "./more-note";
 import { getAllUserNotes } from "@/actions/notes";
 import { currentUser } from "@clerk/nextjs/server";
 import { Note } from "@prisma/client";
 import { LogoutButton } from "../logout-button";
 import { Tooltip, TooltipTrigger, TooltipContent } from "../ui/tooltip";
+import { getFavoritedNotes } from "../../../src/actions/notes";
 
 const AppSidebar: React.FC = async () => {
   const user = await currentUser();
   const _notes: Note[] | false = await getAllUserNotes(user?.id as string);
+  const _favorited_notes: Note[] | false = await getFavoritedNotes(user?.id as string);
 
   return (
     <aside
@@ -47,7 +50,10 @@ const AppSidebar: React.FC = async () => {
               <NotepadText size={16} className="mr-2" />
               NOTES
             </p>
-            <NewNote></NewNote>
+            <div className="flex">
+            {_favorited_notes && <Likes notes={_favorited_notes} />}
+              <NewNote></NewNote>
+            </div>
           </div>
           {_notes && _notes.length === 0 && (
             <p className="text-white/30 text-center text-sm font-semibold mb-3">
