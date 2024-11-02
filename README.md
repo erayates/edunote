@@ -52,8 +52,29 @@ Share your notes in public to join the note network. Create tags to reach more p
 <img src="Docs/ss/noteoptionsexample.png">
 <img src="Docs/ss/notevideoexample.png">
 
+
 #### Note Settings
 <img src="Docs/ss/notesettings.png">
+
+</samp>
+</details>
+
+<details>
+<samp>
+
+### Special Ai
+
+#### Youtube
+<img src="btk-hackathon-24\Docs\ss\ai-yt.png">
+
+#### PDF
+<img src="btk-hackathon-24\Docs\ss\ai-pdf.png">
+
+#### Audio
+<img src="btk-hackathon-24\Docs\ss\ai-audio.png">
+
+#### Image
+<img src="btk-hackathon-24\Docs\ss\ai-image.png">
 
 </samp>
 </details>
