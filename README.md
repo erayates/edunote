@@ -55,7 +55,8 @@ Share your notes in public to join the note network. Create tags to reach more p
   <summary style="font-weight: bold; cursor: pointer; margin-bottom: 5px; padding: 5px 0; width: 100%; display: flex; text-align: center; align-items: center;">
     <samp style="font-size: 15px; color: #007acc; display: flex; text-align: center; width: 100%; align-items: center;">See Videos</samp>
   </summary>
-  <summary style="border: 2px dashed red; padding: 10px; margin-bottom:10px; color: red; font-weight: bold;">Warning: The videos were taken on a local run, not on a deployed product. Due to hardware insufficiency, the fps rate and the working speed of the web app may seem low. Also, the videos do not show the final version of the product. Please go to the product from the link above for a full experience.</summary>
+  <br>
+  <div style="border: 2px dashed red; padding: 10px; margin-bottom:10px; color: red; font-weight: bold;">Warning: The videos were taken on a local run, not on the deployed product. Due to hardware insufficiency, the fps rate and the working speed of the web app may seem low. Also, the videos may not show the final version of the product. Please go to the product from the link above for full experience.</div>
   <!-- <video width="720" height="391" controls>
     <source src="Docs/screen-capture.mp4" type="video/mp4">
     Error while opening video. Please see Docs/screen-capture.mp4
@@ -68,7 +69,9 @@ Share your notes in public to join the note network. Create tags to reach more p
     <source src="Docs/screen-capture (2).mp4" type="video/mp4">
     Error while opening video. Please see Docs/screen-capture (2).mp4
   </video> -->
+  See <a href="Docs/">Docs</a> to reach media.
 </details>
+
 
 <h2>Features</h2>
 
@@ -150,6 +153,7 @@ Share your notes in public to join the note network. Create tags to reach more p
 - **Integrations:** Integration with other applications (Google Drive, Evernote, Zoom, etc.).
 - **Light/Dark Theme**
 - **Mindmap Styled Note Network**
+- **Semantic/AI Search for better response**
 
 ## API Reference
 
