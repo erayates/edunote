@@ -42,10 +42,20 @@ Share your notes in public to join the note network. Create tags to reach more p
 
 ## Demo
 
+<div style="max-width: 1000px; margin: 15px 10px; padding: 30px; background-color: ##313131; border-radius: 15px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); transition: transform 0.2s;">
+  <p style="font-weight: bold; color: #cccccc; font-size: 1.5em; margin-bottom: 20px;">See <strong>btk-hackathon-24-beta.vercel.app</strong> to reach our web app.</p>
+  <a href="https://btk-hackathon-24-beta.vercel.app/" target="_blank" 
+     style="display: inline-block; margin-top: 10px; padding: 12px 20px; background-color: #007bff; color: white; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 1.1em;">
+     Visit Web App
+  </a>
+</div>
+
+
 <details>
   <summary style="font-weight: bold; cursor: pointer; margin-bottom: 5px; padding: 5px 0; width: 100%; display: flex; text-align: center; align-items: center;">
     <samp style="font-size: 15px; color: #007acc; display: flex; text-align: center; width: 100%; align-items: center;">See Videos</samp>
   </summary>
+  <summary style="border: 2px dashed red; padding: 10px; margin-bottom:10px; color: red; font-weight: bold;">Warning: The videos were taken on a local run, not on a deployed product. Due to hardware insufficiency, the fps rate and the working speed of the web app may seem low. Also, the videos do not show the final version of the product. Please go to the product from the link above for a full experience.</summary>
   <video width="720" height="391" controls>
     <source src="Docs/screen-capture.mp4" type="video/mp4">
     Error while opening video. Please see Docs/screen-capture.mp4
