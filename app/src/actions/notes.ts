@@ -95,20 +95,20 @@ export async function fetchNoteWithSharelink(shareLink: string) {
     const tags = await prisma.tag.findMany({
       where: {
         id: {
-          in: note.tagIds || []
-        }
-      }
+          in: note.tagIds || [],
+        },
+      },
     });
 
     // Combine note with tags
     const noteWithTags = {
       ...note,
-      tags
+      tags,
     };
 
     return noteWithTags;
   } catch (error) {
-    console.error('Error fetching note:', error);
+    console.error("Error fetching note:", error);
     return false;
   }
 }
@@ -227,7 +227,7 @@ export async function searchNotes({
       where,
       take: limit,
       skip: (page - 1) * limit,
-      orderBy: { createdAt: "desc" },
+      orderBy: { updatedAt: "desc" },
       include: {
         user: true,
       },
@@ -239,13 +239,13 @@ export async function searchNotes({
         const tags = await prisma.tag.findMany({
           where: {
             id: {
-              in: note.tagIds || []  // Use the tagIds array to fetch related tags
-            }
-          }
+              in: note.tagIds || [], // Use the tagIds array to fetch related tags
+            },
+          },
         });
         return {
           ...note,
-          tags
+          tags,
         };
       })
     );

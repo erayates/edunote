@@ -21,9 +21,9 @@ import { Note, User, Tag } from "@prisma/client";
 import { updateNote } from "@/actions/notes";
 import { toast } from "sonner";
 import { Label } from "@/components/ui/label";
-import { AIThinking } from "../default";
 import Markdown from "react-markdown";
 import { GEMINI_API_FILE_EXTRACT } from "@/lib/constants";
+import { AIThinking } from "../default";
 
 interface SpecializedAIProps {
   note: Note & {

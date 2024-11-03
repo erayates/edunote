@@ -293,13 +293,13 @@ const AppBottomBar: React.FC = () => {
   return (
     <div
       className={cn(
-        "fixed inset-0 top-0 left-0 ease-linear transition-all duration-500 z-20 h-fit w-screen ",
+        "fixed inset-0 top-0 right-0 ease-linear transition-all duration-500 z-20 h-fit w-screen ",
         open && "bg-black/70 backdrop-blur-sm z-50 h-full"
       )}
     >
       <div
         ref={chatRef}
-        className="fixed flex flex-col right-12 top-8 rounded-3xl space-x-4 max-w-[60%]"
+        className="absolute flex flex-col right-14 top-8 rounded-3xl space-x-4 max-w-[60%]"
       >
         <div className="flex items-center py-2 rounded-3xl bg-foreground relative pl-4 -right-6 z-10  border-2 border-primary">
           <Input
