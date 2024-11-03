@@ -104,7 +104,7 @@ const SpecializedYoutubeIntegration: React.FC<SpecializedAIProps> = ({
       </DialogTrigger>
       <DialogContent
         className={cn(
-          "flex duration-500 transition-all bg-foreground border-2 border-primary max-h-[720px]"
+          "max-w-lg flex duration-500 transition-all bg-foreground border-2 border-primary max-h-[720px]"
         )}
       >
         {completion ? (

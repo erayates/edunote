@@ -94,7 +94,7 @@ const SpecializedAI: React.FC<SpecializedAIProps> = ({ note }) => {
             </Button>
           </div>
         </DialogTrigger>
-        <DialogContent className="sm:max-w-[425px] md:max-w-[820px]  bg-foreground flex rounded-3xl p-1 border-2 border-primary">
+        <DialogContent className="max-w-lg sm:max-w-[425px] md:max-w-[820px]  bg-foreground flex rounded-3xl p-1 border-2 border-primary">
           <DialogHeader className="h-[425px] bg-aiButtonGradient w-[320px] relative flex justify-end items-end p-6 rounded-l-3xl -mt-[6px] -mb-[6px] -ml-2">
             <h3 className="text-white font-extrabold uppercase text-6xl text-left">
               Special AI Mod

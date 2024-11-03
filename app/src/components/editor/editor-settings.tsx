@@ -190,7 +190,7 @@ const EditorSettings: React.FC<EditorSettingsProps> = ({ note }) => {
       <DialogTrigger className="text-white/30 hover:text-white z-30">
         <Settings />
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="max-w-lg">
         <DialogHeader>
           <DialogTitle className="text-white">Note Settings</DialogTitle>
           <DialogDescription>Manage your note settings.</DialogDescription>

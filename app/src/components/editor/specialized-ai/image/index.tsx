@@ -123,7 +123,7 @@ const SpecializedImageFile: React.FC<SpecializedAIProps> = ({ note }) => {
       </DialogTrigger>
       <DialogContent
         className={cn(
-          "max-w-auto w-fit h-fit min-w-[480px] flex duration-500 transition-all bg-foreground p-6 border-2 border-primary",
+          "max-w-lg max-w-auto w-fit h-fit min-w-[480px] flex duration-500 transition-all bg-foreground p-6 border-2 border-primary",
           completion && !isLoading && "w-auto max-w-auto max-w-[99900px]"
         )}
       >

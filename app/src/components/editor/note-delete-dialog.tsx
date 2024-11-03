@@ -15,7 +15,7 @@ export function DeleteNote() {
     <Dialog>
       <DialogTrigger asChild>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md p-2">
         <DialogHeader>
           <DialogTitle>Are you sure want to delete?</DialogTitle>
           <DialogDescription>
