@@ -117,7 +117,7 @@ Share your notes in public to join the note network. Create tags to reach more p
 ## API Reference
 
 <details>
-<summary> <b> <samp> See API Reference </samp></b></summary>
+<summary style="font-weight: bold; cursor: pointer; margin-bottom: 5px; padding: 5px 0; width: 100%; display: flex; text-align: center; align-items: center;"> <b> <samp style="font-size: 15px; color: #007acc; display: flex; text-align: center; width: 100%; align-items: center;"> See API Reference </samp></b></summary>
 <samp>
 <br>
 
