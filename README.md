@@ -42,7 +42,23 @@ Share your notes in public to join the note network. Create tags to reach more p
 
 ## Demo
 
-*Available soon...*
+<details>
+  <summary style="font-weight: bold; cursor: pointer; margin-bottom: 5px; padding: 5px 0; width: 100%; display: flex; text-align: center; align-items: center;">
+    <samp style="font-size: 15px; color: #007acc; display: flex; text-align: center; width: 100%; align-items: center;">See Videos</samp>
+  </summary>
+  <video width="720" height="391" controls>
+    <source src="Docs/screen-capture.mp4" type="video/mp4">
+    Error while opening video. Please see Docs/screen-capture.mp4
+  </video>
+  <video width="720" height="391" controls>
+    <source src="Docs/screen-capture (1).mp4" type="video/mp4">
+    Error while opening video. Please see Docs/screen-capture (1).mp4
+  </video>
+  <video width="720" height="391" controls>
+    <source src="Docs/screen-capture (2).mp4" type="video/mp4">
+    Error while opening video. Please see Docs/screen-capture (2).mp4
+  </video>
+</details>
 
 <h2>Features</h2>
 
