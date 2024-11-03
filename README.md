@@ -26,87 +26,124 @@ Share your notes in public to join the note network. Create tags to reach more p
 
 *Available soon...*
 
+<style>
 
-## Features
+  h4 {
+        font-size: 17px;
+        text-align: center;
+  }
+
+    summary {
+        font-weight: bold;
+        cursor: pointer;
+        margin-bottom: 5px;
+        padding: 5px 0;
+        width: 100%;
+        display: flex;
+        text-align: center;
+        align-items: center;
+    }
+
+    summary samp {
+        font-size: 15px;
+        color: #007acc;
+        display: flex;
+        text-align: center;
+        width: 100%;
+        align-items: center;
+    }
+
+    details[open] summary samp{
+        color: #005999;
+    }
+
+    img {
+        max-width: 80%;
+        height: auto;
+        display: block;
+        margin: 10px auto;
+        border-radius: 5px;
+        box-shadow: 0 5px 12px rgba(0, 0, 0, 0.4);
+    }
+
+    .note-section {
+        margin-left: 20px;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        summary {
+            font-size: 16px;
+        }
+        h2 {
+            font-size: 24px;
+        }
+    }
+</style>
+
+<h2>Features</h2>
 
 <details>
-<summary> <b> <samp>Edunote Landin Page</samp></b></summary>
-<samp>
-
-<img src="Docs/ss/full.png">
-
-#### More Notes
-<img src="Docs/ss/morestab.png">
-<img src="Docs/ss/likestab.png">
-
-</samp>
+    <summary><samp>Edunote Landing Page</samp></summary>
+    <div class="note-section">
+        <img src="Docs/ss/full.png" alt="Edunote Landing Page">
+        <h4>More Notes</h4>
+        <img src="Docs/ss/morestab.png" alt="More Notes Tab">
+        <img src="Docs/ss/likestab.png" alt="Likes Tab">
+    </div>
 </details>
 
 <details>
-<summary> <b> <samp>AI Powered Notes</samp></b></summary>
-<samp>
-
-#### Use AI in Your Notes
-<img src="Docs/ss/noteoptions.png">
-<img src="Docs/ss/noteoptionsinside.png">
-<img src="Docs/ss/noteoptionsexample.png">
-<img src="Docs/ss/notevideoexample.png">
-
-
-#### Note Settings
-<img src="Docs/ss/notesettings.png">
-
-</samp>
+    <summary><samp>AI Powered Notes</samp></summary>
+    <div class="note-section">
+        <h4>Use AI in Your Notes</h4>
+        <img src="Docs/ss/noteoptions.png" alt="AI Note Options">
+        <img src="Docs/ss/noteoptionsinside.png" alt="AI Note Options Inside">
+        <img src="Docs/ss/noteoptionsexample.png" alt="AI Note Option Example">
+        <img src="Docs/ss/notevideoexample.png" alt="AI Video Example">
+        
+        <h4>Note Settings</h4>
+        <img src="Docs/ss/notesettings.png" alt="Note Settings">
+    </div>
 </details>
 
 <details>
-<summary> <b> <samp>Note Network</samp></b></summary>
-<samp>
-
-<img src="Docs\ss\alls.png">
-
-</samp>
+    <summary><samp>Note Network</samp></summary>
+    <div class="note-section">
+        <img src="Docs/ss/alls.png" alt="Note Network Overview">
+    </div>
 </details>
 
 <details>
-<summary> <b> <samp>AI Chat</samp></b></summary>
-<samp>
-
-<img src="Docs\ss\chat.png">
-
-#### Gemini
-<img src="Docs\ss\gemini.png">
-
-#### Chat in Public Notes
-<img src="Docs\ss\publics.png">
-
-#### Chat in Your Notes
-<img src="Docs\ss\privates.png">
-<img src="Docs\ss\single.png">
-<img src="Docs\ss\singleoptions.png">
-
-</samp>
+    <summary><samp>AI Chat</samp></summary>
+    <div class="note-section">
+        <img src="Docs/ss/chat.png" alt="AI Chat">
+        <h4>Gemini</h4>
+        <img src="Docs/ss/gemini.png" alt="Gemini Chat">
+        <h4>Chat in Public Notes</h4>
+        <img src="Docs/ss/publics.png" alt="Chat in Public Notes">
+        <h4>Chat in Your Notes</h4>
+        <img src="Docs/ss/privates.png" alt="Chat in Private Notes">
+        <img src="Docs/ss/single.png" alt="Single Chat">
+        <img src="Docs/ss/singleoptions.png" alt="Single Chat Options">
+    </div>
 </details>
 
 <details>
-<summary> <b> <samp>Special Ai</samp></b></summary>
-<samp>
-<img src="Docs\ss\ai.png">
-
-#### Youtube
-<img src="Docs\ss\ai-yt.png">
-
-#### PDF
-<img src="Docs\ss\ai-pdf.png">
-
-#### Audio
-<img src="Docs\ss\ai-audio.png">
-
-#### Image
-<img src="Docs\ss\ai-image.png">
-
-</samp>
+    <summary><samp>Special AI</samp></summary>
+    <div class="note-section">
+        <img src="Docs/ss/ai.png" alt="Special AI">
+        <h4>Youtube</h4>
+        <img src="Docs/ss/ai-yt.png" alt="AI YouTube Example">
+        <h4>PDF</h4>
+        <img src="Docs/ss/ai-pdf.png" alt="AI PDF Example">
+        <h4>Audio</h4>
+        <img src="Docs/ss/ai-audio.png" alt="AI Audio Example">
+        <h4>Image</h4>
+        <img src="Docs/ss/ai-image.png" alt="AI Image Example">
+    </div>
 </details>
+
 
 ## Planned Features
 
