@@ -37,50 +37,16 @@ export function insertYoutube(
 export function insertPdf(noteContent: string, text: string) {
   const jsonContent = JSON.parse(noteContent);
 
-  // Split text into paragraphs
-  const paragraphs = text.split("\n\n");
+  const pdfContent = {
+    type: "paragraph",
+    content: [
+      { type: "hardBreak" },
+      { type: "text", text: `Summarized Text: ${text}` },
+    ],
+  };
 
-  // Convert each paragraph into proper Tiptap structure
-  const pdfContent = paragraphs.map((paragraph) => {
-    // Check if it's a heading (starts with #)
-    if (paragraph.startsWith("# ")) {
-      return {
-        type: "heading",
-        attrs: { level: 1 },
-        content: [{ type: "text", text: paragraph.replace("# ", "") }],
-      };
-    } else if (paragraph.startsWith("## ")) {
-      return {
-        type: "heading",
-        attrs: { level: 2 },
-        content: [{ type: "text", text: paragraph.replace("## ", "") }],
-      };
-    } else if (paragraph.startsWith("* ")) {
-      // Handle bullet points
-      return {
-        type: "bulletList",
-        content: [
-          {
-            type: "listItem",
-            content: [
-              {
-                type: "paragraph",
-                content: [{ type: "text", text: paragraph.replace("* ", "") }],
-              },
-            ],
-          },
-        ],
-      };
-    } else {
-      // Regular paragraph
-      return {
-        type: "paragraph",
-        content: [{ type: "text", text: paragraph }],
-      };
-    }
-  });
+  jsonContent.content.push(pdfContent);
 
-  jsonContent.content.push(...pdfContent);
   return JSON.stringify(jsonContent);
 }
 
