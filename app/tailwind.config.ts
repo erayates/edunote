@@ -85,9 +85,6 @@ const config: Config = {
       noteThumbnailGradient:
         "linear-gradient(180deg, transparent 0%, hsl(217, 9.1%, 17.3%) 100%)",
     },
-    animation: {
-      "spin-slow": "spin 10s linear infinite",
-    },
   },
   plugins: [require("tailwindcss-animate"), require("@tailwindcss/typography")],
 };

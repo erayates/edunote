@@ -78,7 +78,7 @@ const NoteFilter: React.FC<{
     params.set(type, value);
     setCurrentPage(1);
     router.replace(`/notes?${params.toString()}`);
-  }, 300);
+  }, 500);
 
   return (
     <div className="w-[500px] max-w-[500px] sticky top-4  h-fit bg-foreground border-2 border-primary rounded-xl p-2">

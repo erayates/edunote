@@ -96,7 +96,7 @@ const EdunoteEditor: React.FC<EdunoteEditorProps> = ({ note, settingsOff }) => {
 
       toast.error("Something went wrong when updating note!");
     },
-    500
+    1000
   );
 
   useEffect(() => {
