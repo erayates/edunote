@@ -1,3 +1,14 @@
+<!-- <details>
+  <summary style="margin-bottom: 5px; display: flex; text-align: center;">
+    <samp style="font-size: 8px; color: #5d708c">Notes for Hackathon (Click to see)</samp>
+  </summary>
+
+  <ul style="font-size: 12px">
+    <li>Responsive...</li>
+  </ul>
+
+</details> -->
+
 
 ![Logo](app/public/assets/images/edunote-logo-light.png)
 
