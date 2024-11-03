@@ -123,13 +123,13 @@ const SpecializedImageFile: React.FC<SpecializedAIProps> = ({ note }) => {
       </DialogTrigger>
       <DialogContent
         className={cn(
-          "min-w-[480px] flex duration-500 transition-all bg-foreground p-6 border-2 border-primary",
-          completion && !isLoading && "w-auto "
+          "max-w-auto w-fit h-fit min-w-[480px] flex duration-500 transition-all bg-foreground p-6 border-2 border-primary",
+          completion && !isLoading && "w-auto max-w-auto max-w-[99900px]"
         )}
       >
         {completion ? (
-          <div className="flex flex-col space-y-2">
-            <div className="h-[480px] w-[480px] max-h-[480px] max-w-[480px] relative">
+          <div className="flex flex-row space-y-2">
+            <div className="min-w-[400px] relative">
               {imageFile?.url && (
                 <Image
                   src={imageFile.url}
@@ -137,12 +137,12 @@ const SpecializedImageFile: React.FC<SpecializedAIProps> = ({ note }) => {
                   width={0}
                   alt=""
                   sizes="100vw"
-                  className="w-full h-auto rounded-lg object-cover"
+                  className="w-full h-full rounded-lg object-cover"
                 />
               )}
             </div>
-            <div className="max-w-[480px]">
-              <div className="flex items-center  justify-between mt-2 mb-2 border-2 border-primary p-2 rounded-lg ">
+            <div className="max-w-[600px] min-w-[400px] pl-6">
+              <div className="flex items-center  justify-between border border-primary p-2 rounded-lg mb-4">
                 <DialogTitle className="text-white font-medium text-xl">Summary</DialogTitle>
                 <Button
                   variant="outline"
@@ -153,8 +153,8 @@ const SpecializedImageFile: React.FC<SpecializedAIProps> = ({ note }) => {
                   Insert
                 </Button>
               </div>
-              <ScrollArea className="h-[300px] overflow-y-auto overflow-x-clip rounded-lg">
-                <div className="text-white  bg-blue-500 rounded-lg p-2">
+              <ScrollArea className="h-fit max-h-[500px] overflow-y-auto overflow-x-clip rounded-lg">
+                <div className="text-white  bg-blue-500 rounded-lg p-3 h-full">
                   <Markdown>{completion}</Markdown>
                 </div>
                 <ScrollBar orientation="vertical" />
@@ -162,7 +162,7 @@ const SpecializedImageFile: React.FC<SpecializedAIProps> = ({ note }) => {
             </div>
           </div>
         ) : !isLoading ? (
-          <DialogHeader className="relative space-y-2 w-full">
+          <DialogHeader className="relative space-y-2 w-full h-full">
             <DialogTitle className="text-3xl font-semibold text-white">
               Upload Image
             </DialogTitle>

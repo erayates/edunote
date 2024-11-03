@@ -178,7 +178,7 @@ const SpecializedPdfIntegration: React.FC<SpecializedAIProps> = ({ note }) => {
                 <span className="w-5 h-5 mr-2 grid place-items-center">
                   <CheckCircle2 className="mr-2" />
                 </span>
-                <span className="mt-1">
+                <span className="mt-1 w-fit">
                   File:{" "}
                   {pdfFile?.name.length > 30
                     ? pdfFile.name.slice(0, 30) + "..."
