@@ -26,108 +26,62 @@ Share your notes in public to join the note network. Create tags to reach more p
 
 *Available soon...*
 
-<style>
-
-  h4 {
-        font-size: 17px;
-        text-align: center;
-  }
-
-    summary {
-        font-weight: bold;
-        cursor: pointer;
-        margin-bottom: 5px;
-        padding: 5px 0;
-        width: 100%;
-        display: flex;
-        text-align: center;
-        align-items: center;
-    }
-
-    summary samp {
-        font-size: 15px;
-        color: #007acc;
-        display: flex;
-        text-align: center;
-        width: 100%;
-        align-items: center;
-    }
-
-    details[open] summary samp{
-        color: #005999;
-    }
-
-    img {
-        max-width: 80%;
-        height: auto;
-        display: block;
-        margin: 10px auto;
-        border-radius: 5px;
-        box-shadow: 0 5px 12px rgba(0, 0, 0, 0.4);
-    }
-
-    .note-section {
-        margin-left: 20px;
-    }
-
-    /* Responsive Design */
-    @media (max-width: 768px) {
-        summary {
-            font-size: 16px;
-        }
-        h2 {
-            font-size: 24px;
-        }
-    }
-</style>
-
-<h2>Features</h2>
+<h2 style="font-size: 24px; text-align: center;">Features</h2>
 
 <details>
-    <summary><samp>Edunote Landing Page</samp></summary>
-    <div class="note-section">
-        <img src="Docs/ss/full.png" alt="Edunote Landing Page">
-        <h4>More Notes</h4>
-        <img src="Docs/ss/morestab.png" alt="More Notes Tab">
-        <img src="Docs/ss/likestab.png" alt="Likes Tab">
-    </div>
+  <summary style="font-weight: bold; cursor: pointer; margin-bottom: 5px; padding: 5px 0; width: 100%; display: flex; text-align: center; align-items: center;">
+    <samp style="font-size: 15px; color: #007acc; display: flex; text-align: center; width: 100%; align-items: center;">Edunote Landing Page</samp>
+  </summary>
+  <div style="margin-left: 20px;">
+    <img src="Docs/ss/full.png" alt="Edunote Landing Page" style="max-width: 80%; height: auto; display: block; margin: 10px auto; border-radius: 5px; box-shadow: 0 5px 12px rgba(0, 0, 0, 0.4);">
+    <h4 style="font-size: 17px; text-align: center;">More Notes</h4>
+    <img src="Docs/ss/morestab.png" alt="More Notes Tab" style="max-width: 80%; height: auto; display: block; margin: 10px auto; border-radius: 5px; box-shadow: 0 5px 12px rgba(0, 0, 0, 0.4);">
+    <img src="Docs/ss/likestab.png" alt="Likes Tab" style="max-width: 80%; height: auto; display: block; margin: 10px auto; border-radius: 5px; box-shadow: 0 5px 12px rgba(0, 0, 0, 0.4);">
+  </div>
 </details>
 
 <details>
-    <summary><samp>AI Powered Notes</samp></summary>
-    <div class="note-section">
-        <h4>Use AI in Your Notes</h4>
-        <img src="Docs/ss/noteoptions.png" alt="AI Note Options">
-        <img src="Docs/ss/noteoptionsinside.png" alt="AI Note Options Inside">
-        <img src="Docs/ss/noteoptionsexample.png" alt="AI Note Option Example">
-        <img src="Docs/ss/notevideoexample.png" alt="AI Video Example">
-        
-        <h4>Note Settings</h4>
-        <img src="Docs/ss/notesettings.png" alt="Note Settings">
-    </div>
+  <summary style="font-weight: bold; cursor: pointer; margin-bottom: 5px; padding: 5px 0; width: 100%; display: flex; text-align: center; align-items: center;">
+    <samp style="font-size: 15px; color: #007acc; display: flex; text-align: center; width: 100%; align-items: center;">AI Powered Notes</samp>
+  </summary>
+  <div style="margin-left: 20px;">
+    <h4 style="font-size: 17px; text-align: center;">Use AI in Your Notes</h4>
+    <img src="Docs/ss/noteoptions.png" alt="AI Note Options" style="max-width: 80%; height: auto; display: block; margin: 10px auto; border-radius: 5px; box-shadow: 0 5px 12px rgba(0, 0, 0, 0.4);">
+    <img src="Docs/ss/noteoptionsinside.png" alt="AI Note Options Inside" style="max-width: 80%; height: auto; display: block; margin: 10px auto; border-radius: 5px; box-shadow: 0 5px 12px rgba(0, 0, 0, 0.4);">
+    <img src="Docs/ss/noteoptionsexample.png" alt="AI Note Option Example" style="max-width: 80%; height: auto; display: block; margin: 10px auto; border-radius: 5px; box-shadow: 0 5px 12px rgba(0, 0, 0, 0.4);">
+    <img src="Docs/ss/notevideoexample.png" alt="AI Video Example" style="max-width: 80%; height: auto; display: block; margin: 10px auto; border-radius: 5px; box-shadow: 0 5px 12px rgba(0, 0, 0, 0.4);">
+    
+    <h4 style="font-size: 17px; text-align: center;">Note Settings</h4>
+    <img src="Docs/ss/notesettings.png" alt="Note Settings" style="max-width: 80%; height: auto; display: block; margin: 10px auto; border-radius: 5px; box-shadow: 0 5px 12px rgba(0, 0, 0, 0.4);">
+  </div>
 </details>
 
 <details>
-    <summary><samp>Note Network</samp></summary>
-    <div class="note-section">
-        <img src="Docs/ss/alls.png" alt="Note Network Overview">
-    </div>
+  <summary style="font-weight: bold; cursor: pointer; margin-bottom: 5px; padding: 5px 0; width: 100%; display: flex; text-align: center; align-items: center;">
+    <samp style="font-size: 15px; color: #007acc; display: flex; text-align: center; width: 100%; align-items: center;">Note Network</samp>
+  </summary>
+  <div style="margin-left: 20px;">
+    <img src="Docs/ss/alls.png" alt="Note Network Overview" style="max-width: 80%; height: auto; display: block; margin: 10px auto; border-radius: 5px; box-shadow: 0 5px 12px rgba(0, 0, 0, 0.4);">
+  </div>
 </details>
 
 <details>
-    <summary><samp>AI Chat</samp></summary>
-    <div class="note-section">
-        <img src="Docs/ss/chat.png" alt="AI Chat">
-        <h4>Gemini</h4>
-        <img src="Docs/ss/gemini.png" alt="Gemini Chat">
-        <h4>Chat in Public Notes</h4>
-        <img src="Docs/ss/publics.png" alt="Chat in Public Notes">
-        <h4>Chat in Your Notes</h4>
-        <img src="Docs/ss/privates.png" alt="Chat in Private Notes">
-        <img src="Docs/ss/single.png" alt="Single Chat">
-        <img src="Docs/ss/singleoptions.png" alt="Single Chat Options">
-    </div>
+  <summary style="font-weight: bold; cursor: pointer; margin-bottom: 5px; padding: 5px 0; width: 100%; display: flex; text-align: center; align-items: center;">
+    <samp style="font-size: 15px; color: #007acc; display: flex; text-align: center; width: 100%; align-items: center;">AI Chat</samp>
+  </summary>
+  <div style="margin-left: 20px;">
+    <img src="Docs/ss/chat.png" alt="AI Chat" style="max-width: 80%; height: auto; display: block; margin: 10px auto; border-radius: 5px; box-shadow: 0 5px 12px rgba(0, 0, 0, 0.4);">
+    <h4 style="font-size: 17px; text-align: center;">Gemini</h4>
+    <img src="Docs/ss/gemini.png" alt="Gemini Chat" style="max-width: 80%; height: auto; display: block; margin: 10px auto; border-radius: 5px; box-shadow: 0 5px 12px rgba(0, 0, 0, 0.4);">
+    <h4 style="font-size: 17px; text-align: center;">Chat in Public Notes</h4>
+    <img src="Docs/ss/publics.png" alt="Chat in Public Notes" style="max-width: 80%; height: auto; display: block; margin: 10px auto; border-radius: 5px; box-shadow: 0 5px 12px rgba(0, 0, 0, 0.4);">
+    <h4 style="font-size: 17px; text-align: center;">Chat in Your Notes</h4>
+    <img src="Docs/ss/privates.png" alt="Chat in Private Notes" style="max-width: 80%; height: auto; display: block; margin: 10px auto; border-radius: 5px; box-shadow: 0 5px 12px rgba(0, 0, 0, 0.4);">
+    <img src="Docs/ss/single.png" alt="Single Chat" style="max-width: 80%; height: auto; display: block; margin: 10px auto; border-radius: 5px; box-shadow: 0 5px 12px rgba(0, 0, 0, 0.4);">
+    <img src="Docs/ss/singleoptions.png" alt="Single Chat Options" style="max-width: 80%; height: auto; display: block; margin: 10px auto; border-radius: 5px; box-shadow: 0 5px 12px rgba(0, 0, 0, 0.4);">
+  </div>
 </details>
+
 
 <details>
     <summary><samp>Special AI</samp></summary>
