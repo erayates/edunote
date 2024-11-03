@@ -10,6 +10,13 @@
 ![NPM Version](https://img.shields.io/npm/v/tailwindcss?logo=tailwindcss&label=tailwindcss&link=https%3A%2F%2Ftailwindcss.com%2F)
 ![Static Badge](https://img.shields.io/badge/FastAPI-white?logo=fastapi&link=https%3A%2F%2Ffastapi.tiangolo.com%2F)
 ![Docker Image Version](https://img.shields.io/docker/v/elymsyr/btk-file-02?arch=amd64&logo=docker&label=Docker&link=https%3A%2F%2Fhub.docker.com%2Frepositories%2Felymsyr)
+![Static Badge](https://img.shields.io/badge/Google%20Cloud%20Artifact%20Registiry-white?logo=googlecloud)
+![Static Badge](https://img.shields.io/badge/Google%20Cloud%20Run-white?logo=googlecloud)
+![Static Badge](https://img.shields.io/badge/Google%20Cloud%20Buckets-white?logo=googlecloud)
+![Static Badge](https://img.shields.io/badge/Clerk-orange?logo=clerk)
+![Static Badge](https://img.shields.io/badge/Javascript-black?logo=javascript)
+![Static Badge](https://img.shields.io/badge/Python-black?logo=python)
+
 
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/t/erayates/btk-hackathon-24)
 ![GitHub Created At](https://img.shields.io/github/created-at/erayates/btk-hackathon-24)
@@ -26,7 +33,7 @@ Share your notes in public to join the note network. Create tags to reach more p
 
 *Available soon...*
 
-<h2 style="font-size: 24px; text-align: center;">Features</h2>
+<h2>Features</h2>
 
 <details>
   <summary style="font-weight: bold; cursor: pointer; margin-bottom: 5px; padding: 5px 0; width: 100%; display: flex; text-align: center; align-items: center;">
@@ -50,7 +57,6 @@ Share your notes in public to join the note network. Create tags to reach more p
     <img src="Docs/ss/noteoptionsinside.png" alt="AI Note Options Inside" style="max-width: 80%; height: auto; display: block; margin: 10px auto; border-radius: 5px; box-shadow: 0 5px 12px rgba(0, 0, 0, 0.4);">
     <img src="Docs/ss/noteoptionsexample.png" alt="AI Note Option Example" style="max-width: 80%; height: auto; display: block; margin: 10px auto; border-radius: 5px; box-shadow: 0 5px 12px rgba(0, 0, 0, 0.4);">
     <img src="Docs/ss/notevideoexample.png" alt="AI Video Example" style="max-width: 80%; height: auto; display: block; margin: 10px auto; border-radius: 5px; box-shadow: 0 5px 12px rgba(0, 0, 0, 0.4);">
-    
     <h4 style="font-size: 17px; text-align: center;">Note Settings</h4>
     <img src="Docs/ss/notesettings.png" alt="Note Settings" style="max-width: 80%; height: auto; display: block; margin: 10px auto; border-radius: 5px; box-shadow: 0 5px 12px rgba(0, 0, 0, 0.4);">
   </div>
@@ -84,17 +90,17 @@ Share your notes in public to join the note network. Create tags to reach more p
 
 
 <details>
-    <summary><samp>Special AI</samp></summary>
+    <summary style="font-weight: bold; cursor: pointer; margin-bottom: 5px; padding: 5px 0; width: 100%; display: flex; text-align: center; align-items: center;"><samp style="font-size: 15px; color: #007acc; display: flex; text-align: center; width: 100%; align-items: center;">Special AI</samp></summary>
     <div class="note-section">
-        <img src="Docs/ss/ai.png" alt="Special AI">
-        <h4>Youtube</h4>
-        <img src="Docs/ss/ai-yt.png" alt="AI YouTube Example">
-        <h4>PDF</h4>
-        <img src="Docs/ss/ai-pdf.png" alt="AI PDF Example">
-        <h4>Audio</h4>
-        <img src="Docs/ss/ai-audio.png" alt="AI Audio Example">
-        <h4>Image</h4>
-        <img src="Docs/ss/ai-image.png" alt="AI Image Example">
+        <img src="Docs/ss/ai.png" alt="Special AI" style="max-width: 80%; height: auto; display: block; margin: 10px auto; border-radius: 5px; box-shadow: 0 5px 12px rgba(0, 0, 0, 0.4);">
+        <h4 style="font-size: 17px; text-align: center;">Youtube</h4>
+        <img src="Docs/ss/ai-yt.png" alt="AI YouTube Example" style="max-width: 80%; height: auto; display: block; margin: 10px auto; border-radius: 5px; box-shadow: 0 5px 12px rgba(0, 0, 0, 0.4);">
+        <h4 style="font-size: 17px; text-align: center;">PDF</h4>
+        <img src="Docs/ss/ai-pdf.png" alt="AI PDF Example" style="max-width: 80%; height: auto; display: block; margin: 10px auto; border-radius: 5px; box-shadow: 0 5px 12px rgba(0, 0, 0, 0.4);">
+        <h4 style="font-size: 17px; text-align: center;">Audio</h4>
+        <img src="Docs/ss/ai-audio.png" alt="AI Audio Example" style="max-width: 80%; height: auto; display: block; margin: 10px auto; border-radius: 5px; box-shadow: 0 5px 12px rgba(0, 0, 0, 0.4);">
+        <h4 style="font-size: 17px; text-align: center;">Image</h4>
+        <img src="Docs/ss/ai-image.png" alt="AI Image Example" style="max-width: 80%; height: auto; display: block; margin: 10px auto; border-radius: 5px; box-shadow: 0 5px 12px rgba(0, 0, 0, 0.4);">
     </div>
 </details>
 
