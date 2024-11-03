@@ -62,7 +62,7 @@ const AIChatContent: React.FC<AIChatContentProps> = ({
               chat.map((chatItem: Chat, _idx: number) =>
                 chatItem.role === "user" ? (
                   <div className="flex space-x-2 w-2/3 ml-auto" key={_idx}>
-                    <div className="bg-background rounded-xl p-2 max-w-[420px] ml-auto h-auto">
+                    <div className="bg-background rounded-xl p-3 max-w-[420px] ml-auto h-auto">
                       {chatItem.parts.map((message, i) => (
                         <span
                           key={i}
@@ -81,13 +81,13 @@ const AIChatContent: React.FC<AIChatContentProps> = ({
                   </div>
                 ) : (
                   <div className="flex space-x-2 w-2/3 mr-auto" key={_idx}>
-                    <Avatar className="border-2 border-blue-600 ">
-                      <AvatarImage src="#" />
+                    <Avatar className="">
+                      <AvatarImage src="/assets/images/gemini-icon.png" />
                       <AvatarFallback className="w-full grid place-items-center bg-background text-white/30 text-md">
                         M
                       </AvatarFallback>
                     </Avatar>
-                    <div className="bg-blue-600 rounded-xl p-2">
+                    <div className="bg-blue-600 rounded-xl p-3">
                       {chatItem.parts.map((message: string, i) => {
                         try {
                           const parsedMessage: {
@@ -97,7 +97,7 @@ const AIChatContent: React.FC<AIChatContentProps> = ({
                           return (
                             <div
                               key={i}
-                              className="prose p-2 px-4 prose-sm prose-h2:text-white prose-h1:text-white prose-p:text-white prose-a:text-blue-500 prose-a:no-underline prose-strong:text-white text-white"
+                              className="prose p-3 px-4 prose-sm prose-h2:text-white prose-h1:text-white prose-p:text-white prose-a:text-blue-500 prose-a:no-underline prose-strong:text-white text-white"
                             >
                               <Markdown>{parsedMessage.response}</Markdown>
 

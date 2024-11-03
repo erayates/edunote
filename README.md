@@ -10,6 +10,13 @@
 ![NPM Version](https://img.shields.io/npm/v/tailwindcss?logo=tailwindcss&label=tailwindcss&link=https%3A%2F%2Ftailwindcss.com%2F)
 ![Static Badge](https://img.shields.io/badge/FastAPI-white?logo=fastapi&link=https%3A%2F%2Ffastapi.tiangolo.com%2F)
 ![Docker Image Version](https://img.shields.io/docker/v/elymsyr/btk-file-02?arch=amd64&logo=docker&label=Docker&link=https%3A%2F%2Fhub.docker.com%2Frepositories%2Felymsyr)
+![Static Badge](https://img.shields.io/badge/Google%20Cloud%20Artifact%20Registiry-white?logo=googlecloud)
+![Static Badge](https://img.shields.io/badge/Google%20Cloud%20Run-white?logo=googlecloud)
+![Static Badge](https://img.shields.io/badge/Google%20Cloud%20Buckets-white?logo=googlecloud)
+![Static Badge](https://img.shields.io/badge/Clerk-orange?logo=clerk)
+![Static Badge](https://img.shields.io/badge/Javascript-black?logo=javascript)
+![Static Badge](https://img.shields.io/badge/Python-black?logo=python)
+
 
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/t/erayates/btk-hackathon-24)
 ![GitHub Created At](https://img.shields.io/github/created-at/erayates/btk-hackathon-24)
@@ -26,87 +33,77 @@ Share your notes in public to join the note network. Create tags to reach more p
 
 *Available soon...*
 
-
-## Features
+<h2>Features</h2>
 
 <details>
-<summary> <b> <samp>Edunote Landin Page</samp></b></summary>
-<samp>
-
-<img src="Docs/ss/full.png">
-
-#### More Notes
-<img src="Docs/ss/morestab.png">
-<img src="Docs/ss/likestab.png">
-
-</samp>
+  <summary style="font-weight: bold; cursor: pointer; margin-bottom: 5px; padding: 5px 0; width: 100%; display: flex; text-align: center; align-items: center;">
+    <samp style="font-size: 15px; color: #007acc; display: flex; text-align: center; width: 100%; align-items: center;">Edunote Landing Page</samp>
+  </summary>
+  <div style="margin-left: 20px;">
+    <img src="Docs/ss/full.png" alt="Edunote Landing Page" style="max-width: 80%; height: auto; display: block; margin: 10px auto; border-radius: 5px; box-shadow: 0 5px 12px rgba(0, 0, 0, 0.4);">
+    <h4 style="font-size: 17px; text-align: center;">More Notes</h4>
+    <img src="Docs/ss/morestab.png" alt="More Notes Tab" style="max-width: 80%; height: auto; display: block; margin: 10px auto; border-radius: 5px; box-shadow: 0 5px 12px rgba(0, 0, 0, 0.4);">
+    <img src="Docs/ss/likestab.png" alt="Likes Tab" style="max-width: 80%; height: auto; display: block; margin: 10px auto; border-radius: 5px; box-shadow: 0 5px 12px rgba(0, 0, 0, 0.4);">
+  </div>
 </details>
 
 <details>
-<summary> <b> <samp>AI Powered Notes</samp></b></summary>
-<samp>
-
-#### Use AI in Your Notes
-<img src="Docs/ss/noteoptions.png">
-<img src="Docs/ss/noteoptionsinside.png">
-<img src="Docs/ss/noteoptionsexample.png">
-<img src="Docs/ss/notevideoexample.png">
-
-
-#### Note Settings
-<img src="Docs/ss/notesettings.png">
-
-</samp>
+  <summary style="font-weight: bold; cursor: pointer; margin-bottom: 5px; padding: 5px 0; width: 100%; display: flex; text-align: center; align-items: center;">
+    <samp style="font-size: 15px; color: #007acc; display: flex; text-align: center; width: 100%; align-items: center;">AI Powered Notes</samp>
+  </summary>
+  <div style="margin-left: 20px;">
+    <h4 style="font-size: 17px; text-align: center;">Use AI in Your Notes</h4>
+    <img src="Docs/ss/noteoptions.png" alt="AI Note Options" style="max-width: 80%; height: auto; display: block; margin: 10px auto; border-radius: 5px; box-shadow: 0 5px 12px rgba(0, 0, 0, 0.4);">
+    <img src="Docs/ss/noteoptionsinside.png" alt="AI Note Options Inside" style="max-width: 80%; height: auto; display: block; margin: 10px auto; border-radius: 5px; box-shadow: 0 5px 12px rgba(0, 0, 0, 0.4);">
+    <img src="Docs/ss/noteoptionsexample.png" alt="AI Note Option Example" style="max-width: 80%; height: auto; display: block; margin: 10px auto; border-radius: 5px; box-shadow: 0 5px 12px rgba(0, 0, 0, 0.4);">
+    <img src="Docs/ss/notevideoexample.png" alt="AI Video Example" style="max-width: 80%; height: auto; display: block; margin: 10px auto; border-radius: 5px; box-shadow: 0 5px 12px rgba(0, 0, 0, 0.4);">
+    <h4 style="font-size: 17px; text-align: center;">Note Settings</h4>
+    <img src="Docs/ss/notesettings.png" alt="Note Settings" style="max-width: 80%; height: auto; display: block; margin: 10px auto; border-radius: 5px; box-shadow: 0 5px 12px rgba(0, 0, 0, 0.4);">
+  </div>
 </details>
 
 <details>
-<summary> <b> <samp>Note Network</samp></b></summary>
-<samp>
-
-<img src="Docs\ss\alls.png">
-
-</samp>
+  <summary style="font-weight: bold; cursor: pointer; margin-bottom: 5px; padding: 5px 0; width: 100%; display: flex; text-align: center; align-items: center;">
+    <samp style="font-size: 15px; color: #007acc; display: flex; text-align: center; width: 100%; align-items: center;">Note Network</samp>
+  </summary>
+  <div style="margin-left: 20px;">
+    <img src="Docs/ss/alls.png" alt="Note Network Overview" style="max-width: 80%; height: auto; display: block; margin: 10px auto; border-radius: 5px; box-shadow: 0 5px 12px rgba(0, 0, 0, 0.4);">
+  </div>
 </details>
 
 <details>
-<summary> <b> <samp>AI Chat</samp></b></summary>
-<samp>
-
-<img src="Docs\ss\chat.png">
-
-#### Gemini
-<img src="Docs\ss\gemini.png">
-
-#### Chat in Public Notes
-<img src="Docs\ss\publics.png">
-
-#### Chat in Your Notes
-<img src="Docs\ss\privates.png">
-<img src="Docs\ss\single.png">
-<img src="Docs\ss\singleoptions.png">
-
-</samp>
+  <summary style="font-weight: bold; cursor: pointer; margin-bottom: 5px; padding: 5px 0; width: 100%; display: flex; text-align: center; align-items: center;">
+    <samp style="font-size: 15px; color: #007acc; display: flex; text-align: center; width: 100%; align-items: center;">AI Chat</samp>
+  </summary>
+  <div style="margin-left: 20px;">
+    <img src="Docs/ss/chat.png" alt="AI Chat" style="max-width: 80%; height: auto; display: block; margin: 10px auto; border-radius: 5px; box-shadow: 0 5px 12px rgba(0, 0, 0, 0.4);">
+    <h4 style="font-size: 17px; text-align: center;">Gemini</h4>
+    <img src="Docs/ss/gemini.png" alt="Gemini Chat" style="max-width: 80%; height: auto; display: block; margin: 10px auto; border-radius: 5px; box-shadow: 0 5px 12px rgba(0, 0, 0, 0.4);">
+    <h4 style="font-size: 17px; text-align: center;">Chat in Public Notes</h4>
+    <img src="Docs/ss/publics.png" alt="Chat in Public Notes" style="max-width: 80%; height: auto; display: block; margin: 10px auto; border-radius: 5px; box-shadow: 0 5px 12px rgba(0, 0, 0, 0.4);">
+    <h4 style="font-size: 17px; text-align: center;">Chat in Your Notes</h4>
+    <img src="Docs/ss/privates.png" alt="Chat in Private Notes" style="max-width: 80%; height: auto; display: block; margin: 10px auto; border-radius: 5px; box-shadow: 0 5px 12px rgba(0, 0, 0, 0.4);">
+    <img src="Docs/ss/single.png" alt="Single Chat" style="max-width: 80%; height: auto; display: block; margin: 10px auto; border-radius: 5px; box-shadow: 0 5px 12px rgba(0, 0, 0, 0.4);">
+    <img src="Docs/ss/singleoptions.png" alt="Single Chat Options" style="max-width: 80%; height: auto; display: block; margin: 10px auto; border-radius: 5px; box-shadow: 0 5px 12px rgba(0, 0, 0, 0.4);">
+  </div>
 </details>
+
 
 <details>
-<summary> <b> <samp>Special Ai</samp></b></summary>
-<samp>
-<img src="Docs\ss\ai.png">
-
-#### Youtube
-<img src="Docs\ss\ai-yt.png">
-
-#### PDF
-<img src="Docs\ss\ai-pdf.png">
-
-#### Audio
-<img src="Docs\ss\ai-audio.png">
-
-#### Image
-<img src="Docs\ss\ai-image.png">
-
-</samp>
+    <summary style="font-weight: bold; cursor: pointer; margin-bottom: 5px; padding: 5px 0; width: 100%; display: flex; text-align: center; align-items: center;"><samp style="font-size: 15px; color: #007acc; display: flex; text-align: center; width: 100%; align-items: center;">Special AI</samp></summary>
+    <div class="note-section">
+        <img src="Docs/ss/ai.png" alt="Special AI" style="max-width: 80%; height: auto; display: block; margin: 10px auto; border-radius: 5px; box-shadow: 0 5px 12px rgba(0, 0, 0, 0.4);">
+        <h4 style="font-size: 17px; text-align: center;">Youtube</h4>
+        <img src="Docs/ss/ai-yt.png" alt="AI YouTube Example" style="max-width: 80%; height: auto; display: block; margin: 10px auto; border-radius: 5px; box-shadow: 0 5px 12px rgba(0, 0, 0, 0.4);">
+        <h4 style="font-size: 17px; text-align: center;">PDF</h4>
+        <img src="Docs/ss/ai-pdf.png" alt="AI PDF Example" style="max-width: 80%; height: auto; display: block; margin: 10px auto; border-radius: 5px; box-shadow: 0 5px 12px rgba(0, 0, 0, 0.4);">
+        <h4 style="font-size: 17px; text-align: center;">Audio</h4>
+        <img src="Docs/ss/ai-audio.png" alt="AI Audio Example" style="max-width: 80%; height: auto; display: block; margin: 10px auto; border-radius: 5px; box-shadow: 0 5px 12px rgba(0, 0, 0, 0.4);">
+        <h4 style="font-size: 17px; text-align: center;">Image</h4>
+        <img src="Docs/ss/ai-image.png" alt="AI Image Example" style="max-width: 80%; height: auto; display: block; margin: 10px auto; border-radius: 5px; box-shadow: 0 5px 12px rgba(0, 0, 0, 0.4);">
+    </div>
 </details>
+
 
 ## Planned Features
 
@@ -120,7 +117,7 @@ Share your notes in public to join the note network. Create tags to reach more p
 ## API Reference
 
 <details>
-<summary> <b> <samp> See API Reference </samp></b></summary>
+<summary style="font-weight: bold; cursor: pointer; margin-bottom: 5px; padding: 5px 0; width: 100%; display: flex; text-align: center; align-items: center;"> <b> <samp style="font-size: 15px; color: #007acc; display: flex; text-align: center; width: 100%; align-items: center;"> See API Reference </samp></b></summary>
 <samp>
 <br>
 
