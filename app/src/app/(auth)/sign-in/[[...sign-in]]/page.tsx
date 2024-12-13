@@ -1,7 +1,7 @@
 import { SignIn } from "@clerk/nextjs";
 import Image from "next/image";
 
-export default function SignInPage() {
+export default async function SignInPage() {
   return (
     <div className="grid grid-cols-5 h-screen bg-slate-100">
       <div className="bg-authBg bg-center bg-cover backdrop-blur-2xl col-span-3 relative h-full flex flex-col items-center justify-center custom-clip-path overflow-hidden">

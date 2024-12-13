@@ -8,7 +8,7 @@ const prisma = new PrismaClient();
 
 async function handler(req: NextRequest) {
   // Get the headers
-  const headerPayload = headers();
+  const headerPayload = await headers();
   const svix_id = headerPayload.get("svix-id");
   const svix_timestamp = headerPayload.get("svix-timestamp");
   const svix_signature = headerPayload.get("svix-signature");
@@ -26,7 +26,6 @@ async function handler(req: NextRequest) {
 
   // Create a new Svix instance with your webhook secret
   const wh = new Webhook(process.env.WEBHOOK_SECRET || "");
-
   let evt: WebhookEvent;
 
   // Verify the payload with the headers
@@ -51,11 +50,8 @@ async function handler(req: NextRequest) {
 
   // Handle the webhook
   const eventType = evt.type;
-
   if (eventType === "user.created") {
-    const { id, email_addresses, username, first_name, last_name, image_url } =
-      evt.data;
-
+    const { id, email_addresses, username, first_name, last_name, image_url } = evt.data;
     try {
       const user = await prisma.user.create({
         data: {
@@ -75,7 +71,6 @@ async function handler(req: NextRequest) {
           },
         },
       });
-
       return NextResponse.json(user, { status: 200 });
     } catch (error) {
       console.error("Error creating user:", error);
@@ -83,48 +78,7 @@ async function handler(req: NextRequest) {
     }
   }
 
-  if (eventType === "user.updated") {
-    const { id, email_addresses, username, first_name, last_name, image_url } =
-      evt.data;
-
-    try {
-      const user = await prisma.user.update({
-        where: { id },
-        data: {
-          email: email_addresses[0].email_address,
-          username: username || email_addresses[0].email_address.split("@")[0],
-          fullname: `${first_name || ""} ${last_name || ""}`.trim(),
-          avatar: image_url,
-        },
-      });
-
-      return NextResponse.json(user, { status: 200 });
-    } catch (error) {
-      console.error("Error updating user:", error);
-      return NextResponse.json("Error updating user", { status: 500 });
-    }
-  }
-
-  if (eventType === "user.deleted") {
-    const { id } = evt.data;
-
-    try {
-      await prisma.user.delete({
-        where: { id },
-      });
-
-      await prisma.note.deleteMany({
-        where: {
-          userId: id,
-        },
-      });
-
-      return NextResponse.json("User deleted", { status: 200 });
-    } catch (error) {
-      console.error("Error deleting user:", error);
-      return NextResponse.json("Error deleting user", { status: 500 });
-    }
-  }
+  // Handle other event types...
 
   return NextResponse.json("", { status: 500 });
 }

@@ -11,21 +11,21 @@ interface SearchParams {
 }
 
 interface NotesPageProps {
-  searchParams: SearchParams;
+  searchParams: Promise<SearchParams>;
 }
 
 const LIMIT = 12;
 
 export default async function NotesPage({ searchParams }: NotesPageProps) {
-  const { search, tags, author, createdAt, page = 1 } = searchParams;
+  const { search, tags, author, createdAt, page = 1 } = await searchParams;
 
   const searchResult = await searchNotes({
     query: search,
     tags: tags,
     author,
     createdAt: createdAt ? new Date(createdAt) : undefined,
-    page: Number(page), 
-    limit: LIMIT, 
+    page: Number(page),
+    limit: LIMIT,
   });
 
   if (searchResult) {

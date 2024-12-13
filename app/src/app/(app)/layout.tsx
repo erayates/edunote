@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import "../globals.css";
-import { ClerkProvider } from "@clerk/nextjs";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Poppins } from "next/font/google";
 import AppSidebar from "@/components/layout/sidebar";
 import AppBottomBar from "@/components/layout/top-bar";
 import { Toaster } from "sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { ClerkProvider } from "@clerk/nextjs";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -25,7 +25,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider>
+    <ClerkProvider dynamic>
       <html lang="en" suppressHydrationWarning>
         <body
           className={`${poppins.className} h-full bg-background antialiased relative w-screen overflow-x-clip`}
