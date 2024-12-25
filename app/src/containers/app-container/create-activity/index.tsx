@@ -12,6 +12,8 @@ import { useRouter } from "next/navigation";
 import * as React from "react";
 import { toast } from "sonner";
 
+import Link from "next/link";
+
 export function CreateActivity() {
   const { user } = useUser();
   const router = useRouter();
@@ -40,17 +42,15 @@ export function CreateActivity() {
       </button>
 
       <Tooltip delayDuration={200}>
-        <TooltipTrigger asChild>
-          <button className="flex w-full bg-foreground flex-col py-5 items-start justify-between rounded-md border px-4 sm:flex-row sm:items-center">
-            <p className="text-sm font-medium leading-none">
-              <span className="text-muted-foreground">Create a new group</span>
-            </p>
-            <PlusCircle className="text-white/30" />
-          </button>
-        </TooltipTrigger>
-        <TooltipContent className="bg-black text-white txt-sm font-semibold">
-          <p>⏳ Available Soon...</p>
-        </TooltipContent>
+        <Link
+          href="/groups/create"
+          className="flex w-full bg-foreground flex-col py-5 items-start justify-between rounded-md border px-4 sm:flex-row sm:items-center"
+        >
+          <p className="text-sm font-medium leading-none">
+            <span className="text-muted-foreground">Create a new group</span>
+          </p>
+          <PlusCircle className="text-white/30" />
+        </Link>
       </Tooltip>
 
       <Tooltip delayDuration={200}>
