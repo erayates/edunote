@@ -97,6 +97,7 @@ model Group {
   name        String          @map("group_name")
   description String          @map("group_description")
   imageUrl    String?         @map("group_image")
+  avatar      String          @map("group_avatar")
   visibility  GroupVisibility @default(PRIVATE)
 
   // Relations
