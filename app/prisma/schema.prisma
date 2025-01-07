@@ -94,10 +94,11 @@ model Note {
 
 model Group {
   id          String          @id @default(auto()) @map("_id") @db.ObjectId
-  name        String          @map("group_name")
+  name        String          @unique @map("group_name")
   description String          @map("group_description")
   imageUrl    String?         @map("group_image")
   avatar      String          @map("group_avatar")
+  slug        String          @unique @map("group_slug")
   visibility  GroupVisibility @default(PRIVATE)
 
   // Relations
@@ -267,7 +268,6 @@ enum NoteStatus {
 enum GroupVisibility {
   PUBLIC
   PRIVATE
-  SECRET
 }
 
 enum NotificationType {
