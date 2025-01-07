@@ -22,7 +22,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider dynamic>
+    <ClerkProvider
+      dynamic
+      appearance={{ layout: { unsafe_disableDevelopmentModeWarnings: true } }}
+    >
       <html lang="en">
         <body
           className={`${poppins.className} h-screen bg-background antialiased relative`}
