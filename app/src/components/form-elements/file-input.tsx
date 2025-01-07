@@ -1,6 +1,11 @@
 "use client";
 
-import { FormField, FormItem, FormLabel, FormControl } from "@/components/ui/form";
+import {
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useFormContext } from "react-hook-form";
 import Image from "next/image";
@@ -14,7 +19,12 @@ interface FileInputProps {
   className?: string;
 }
 
-export default function FileInput({ name, label, accept, className }: FileInputProps) {
+export default function FileInput({
+  name,
+  label,
+  accept,
+  className,
+}: FileInputProps) {
   const [preview, setPreview] = useState<string | null>(null);
   const { control } = useFormContext();
 
@@ -31,7 +41,7 @@ export default function FileInput({ name, label, accept, className }: FileInputP
     <FormField
       control={control}
       name={name}
-      render={({ field: { value, onChange, ...field } }) => (
+      render={({ field: { onChange, ...field } }) => (
         <FormItem className="relative">
           <FormLabel
             htmlFor={name}

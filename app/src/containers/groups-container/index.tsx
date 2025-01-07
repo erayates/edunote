@@ -3,9 +3,8 @@
 import { BookKey } from "lucide-react";
 import React, { useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { NoteWithRelations } from "@/types/note";
-import { useUser } from "@clerk/nextjs";
-import NoteFilter from "../notes-container/note-filter";
+// import { useUser } from "@clerk/nextjs";
+// import NoteFilter from "../notes-container/note-filter";
 import NoteSearch from "../notes-container/note-search";
 import { GroupWithRelations } from "@/types/group";
 
@@ -14,17 +13,21 @@ interface GroupsContainerProps {
   totalNotes: number;
 }
 
-const GroupsContainer: React.FC<GroupsContainerProps> = ({
-  groups,
-  totalNotes,
-}) => {
+const GroupsContainer: React.FC<GroupsContainerProps> = (
+  {
+    //   groups,
+    //   totalNotes,
+  }
+) => {
   const searchParams = useSearchParams();
 
   const [currentPage, setCurrentPage] = useState(
     Number(searchParams.get("page")) || 1
   );
 
-  const { user } = useUser();
+  console.log(currentPage)
+
+//   const { user } = useUser();
 
   return (
     <div className="space-y-6 w-full">
@@ -39,7 +42,6 @@ const GroupsContainer: React.FC<GroupsContainerProps> = ({
           <div className="relative w-full pt-4 ">
             <NoteSearch setCurrentPage={setCurrentPage} />
           </div>
-          
         </div>
       </div>
 

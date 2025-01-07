@@ -25,7 +25,6 @@ const CustomInput: React.FC<CustomInputProps> = ({
   placeholder,
   type,
   label,
-  className,
 }) => {
   const { control } = useFormContext();
 

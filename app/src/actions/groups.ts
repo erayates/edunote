@@ -2,7 +2,6 @@
 
 import { GroupFormData } from "@/features/group/types/form";
 import { prisma } from "@/lib/db";
-import { Prisma } from "@prisma/client";
 import slug from "slug";
 
 export async function createGroup(data: GroupFormData, userId: string) {
