@@ -33,7 +33,7 @@ const NoteFilter: React.FC<{
     if (selectedTags.length === 0) {
       params.delete("tags");
       setCurrentPage(1);
-      router.replace(`/notes?${params.toString()}`);
+      router.replace(`/groups?${params.toString()}`);
       return;
     }
   }, [selectedTags]);

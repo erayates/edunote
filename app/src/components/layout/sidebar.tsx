@@ -24,7 +24,9 @@ import { getFavoritedNotes } from "../../../src/actions/notes";
 const AppSidebar: React.FC = async () => {
   const user = await currentUser();
   const _notes: Note[] | false = await getAllUserNotes(user?.id as string);
-  const _favorited_notes: Note[] | false = await getFavoritedNotes(user?.id as string);
+  const _favorited_notes: Note[] | false = await getFavoritedNotes(
+    user?.id as string
+  );
 
   return (
     <aside
@@ -51,7 +53,7 @@ const AppSidebar: React.FC = async () => {
               NOTES
             </p>
             <div className="flex">
-            {_favorited_notes && <Likes notes={_favorited_notes} />}
+              {_favorited_notes && <Likes notes={_favorited_notes} />}
               <NewNote></NewNote>
             </div>
           </div>
@@ -109,31 +111,25 @@ const AppSidebar: React.FC = async () => {
               </p>
             </Link>
           </li>
-          <Tooltip delayDuration={200}>
-            <TooltipTrigger asChild>
-              <li className="flex items-center text-white border-2 rounded-xl group hover:bg-[#424549] transition-all duration-300 border-[#424549] mt-3">
-                <Link
-                  href="#"
-                  className="flex space-x-2 items-center w-full pt-1 pb-[6px] px-4"
-                >
-                  <span className="w-10 h-10">
-                    <Boxes size={40} />
-                  </span>
-                  <p className="leading-none">
-                    <span className="text-white text-sm font-medium leading-6">
-                      Groups
-                    </span>
-                    <span className="text-white/30 group-hover:text-white leading-none text-xs inline-block">
-                      Explore any groups from world.
-                    </span>
-                  </p>
-                </Link>
-              </li>
-            </TooltipTrigger>
-            <TooltipContent className="bg-black text-white txt-sm font-semibold">
-              <p>⏳ Available Soon...</p>
-            </TooltipContent>
-          </Tooltip>
+
+          <li className="flex items-center text-white border-2 rounded-xl group hover:bg-[#424549] transition-all duration-300 border-[#424549] mt-3">
+            <Link
+              href="/groups"
+              className="flex space-x-2 items-center w-full pt-1 pb-[6px] px-4"
+            >
+              <span className="w-10 h-10">
+                <Boxes size={40} />
+              </span>
+              <p className="leading-none">
+                <span className="text-white text-sm font-medium leading-6">
+                  Groups
+                </span>
+                <span className="text-white/30 group-hover:text-white leading-none text-xs inline-block">
+                  Explore any groups from world.
+                </span>
+              </p>
+            </Link>
+          </li>
 
           <Tooltip delayDuration={200}>
             <TooltipTrigger asChild>

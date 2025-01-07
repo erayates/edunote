@@ -28,12 +28,12 @@ const NoteSearch: React.FC<{
     const params = new URLSearchParams(searchParams);
     if (value === "" && value) {
       params.delete("search");
-      router.replace(`/notes?${params.toString()}`);
+      router.replace(`/groups?${params.toString()}`);
       return;
     }
     params.set("search", value);
     setCurrentPage(1);
-    router.replace(`/notes?${params.toString()}`);
+    router.replace(`/groups?${params.toString()}`);
   });
 
   return (
