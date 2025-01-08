@@ -66,10 +66,10 @@ export default function FileInput({
               id={name}
               type="file"
               accept={accept}
+              value={""}
               className="hidden"
               onChange={(event) => {
-                const file = handleFileChange(event);
-                onChange(file);
+                onChange(handleFileChange(event));
               }}
             />
           </FormControl>

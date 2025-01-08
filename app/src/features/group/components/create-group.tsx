@@ -24,6 +24,8 @@ export default function CreateGroup() {
       name: "",
       description: "",
       visibility: true,
+      avatar: null,
+      thumbnail: null,
       settings: {
         allowMemberPosts: false,
         allowMemberInvites: false,

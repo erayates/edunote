@@ -7,27 +7,22 @@ import { useSearchParams } from "next/navigation";
 // import NoteFilter from "../notes-container/note-filter";
 import NoteSearch from "../notes-container/note-search";
 import { GroupWithRelations } from "@/types/group";
+import GroupCard from "./group-card";
 
 interface GroupsContainerProps {
   groups: GroupWithRelations[];
   totalNotes: number;
 }
 
-const GroupsContainer: React.FC<GroupsContainerProps> = (
-  {
-    //   groups,
-    //   totalNotes,
-  }
-) => {
+const GroupsContainer: React.FC<GroupsContainerProps> = ({
+  groups,
+  //   totalNotes,
+}) => {
   const searchParams = useSearchParams();
 
   const [currentPage, setCurrentPage] = useState(
     Number(searchParams.get("page")) || 1
   );
-
-  console.log(currentPage)
-
-//   const { user } = useUser();
 
   return (
     <div className="space-y-6 w-full">
@@ -48,38 +43,33 @@ const GroupsContainer: React.FC<GroupsContainerProps> = (
       <div className="flex space-x-6">
         <div className="flex flex-col w-full space-y-6">
           <div className="grid grid-cols-3 gap-6">
-            {/* {notes.length === 0 && (
+            {groups.length === 0 && (
               <p className="text-white/30 col-span-full bg-foreground border-2 border-primary rounded-lg p-6 text-center text-lg font-semibold mb-3">
                 There is no notes.
               </p>
             )}
 
-            {notes.map((note) => (
-              <NoteCard
-                isFavorited={note.favoritedByIds.some(
-                  (userId) => userId === user?.id
-                )}
-                key={String(note.id)}
-                noteId={note.id}
-                thumbnailUrl={note.thumbnail as string}
-                avatarUrl={note.user.avatar as string}
-                title={note.title}
-                description={note.description}
-                updatedAt={note.updatedAt}
-                author={note.user.fullname}
-                slug={note.slug}
-                tags={note.tags.map((tag) => tag.name)}
-                noteUserId={note.userId}
+            {groups.map((group) => (
+              <GroupCard
+                key={String(group.id)}
+                // groupId={group.id}
+                imageUrl={group.imageUrl as string}
+                avatar={group.avatar as string}
+                name={group.name}
+                description={group.description}
+                slug={group.slug}
+                visibility={group.visibility}
+                // settings={group.settings}
+                // members={group.members}
               />
             ))}
           </div>
 
-          <NotePagination
+          {/* <NotePagination
             totalNotes={totalNotes}
             currentPage={currentPage}
             setCurrentPage={setCurrentPage}
           /> */}
-          </div>
         </div>
       </div>
     </div>
