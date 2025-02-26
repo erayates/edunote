@@ -14,7 +14,7 @@
 
 ![Static Badge](https://img.shields.io/badge/EDUNOTE-black?logo=e&link=https%3A%2F%2Fbtk-hackathon-24-beta.vercel.app%2F)
 ![Static Badge](https://img.shields.io/badge/erenorhun-black?logo=github&link=https%3A%2F%2Fgithub.com%2Felymsyr%2F)
-![Static Badge](https://img.shields.io/badge/erayates-black?logo=github&link=https%3A%2F%2Fgithub.com%2Ferayates%2F)![Static Badge](https://img.shields.io/badge/utkukayaa-black?logo=github&link=https%3A%2F%2Fgithub.com%2FUtkuKayaa%2F)
+![Static Badge](https://img.shields.io/badge/erayates-black?logo=github&link=https%3A%2F%2Fgithub.com%2Ferayates%2F)
 
 ![Static Badge](https://img.shields.io/badge/Vercel-black?logo=vercel&link=https%3A%2F%2Fvercel.com%2F)
 ![Static Badge](https://img.shields.io/badge/Next.JS-black?logo=nextdotjs&link=https%3A%2F%2Fnextjs.org%2F)
